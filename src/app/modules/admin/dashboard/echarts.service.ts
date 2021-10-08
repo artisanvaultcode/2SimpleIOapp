@@ -1,12 +1,7 @@
 import { Injectable } from '@angular/core';
-import {
-    APIService,
-    HisSmsLog,
-    ListHisSmsLogsQuery,
-    ModelHisSmsLogFilterInput,
-} from 'app/API.service';
 import _lodash from 'lodash';
 import { BehaviorSubject } from 'rxjs';
+import {APIService, HisSmsLog, ListHisSmsLogsQuery, ModelHisSmsLogFilterInput} from '../../../API.service';
 
 export interface SmsData {
     name: string;
@@ -64,7 +59,7 @@ export class EchartsService {
                 }
                 this._countRow.next(countRow);
             })
-            .catch((err) => console.log(err));
+            .catch(err => console.log(err));
         return countRow;
     }
 
@@ -78,7 +73,7 @@ export class EchartsService {
             lastProcessDt: { gt: hoy00 },
             clientId: { eq: clientid },
         };
-        let devDataTmp = [];
+        const devDataTmp = [];
         let nextToken = null;
         await this.api
             .ListHisSmsLogs(filter, 300, nextToken)
@@ -91,12 +86,12 @@ export class EchartsService {
                             uniqueid: item.uniqueId,
                             name: 'Device 1',
                             value: 1
-                        }
+                        };
                         devDataTmp.push(devs);
                     } else {
                         let found = false;
-                        for (let devf of devDataTmp){
-                            if (devf.uniqueid == item.uniqueId){
+                        for (const devf of devDataTmp){
+                            if (devf.uniqueid === item.uniqueId){
                                 found = true;
                                 devf.value += 1;
                             }
@@ -106,7 +101,7 @@ export class EchartsService {
                                 uniqueid: item.uniqueId,
                                 name: 'Device ' + (devDataTmp.length+1),
                                 value: 1
-                            }
+                            };
                             devDataTmp.push(devs);
                         }
                     }
@@ -123,12 +118,12 @@ export class EchartsService {
                                         uniqueid: item.uniqueId,
                                         name: 'Device 1',
                                         value: 1
-                                    }
+                                    };
                                     devDataTmp.push(devs);
                                 } else {
                                     let found = false;
-                                    for (let devf of devDataTmp){
-                                        if (devf.uniqueid == item.uniqueId){
+                                    for (const devf of devDataTmp){
+                                        if (devf.uniqueid === item.uniqueId){
                                             found = true;
                                             devf.value += 1;
                                         }
@@ -138,7 +133,7 @@ export class EchartsService {
                                             uniqueid: item.uniqueId,
                                             name: 'Device ' + (devDataTmp.length+1),
                                             value: 1
-                                        }
+                                        };
                                         devDataTmp.push(devs);
                                     }
                                 }
@@ -147,20 +142,20 @@ export class EchartsService {
                 }
                 this.devData = devDataTmp;
             })
-            .catch((err) => console.log(err));
+            .catch(err => console.log(err));
     }
 
     async biweeklySms(clientid: string) {
         const date = new Date();
         // fechas
-        let datea = date;
+        const datea = date;
         datea.setDate(datea.getDate() - 14);
         for (let i = 1; i < 15; i++) {
             const mma = new Intl.DateTimeFormat('en', {month: 'short',}).format(datea);
             const mms = new Intl.DateTimeFormat('en', {month: '2-digit',}).format(datea);
             const dda = new Intl.DateTimeFormat('en', {day: '2-digit',}).format(datea);
-            const smsAux: SmsData = { 
-                name: mma + '-' + dda, 
+            const smsAux: SmsData = {
+                name: mma + '-' + dda,
                 fecha00: datea.getFullYear().toString()+'-'+mms+'-'+dda+'T00:00:00',
                 fecha24: datea.getFullYear().toString()+'-'+mms+'-'+dda+'T23:59:59',
                 value: 0,
@@ -186,7 +181,7 @@ export class EchartsService {
                  * cargar datos en contrados
                  */
                 result.items.forEach((item: HisSmsLog) => {
-                    for (let dateit of this.data) {
+                    for (const dateit of this.data) {
                         // Conteo por fecha
                         if (item.createdAt >= dateit.fecha00 && item.createdAt <= dateit.fecha24) {
                             dateit.value += 1;
@@ -202,7 +197,7 @@ export class EchartsService {
                              * cargar datos en contrados
                              */
                             result.items.forEach((item: HisSmsLog) => {
-                                for (let dateit of this.data) {
+                                for (const dateit of this.data) {
                                     // Conteo por fecha
                                     if (item.createdAt >= dateit.fecha00 && item.createdAt <= dateit.fecha24) {
                                         dateit.value += 1;
@@ -212,14 +207,14 @@ export class EchartsService {
                         });
                 }
             })
-            .catch((err) => console.log(err));
+            .catch(err => console.log(err));
     }
 
     get smsOverviewData(){
         return [{
-            name: "Sms Sent",
+            name: 'Sms Sent',
             series: this.data
-          }]
+          }];
     }
 
     get devDataSent(){

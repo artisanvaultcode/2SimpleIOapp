@@ -1,20 +1,30 @@
 # this is an auto generated file. This will be overwritten
-query SyncTodos(
-  $filter: ModelTodoFilterInput
+query GetGroup($id: ID!) {
+  getGroup(id: $id) {
+    id
+    name
+    carrier
+    status
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+query ListGroups(
+  $filter: ModelGroupFilterInput
   $limit: Int
   $nextToken: String
-  $lastSync: AWSTimestamp
 ) {
-  syncTodos(
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-    lastSync: $lastSync
-  ) {
+  listGroups(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
-      description
+      carrier
+      status
+      clientId
       _version
       _deleted
       _lastChangedAt
@@ -25,11 +35,244 @@ query SyncTodos(
     startedAt
   }
 }
-query GetTodo($id: ID!) {
-  getTodo(id: $id) {
+query SyncGroups(
+  $filter: ModelGroupFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncGroups(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      name
+      carrier
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query GetRecipient($id: ID!) {
+  getRecipient(id: $id) {
+    id
+    phone
+    carrierStatus
+    lastProcessDt
+    phoneTxt
+    status
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+    Group {
+      id
+      name
+      carrier
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    MsgTemplate {
+      id
+      name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+  }
+}
+query ListRecipients(
+  $filter: ModelRecipientFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listRecipients(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      phone
+      carrierStatus
+      lastProcessDt
+      phoneTxt
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+      Group {
+        id
+        name
+        carrier
+        status
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+      MsgTemplate {
+        id
+        name
+        message
+        status
+        default
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+    }
+    nextToken
+    startedAt
+  }
+}
+query SearchRecipients(
+  $filter: SearchableRecipientFilterInput
+  $sort: SearchableRecipientSortInput
+  $limit: Int
+  $nextToken: String
+  $from: Int
+) {
+  searchRecipients(
+    filter: $filter
+    sort: $sort
+    limit: $limit
+    nextToken: $nextToken
+    from: $from
+  ) {
+    items {
+      id
+      phone
+      carrierStatus
+      lastProcessDt
+      phoneTxt
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+      Group {
+        id
+        name
+        carrier
+        status
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+      MsgTemplate {
+        id
+        name
+        message
+        status
+        default
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+    }
+    nextToken
+    total
+  }
+}
+query SyncRecipients(
+  $filter: ModelRecipientFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncRecipients(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      phone
+      carrierStatus
+      lastProcessDt
+      phoneTxt
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+      Group {
+        id
+        name
+        carrier
+        status
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+      MsgTemplate {
+        id
+        name
+        message
+        status
+        default
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+    }
+    nextToken
+    startedAt
+  }
+}
+query GetMsgTemplate($id: ID!) {
+  getMsgTemplate(id: $id) {
     id
     name
-    description
+    message
+    status
+    default
+    clientId
     _version
     _deleted
     _lastChangedAt
@@ -37,16 +280,363 @@ query GetTodo($id: ID!) {
     updatedAt
   }
 }
-query ListTodos(
-  $filter: ModelTodoFilterInput
+query ListMsgTemplates(
+  $filter: ModelMsgTemplateFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  listMsgTemplates(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query SyncMsgTemplates(
+  $filter: ModelMsgTemplateFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncMsgTemplates(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query GetMsgToGroup($id: ID!) {
+  getMsgToGroup(id: $id) {
+    id
+    msgID
+    groupID
+    clientId
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+query ListMsgToGroups(
+  $filter: ModelMsgToGroupFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listMsgToGroups(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      msgID
+      groupID
+      clientId
+      status
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query SyncMsgToGroups(
+  $filter: ModelMsgToGroupFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncMsgToGroups(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      msgID
+      groupID
+      clientId
+      status
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query GetDevice($id: ID!) {
+  getDevice(id: $id) {
+    id
+    uniqueId
+    description
+    metadata
+    lastProcessDt
+    phoneTxt
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+query ListDevices(
+  $filter: ModelDeviceFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listDevices(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      uniqueId
       description
+      metadata
+      lastProcessDt
+      phoneTxt
+      status
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query SearchDevices(
+  $filter: SearchableDeviceFilterInput
+  $sort: SearchableDeviceSortInput
+  $limit: Int
+  $nextToken: String
+  $from: Int
+) {
+  searchDevices(
+    filter: $filter
+    sort: $sort
+    limit: $limit
+    nextToken: $nextToken
+    from: $from
+  ) {
+    items {
+      id
+      uniqueId
+      description
+      metadata
+      lastProcessDt
+      phoneTxt
+      status
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    total
+  }
+}
+query SyncDevices(
+  $filter: ModelDeviceFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncDevices(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      uniqueId
+      description
+      metadata
+      lastProcessDt
+      phoneTxt
+      status
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query GetHisSmsLog($id: ID!) {
+  getHisSmsLog(id: $id) {
+    id
+    uniqueId
+    clientId
+    clientIdTxt
+    lastProcessDt
+    metadata
+    carrierStatus
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+query ListHisSmsLogs(
+  $filter: ModelHisSmsLogFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listHisSmsLogs(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      uniqueId
+      clientId
+      clientIdTxt
+      lastProcessDt
+      metadata
+      carrierStatus
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query SyncHisSmsLogs(
+  $filter: ModelHisSmsLogFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncHisSmsLogs(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      uniqueId
+      clientId
+      clientIdTxt
+      lastProcessDt
+      metadata
+      carrierStatus
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query GetSubscriber($id: ID!) {
+  getSubscriber(id: $id) {
+    id
+    apiKey
+    clientId
+    limit
+    limitMax
+    currentCount
+    expires
+    lastProcessDt
+    metadata
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+query ListSubscribers(
+  $filter: ModelSubscriberFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listSubscribers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      apiKey
+      clientId
+      limit
+      limitMax
+      currentCount
+      expires
+      lastProcessDt
+      metadata
+      status
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query SyncSubscribers(
+  $filter: ModelSubscriberFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncSubscribers(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      apiKey
+      clientId
+      limit
+      limitMax
+      currentCount
+      expires
+      lastProcessDt
+      metadata
+      status
       _version
       _deleted
       _lastChangedAt

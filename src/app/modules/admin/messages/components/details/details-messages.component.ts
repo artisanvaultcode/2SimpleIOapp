@@ -4,13 +4,13 @@ import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
 import { Observable, of, Subject } from 'rxjs';
 import {Label, Note} from '../../messages.types';
 import {MsgsService} from '../../messages.service';
-import { EntityStatus, Group, MsgTemplate, MsgToGroup, TemplateUsage } from 'app/API.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import _lodash from 'lodash';
+import {EntityStatus, Group, MsgTemplate, MsgToGroup, TemplateUsage} from '../../../../../API.service';
 
 export type MsgtogrpNames = MsgToGroup & {
     namegroup?: string;
-}
+};
 
 @Component({
     selector       : 'messages-details',
@@ -57,7 +57,7 @@ export class DetailsMessagesComponent implements OnInit, OnDestroy
             this.note$ = this._notesService.note$;
             // Request the data from the server
             this._notesService.getMessageById(this._data.note.id).subscribe();
-            console.log("note$", this.note$);
+            console.log('note$', this.note$);
             // Get the note
             //this.note$ = this._notesService.note$;
         }
@@ -125,15 +125,15 @@ export class DetailsMessagesComponent implements OnInit, OnDestroy
      */
     createNote(note: MsgTemplate): void
     {
-        
+
         note.clientId = this.clientid;
         this._notesService.createNote(note)
             .then((resp: MsgTemplate) => {
                 // Close the dialog
                 this._matDialogRef.close();
-                console.log("Creado...", resp)
+                console.log('Creado...', resp);
             })
-            .catch(err => console.log("Error MsgService - Create...", err));
+            .catch(err => console.log('Error MsgService - Create...', err));
         /* this._notesService.createNote(note).pipe(
             map(() => {
                 // Get the note
@@ -150,10 +150,10 @@ export class DetailsMessagesComponent implements OnInit, OnDestroy
     isNoteHasLabel(msgtemplate: MsgTemplate, group: Group ): boolean
     {
         let foundmsg = true;
-        this.msgtogroups$.subscribe(msgtos => {
-            const msgst = msgtos.find(item => item.msgID === msgtemplate.id && item.groupID === group.id)
+        this.msgtogroups$.subscribe((msgtos) => {
+            const msgst = msgtos.find(item => item.msgID === msgtemplate.id && item.groupID === group.id);
             foundmsg = !_lodash.isEmpty(msgst);
-        })
+        });
         return foundmsg;
     }
 
@@ -183,7 +183,7 @@ export class DetailsMessagesComponent implements OnInit, OnDestroy
     }
 
     toggleGroupOnNote(msg2grp: MsgToGroup): void {
-        console.log("toggleGroupOnNote...", msg2grp);
+        console.log('toggleGroupOnNote...', msg2grp);
         this._notesService.delMsgToGroup(msg2grp)
             .then(() => this._matDialogRef.close())
             .catch(error => console.log(error));
@@ -230,18 +230,18 @@ export class DetailsMessagesComponent implements OnInit, OnDestroy
          * Delete MsgToGroup first
          */
         let filmsg2grp: MsgToGroup[];
-        this.msgtogroups$.subscribe(resp => {
+        this.msgtogroups$.subscribe((resp) => {
             filmsg2grp = resp.filter(
-                (f) => note.id === f.msgID
-            )
+                f => note.id === f.msgID
+            );
         });
         if (filmsg2grp.length>0){
-            for (let item of filmsg2grp){
+            for (const item of filmsg2grp){
                 this.toggleGroupOnNote(item);
             }
         }
-        this._notesService.deleteNote(note)
-            .then
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        of(this._notesService.deleteNote(note));
     }
 
     /**
@@ -289,11 +289,11 @@ export class DetailsMessagesComponent implements OnInit, OnDestroy
 
     getGroups(id: string) {
         let flabt;
-        this.msgtogroups$.subscribe(resp => {
+        this.msgtogroups$.subscribe((resp) => {
             flabt = resp.filter(
-                (f) => id === f.msgID
-            )
-        })
+                f => id === f.msgID
+            );
+        });
         return flabt;
     }
 }

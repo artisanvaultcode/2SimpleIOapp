@@ -1,12 +1,14 @@
 # this is an auto generated file. This will be overwritten
-mutation CreateTodo(
-  $input: CreateTodoInput!
-  $condition: ModelTodoConditionInput
+mutation CreateGroup(
+  $input: CreateGroupInput!
+  $condition: ModelGroupConditionInput
 ) {
-  createTodo(input: $input, condition: $condition) {
+  createGroup(input: $input, condition: $condition) {
     id
     name
-    description
+    carrier
+    status
+    clientId
     _version
     _deleted
     _lastChangedAt
@@ -14,14 +16,16 @@ mutation CreateTodo(
     updatedAt
   }
 }
-mutation UpdateTodo(
-  $input: UpdateTodoInput!
-  $condition: ModelTodoConditionInput
+mutation UpdateGroup(
+  $input: UpdateGroupInput!
+  $condition: ModelGroupConditionInput
 ) {
-  updateTodo(input: $input, condition: $condition) {
+  updateGroup(input: $input, condition: $condition) {
     id
     name
-    description
+    carrier
+    status
+    clientId
     _version
     _deleted
     _lastChangedAt
@@ -29,14 +33,433 @@ mutation UpdateTodo(
     updatedAt
   }
 }
-mutation DeleteTodo(
-  $input: DeleteTodoInput!
-  $condition: ModelTodoConditionInput
+mutation DeleteGroup(
+  $input: DeleteGroupInput!
+  $condition: ModelGroupConditionInput
 ) {
-  deleteTodo(input: $input, condition: $condition) {
+  deleteGroup(input: $input, condition: $condition) {
     id
     name
+    carrier
+    status
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation CreateRecipient(
+  $input: CreateRecipientInput!
+  $condition: ModelRecipientConditionInput
+) {
+  createRecipient(input: $input, condition: $condition) {
+    id
+    phone
+    carrierStatus
+    lastProcessDt
+    phoneTxt
+    status
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+    Group {
+      id
+      name
+      carrier
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    MsgTemplate {
+      id
+      name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+  }
+}
+mutation UpdateRecipient(
+  $input: UpdateRecipientInput!
+  $condition: ModelRecipientConditionInput
+) {
+  updateRecipient(input: $input, condition: $condition) {
+    id
+    phone
+    carrierStatus
+    lastProcessDt
+    phoneTxt
+    status
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+    Group {
+      id
+      name
+      carrier
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    MsgTemplate {
+      id
+      name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+  }
+}
+mutation DeleteRecipient(
+  $input: DeleteRecipientInput!
+  $condition: ModelRecipientConditionInput
+) {
+  deleteRecipient(input: $input, condition: $condition) {
+    id
+    phone
+    carrierStatus
+    lastProcessDt
+    phoneTxt
+    status
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+    Group {
+      id
+      name
+      carrier
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    MsgTemplate {
+      id
+      name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+  }
+}
+mutation CreateMsgTemplate(
+  $input: CreateMsgTemplateInput!
+  $condition: ModelMsgTemplateConditionInput
+) {
+  createMsgTemplate(input: $input, condition: $condition) {
+    id
+    name
+    message
+    status
+    default
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation UpdateMsgTemplate(
+  $input: UpdateMsgTemplateInput!
+  $condition: ModelMsgTemplateConditionInput
+) {
+  updateMsgTemplate(input: $input, condition: $condition) {
+    id
+    name
+    message
+    status
+    default
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation DeleteMsgTemplate(
+  $input: DeleteMsgTemplateInput!
+  $condition: ModelMsgTemplateConditionInput
+) {
+  deleteMsgTemplate(input: $input, condition: $condition) {
+    id
+    name
+    message
+    status
+    default
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation CreateMsgToGroup(
+  $input: CreateMsgToGroupInput!
+  $condition: ModelMsgToGroupConditionInput
+) {
+  createMsgToGroup(input: $input, condition: $condition) {
+    id
+    msgID
+    groupID
+    clientId
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation UpdateMsgToGroup(
+  $input: UpdateMsgToGroupInput!
+  $condition: ModelMsgToGroupConditionInput
+) {
+  updateMsgToGroup(input: $input, condition: $condition) {
+    id
+    msgID
+    groupID
+    clientId
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation DeleteMsgToGroup(
+  $input: DeleteMsgToGroupInput!
+  $condition: ModelMsgToGroupConditionInput
+) {
+  deleteMsgToGroup(input: $input, condition: $condition) {
+    id
+    msgID
+    groupID
+    clientId
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation CreateDevice(
+  $input: CreateDeviceInput!
+  $condition: ModelDeviceConditionInput
+) {
+  createDevice(input: $input, condition: $condition) {
+    id
+    uniqueId
     description
+    metadata
+    lastProcessDt
+    phoneTxt
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation UpdateDevice(
+  $input: UpdateDeviceInput!
+  $condition: ModelDeviceConditionInput
+) {
+  updateDevice(input: $input, condition: $condition) {
+    id
+    uniqueId
+    description
+    metadata
+    lastProcessDt
+    phoneTxt
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation DeleteDevice(
+  $input: DeleteDeviceInput!
+  $condition: ModelDeviceConditionInput
+) {
+  deleteDevice(input: $input, condition: $condition) {
+    id
+    uniqueId
+    description
+    metadata
+    lastProcessDt
+    phoneTxt
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation CreateHisSmsLog(
+  $input: CreateHisSmsLogInput!
+  $condition: ModelHisSmsLogConditionInput
+) {
+  createHisSmsLog(input: $input, condition: $condition) {
+    id
+    uniqueId
+    clientId
+    clientIdTxt
+    lastProcessDt
+    metadata
+    carrierStatus
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation UpdateHisSmsLog(
+  $input: UpdateHisSmsLogInput!
+  $condition: ModelHisSmsLogConditionInput
+) {
+  updateHisSmsLog(input: $input, condition: $condition) {
+    id
+    uniqueId
+    clientId
+    clientIdTxt
+    lastProcessDt
+    metadata
+    carrierStatus
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation DeleteHisSmsLog(
+  $input: DeleteHisSmsLogInput!
+  $condition: ModelHisSmsLogConditionInput
+) {
+  deleteHisSmsLog(input: $input, condition: $condition) {
+    id
+    uniqueId
+    clientId
+    clientIdTxt
+    lastProcessDt
+    metadata
+    carrierStatus
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation CreateSubscriber(
+  $input: CreateSubscriberInput!
+  $condition: ModelSubscriberConditionInput
+) {
+  createSubscriber(input: $input, condition: $condition) {
+    id
+    apiKey
+    clientId
+    limit
+    limitMax
+    currentCount
+    expires
+    lastProcessDt
+    metadata
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation UpdateSubscriber(
+  $input: UpdateSubscriberInput!
+  $condition: ModelSubscriberConditionInput
+) {
+  updateSubscriber(input: $input, condition: $condition) {
+    id
+    apiKey
+    clientId
+    limit
+    limitMax
+    currentCount
+    expires
+    lastProcessDt
+    metadata
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation DeleteSubscriber(
+  $input: DeleteSubscriberInput!
+  $condition: ModelSubscriberConditionInput
+) {
+  deleteSubscriber(input: $input, condition: $condition) {
+    id
+    apiKey
+    clientId
+    limit
+    limitMax
+    currentCount
+    expires
+    lastProcessDt
+    metadata
+    status
     _version
     _deleted
     _lastChangedAt

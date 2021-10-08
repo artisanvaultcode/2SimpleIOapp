@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { CreateMsgTemplateInput, EntityStatus, MsgTemplate, TemplateUsage } from 'app/API.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { MsgTemplateService } from 'app/core/services/msg-template.service';
+import {CreateMsgTemplateInput, EntityStatus, MsgTemplate, TemplateUsage} from '../../../../../API.service';
 
 @Component({
     selector: 'msg-default',
@@ -44,21 +44,21 @@ export class MsgTemplateDefaultComponent implements OnInit {
         this.getClientID();
         this.setMsgDefault();
         this.composeForm.patchValue(this.msgDefault);
-        
+
     }
-    
-    setMsgDefault(){
+
+    setMsgDefault(): void{
         this.msgDefault = {
             name: '',
             message: ''
-        }
+        };
         this.msgDefault.status = EntityStatus.ACTIVE;
         this.msgDefault.default = TemplateUsage.DEFAULT;
     }
-    
-    getClientID(){
+
+    getClientID(): void{
         this._authService.checkClientId()
-            .then(resp => {
+            .then((resp) => {
                 this.clientid = resp['sub'];
             });
     }
@@ -74,18 +74,18 @@ export class MsgTemplateDefaultComponent implements OnInit {
         // Close the dialog
         const newMgsTemplate: MsgTemplate = this.composeForm.getRawValue();
         if (this.composeForm.invalid){
-            console.log("Validation Form invalid...");
+            console.log('Validation Form invalid...');
             this.showAlert = true;
         } else {
             this.msgDefault.clientId = this.clientid;
             this.msgDefault.name = newMgsTemplate.name;
-            var msgTemp = newMgsTemplate.message;
-            msgTemp = msgTemp.replace("<p>", "");
-            msgTemp = msgTemp.replace("</p>", "");
+            let msgTemp = newMgsTemplate.message;
+            msgTemp = msgTemp.replace('<p>', '');
+            msgTemp = msgTemp.replace('</p>', '');
             this.msgDefault.message = msgTemp;
             // Create default message
             this._msgTemplateService.addDefault(this.msgDefault, this.clientid)
-                .then(resp => console.log("message saved..."));
+                .then(resp => console.log('message saved...'));
             this.matDialogRef.close();
         }
     }

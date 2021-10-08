@@ -1,19 +1,16 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
-import {filter, map, switchMap, take, tap} from 'rxjs/operators';
-import {
-    APIService,
-    Device,
-    EntityStatus,
-    ModelDeviceFilterInput,
-    SearchableDeviceFilterInput,
-    SearchableDeviceSortableFields,
-    SearchableDeviceSortInput,
-    SearchableSortDirection, UpdateDeviceInput
-} from '../../../API.service';
+import {map, switchMap, take} from 'rxjs/operators';
 import * as _ from 'lodash';
 import {Logger} from '@aws-amplify/core';
+import {
+    APIService,
+    Device, EntityStatus,
+    ModelDeviceFilterInput,
+    SearchableDeviceFilterInput, SearchableDeviceSortableFields, SearchableDeviceSortInput,
+    SearchableSortDirection, UpdateDeviceInput
+} from '../../../API.service';
 
 @Injectable({
     providedIn: 'root'
