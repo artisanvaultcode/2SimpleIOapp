@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "2simpleioapp",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "auth2simpleioapp755235cd755235cd",
+      "Outputs.UserPoolId"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-2simpleioapp-dev-213838-authRole",
+      "UnauthRoleArn": "arn:aws:iam::538331572700:role/amplify-2simpleioapp-dev-213838-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::538331572700:role/amplify-2simpleioapp-dev-213838-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-2simpleioapp-dev-213838-deployment",
+      "UnauthRoleName": "amplify-2simpleioapp-dev-213838-unauthRole",
+      "StackName": "amplify-2simpleioapp-dev-213838",
+      "StackId": "arn:aws:cloudformation:us-east-1:538331572700:stack/amplify-2simpleioapp-dev-213838/9c6a8170-27f1-11ec-9e59-1207824b08bd",
+      "AmplifyAppId": "d1p76vn48npwaa"
+    },
+    "categories": {
+      "function": {
+        "2simpleioapp755235cd755235cdCustomMessage": {
+          "REDIRECTURL": "https://2simple.io/confirm",
+          "EMAILSUBJECT": "!!VALIDATION!!",
+          "EMAILMESSAGE": "",
+          "deploymentBucketName": "amplify-2simpleioapp-dev-213838-deployment",
+          "s3Key": "amplify-builds/2simpleioapp755235cd755235cdCustomMessage-516d4563746b43355935-build.zip"
+        },
+        "2simpleioapp755235cd755235cdPostConfirmation": {
+          "GROUP": "USER",
+          "deploymentBucketName": "amplify-2simpleioapp-dev-213838-deployment",
+          "s3Key": "amplify-builds/2simpleioapp755235cd755235cdPostConfirmation-7174725544327949704f-build.zip"
+        }
+      },
+      "auth": {
+        "2simpleioapp755235cd755235cd": {}
+      }
+    }
+  }
+}
