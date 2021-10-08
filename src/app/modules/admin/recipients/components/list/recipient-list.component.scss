@@ -1,0 +1,21 @@
+.step-navigation {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    bottom: 32px;
+    max-width: 90%;
+    padding: 0 24px;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    .previous {
+        margin-right: auto;
+    }
+
+    .next,
+    .done {
+        margin-left: auto;
+    }
+}

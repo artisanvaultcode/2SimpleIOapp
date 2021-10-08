@@ -1,0 +1,10 @@
+.smsstyle {
+    width: 90%;
+    height: 360px;
+}
+
+::ng-deep .ngx-charts {
+    text {
+        fill: azure !important;
+    }
+}

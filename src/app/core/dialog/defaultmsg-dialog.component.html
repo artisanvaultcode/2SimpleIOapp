@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>Change Default message?</h2>
+<div mat-dialog-content>
+    <h2>Current message:</h2>
+    <p>{{ currentmsg }}</p>
+    <hr>
+    <!-- <mat-form-field appearance="outline">
+        <mat-label>Proposed message</mat-label>
+        <input matInput [(ngModel)]="data.msgdefault" />
+    </mat-form-field> -->
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">No Thanks</button>
+    <!-- <button 
+      mat-flat-button
+      [color]="'primary'" 
+      [mat-dialog-close]="data.msgdefault" 
+      cdkFocusInitial>
+        Ok
+    </button> -->
+</div>

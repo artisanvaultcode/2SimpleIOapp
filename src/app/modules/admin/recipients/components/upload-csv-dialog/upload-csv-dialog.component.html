@@ -1,0 +1,13 @@
+<mat-card>
+    <mat-card-content>
+        <upload-file style="width:60%; margin-top: 25px;"
+                     (_onSelect)="_onSelect($event)"
+                     (_onReset)="_onReset()">
+        </upload-file>
+    </mat-card-content>
+
+    <mat-card-actions *ngIf="recList && recList.length > 0">
+        <button mat-raised-button (click)="import()">Import</button>
+        <button mat-raised-button (click)="_onCancel()">Cancel</button>
+    </mat-card-actions>
+</mat-card>

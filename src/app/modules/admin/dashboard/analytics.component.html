@@ -1,0 +1,193 @@
+<div class="flex flex-col flex-auto w-full">
+
+    <div class="flex flex-wrap w-full max-w-screen-xl mx-auto p-6 md:p-8">
+        <!-- Spinner default -->
+        <app-progress-spinner class="example-margin" [displayProgressSpinner]="displayProgressSpinner">
+        </app-progress-spinner>
+        <!-- Title and action buttons -->
+        <div class="flex items-center justify-between w-full">
+            <div>
+                <div class="text-3xl font-semibold tracking-tight leading-8">Analytics dashboard</div>
+                <div class="font-medium tracking-tight text-secondary">Monitor metrics, check reports and review performance</div>
+            </div>
+            <div class="flex items-center ml-6">
+                <button
+                    (click)="openDefaultMsgDialog()"
+                    class="hidden sm:inline-flex md:inline-flex"
+                    mat-stroked-button>
+                    <mat-icon
+                        class="icon-size-5"
+                        [svgIcon]="'heroicons_solid:cog'"></mat-icon>
+                    <span class="ml-2">Default Message</span>
+                </button>
+                <div class="hidden md:block">
+                    <div class="text-3xl font-semibold tracking-tight leading-8">
+                        <button
+                            class="hidden sm:inline-flex ml-1"
+                            mat-flat-button
+                            [color]="'primary'"
+                            (click)="launchMsg(true)">
+                            <mat-icon
+                                class="icon-size-5"
+                                [svgIcon]="'heroicons_solid:play'"></mat-icon>
+                            <span class="ml-2">Launch</span>
+                        </button>
+                        <button
+                            class="hidden sm:inline-flex ml-1"
+                            mat-flat-button
+                            [color]="'primary'"
+                            (click)="launchMsg(false)">
+                            <mat-icon
+                                class="icon-size-5"
+                                [svgIcon]="'heroicons_solid:pause'"></mat-icon>
+                            <span class="ml-2">Pause</span>
+                        </button>
+                        <button
+                            class="hidden sm:inline-flex ml-1"
+                            mat-flat-button
+                            [color]="'warn'"
+                            (click)="activateRecipients()">
+                            <mat-icon
+                                class="icon-size-5"
+                                color="red"
+                                [svgIcon]="'heroicons_solid:inbox'"></mat-icon>
+                            <span class="ml-2">Activate</span>
+                        </button>
+                    </div>
+                </div>
+
+
+                <!-- Actions menu (visible on xs) -->
+                <div class="sm:hidden">
+                    <button
+                        [matMenuTriggerFor]="actionsMenu"
+                        mat-icon-button>
+                        <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+                    </button>
+                    <mat-menu #actionsMenu="matMenu">
+                        <button mat-menu-item (click)="openDefaultMsgDialog()">Default Message</button>
+                        <button mat-menu-item (click)="launchMsg(true)">Launch</button>
+                        <button mat-menu-item (click)="launchMsg(false)">Pause</button>
+                        <button mat-menu-item (click)="activateRecipients()">Activate</button>
+                    </mat-menu>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full mt-8">
+            <!-- Visitors overview -->
+            <div class="sm:col-span-2 lg:col-span-3 dark flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">
+                <div class="flex items-center justify-between mt-10 ml-10 mr-6 sm:mr-10">
+                    <div class="flex flex-col">
+                        <div class="mr-4 text-2xl md:text-3xl font-semibold tracking-tight leading-7">Blasting Overview</div>
+                        <div class="font-medium text-secondary">SMS Behaviour</div>
+                    </div>
+                    <div class="ml-2">
+                        <mat-button-toggle-group
+                            class="hidden sm:inline-flex border-none space-x-1"
+                            value="this-week"
+                            #blastingWeekSelector="matButtonToggleGroup">
+                            <mat-button-toggle
+                                class="px-1.5 rounded-full overflow-hidden border-none font-medium"
+                                value="last-week">Last 14 days
+                            </mat-button-toggle>
+                            <mat-button-toggle
+                                class="px-1.5 rounded-full overflow-hidden border-none font-medium"
+                                value="this-week">Last 7 days
+                            </mat-button-toggle>
+                        </mat-button-toggle-group>
+                        <div class="sm:hidden">
+                            <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="blastingMenu">
+                                <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+                            </button>
+                            <mat-menu #blastingMenu="matMenu">
+                                <button mat-menu-item>This Week</button>
+                                <button mat-menu-item>Last Week</button>
+                            </mat-menu>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col flex-auto h-80">
+                    <app-sms-overview class="fitcontainer"></app-sms-overview>
+                    <!-- <apx-chart
+                        class="flex-auto w-full h-full"
+                        [chart]="chartBlasting.chart"
+                        [colors]="chartBlasting.colors"
+                        [dataLabels]="chartBlasting.dataLabels"
+                        [fill]="chartBlasting.fill"
+                        [grid]="chartBlasting.grid"
+                        [series]="chartBlasting.series[blastingWeekSelector.value]"
+                        [stroke]="chartBlasting.stroke"
+                        [tooltip]="chartBlasting.tooltip"
+                        [xaxis]="chartBlasting.xaxis"
+                        [yaxis]="chartBlasting.yaxis"></apx-chart> -->
+                </div>
+            </div>
+            <!-- Conversions -->
+            <div class="sm:col-span-2 lg:col-span-1 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">
+                <div class="flex items-start justify-between m-6 mb-0">
+                    <div class="text-lg flex-col font-medium tracking-tight leading-6 truncate">Succesfully Sent</div> 
+                </div>
+                <!-- <div class="flex flex-col lg:flex-row lg:items-center mx-6 mt-3">
+                    <div class="text-7xl font-bold tracking-tighter leading-tight">{{data.conversions.amount | number:'1.0-0'}}</div>
+
+                </div> -->
+                <div class="flex flex-col flex-auto mt-0 mb-0">
+                    <app-smsday-gauge></app-smsday-gauge>
+                    <!-- <apx-chart
+                        class="flex-auto w-full h-full"
+                        [chart]="chartConversions.chart"
+                        [colors]="chartConversions.colors"
+                        [series]="chartConversions.series"
+                        [stroke]="chartConversions.stroke"
+                        [tooltip]="chartConversions.tooltip"
+                        [xaxis]="chartConversions.xaxis"
+                        [yaxis]="chartConversions.yaxis"></apx-chart> -->
+                </div>
+            </div>
+            <!-- Impressions -->
+            <div class="flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">
+                <div class="flex items-start justify-between m-6 mb-0">
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate">WhiteListed</div>
+                </div>
+                <div class="flex flex-col lg:flex-row lg:items-center mx-6 mt-3">
+                    <div class="text-7xl font-bold tracking-tighter leading-tight">{{data.impressions.amount | number:'1.0-0'}}</div>
+                </div>
+                <div class="flex flex-col flex-auto h-20">
+                    <apx-chart
+                        class="flex-auto w-full h-full"
+                        [chart]="chartWhiteListed.chart"
+                        [colors]="chartWhiteListed.colors"
+                        [series]="chartWhiteListed.series"
+                        [stroke]="chartWhiteListed.stroke"
+                        [tooltip]="chartWhiteListed.tooltip"
+                        [xaxis]="chartWhiteListed.xaxis"
+                        [yaxis]="chartWhiteListed.yaxis"></apx-chart>
+                </div>
+            </div>
+            <!-- Visits -->
+            <div class="flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">
+                <div class="flex items-start justify-between m-6 mb-0">
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Devices</div>
+                </div>
+                <!-- <div class="flex flex-col lg:flex-row lg:items-center mx-6 mt-3">
+                    <div class="text-7xl font-bold tracking-tighter leading-tight">{{data.visits.amount | number:'1.0-0'}}</div>
+                </div> -->
+                <div class="flex flex-col flex-auto h-20 mt-0">
+                    <!-- <apx-chart
+                        class="flex-auto w-full h-full"
+                        [chart]="chartRecipients.chart"
+                        [colors]="chartRecipients.colors"
+                        [series]="chartRecipients.series"
+                        [stroke]="chartRecipients.stroke"
+                        [tooltip]="chartRecipients.tooltip"
+                        [xaxis]="chartRecipients.xaxis"
+                        [yaxis]="chartRecipients.yaxis"></apx-chart> -->
+                    <app-devday-advpie></app-devday-advpie>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
