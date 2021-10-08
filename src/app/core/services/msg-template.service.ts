@@ -1,12 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Logger} from '@aws-amplify/core';
-import { find } from 'lodash';
-import { MsgTemplate } from 'models';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {
     APIService,
-    CreateMsgTemplateInput,
-    EntityStatus,
+    CreateMsgTemplateInput, EntityStatus,
     ModelMsgTemplateFilterInput,
     TemplateUsage,
     UpdateMsgTemplateInput
@@ -104,12 +101,12 @@ export class MsgTemplateService
           .then((result) => {
             //update to NONE all message
             this.findDefaultTemplate(clientid)
-              .then(resp => {
+              .then((resp) => {
                 resp['items'].forEach((item: UpdateMsgTemplateInput) => {
                   const idnew = result.id;
                   if (!(item.id === idnew)) {
                     this.updateData(item, TemplateUsage.NONE)
-                      .then(reslt => console.log("Default saved"));
+                      .then(reslt => console.log('Default saved'));
                   }
                 });
               });

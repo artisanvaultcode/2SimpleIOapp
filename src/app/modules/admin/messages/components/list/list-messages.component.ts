@@ -9,7 +9,7 @@ import {GroupsMessagesComponent} from '../groups/groups-messages.component';
 import {DetailsMessagesComponent} from '../details/details-messages.component';
 import {MsgsService} from '../../messages.service';
 import { AuthService } from 'app/core/auth/auth.service';
-import { EntityStatus, Group, MsgTemplate, MsgToGroup } from 'app/API.service';
+import {EntityStatus, Group, MsgTemplate, MsgToGroup} from '../../../../../API.service';
 
 @Component({
     selector       : 'messages-list',
@@ -183,7 +183,7 @@ export class ListMessagesComponent implements OnInit, OnDestroy
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
     }
-    
+
     private async getClientId(){
         const { sub } = await this._auth.checkClientId();
         this.clientid = sub;

@@ -1,9 +1,11 @@
 # this is an auto generated file. This will be overwritten
-subscription OnCreateTodo {
-  onCreateTodo {
+subscription OnCreateGroup {
+  onCreateGroup {
     id
     name
-    description
+    carrier
+    status
+    clientId
     _version
     _deleted
     _lastChangedAt
@@ -11,11 +13,13 @@ subscription OnCreateTodo {
     updatedAt
   }
 }
-subscription OnUpdateTodo {
-  onUpdateTodo {
+subscription OnUpdateGroup {
+  onUpdateGroup {
     id
     name
-    description
+    carrier
+    status
+    clientId
     _version
     _deleted
     _lastChangedAt
@@ -23,11 +27,376 @@ subscription OnUpdateTodo {
     updatedAt
   }
 }
-subscription OnDeleteTodo {
-  onDeleteTodo {
+subscription OnDeleteGroup {
+  onDeleteGroup {
     id
     name
+    carrier
+    status
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnCreateRecipient {
+  onCreateRecipient {
+    id
+    phone
+    carrierStatus
+    lastProcessDt
+    phoneTxt
+    status
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+    Group {
+      id
+      name
+      carrier
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    MsgTemplate {
+      id
+      name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+  }
+}
+subscription OnUpdateRecipient {
+  onUpdateRecipient {
+    id
+    phone
+    carrierStatus
+    lastProcessDt
+    phoneTxt
+    status
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+    Group {
+      id
+      name
+      carrier
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    MsgTemplate {
+      id
+      name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+  }
+}
+subscription OnDeleteRecipient {
+  onDeleteRecipient {
+    id
+    phone
+    carrierStatus
+    lastProcessDt
+    phoneTxt
+    status
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+    Group {
+      id
+      name
+      carrier
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    MsgTemplate {
+      id
+      name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+  }
+}
+subscription OnCreateMsgTemplate {
+  onCreateMsgTemplate {
+    id
+    name
+    message
+    status
+    default
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateMsgTemplate {
+  onUpdateMsgTemplate {
+    id
+    name
+    message
+    status
+    default
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteMsgTemplate {
+  onDeleteMsgTemplate {
+    id
+    name
+    message
+    status
+    default
+    clientId
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnCreateMsgToGroup {
+  onCreateMsgToGroup {
+    id
+    msgID
+    groupID
+    clientId
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateMsgToGroup {
+  onUpdateMsgToGroup {
+    id
+    msgID
+    groupID
+    clientId
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteMsgToGroup {
+  onDeleteMsgToGroup {
+    id
+    msgID
+    groupID
+    clientId
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnCreateDevice {
+  onCreateDevice {
+    id
+    uniqueId
     description
+    metadata
+    lastProcessDt
+    phoneTxt
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateDevice {
+  onUpdateDevice {
+    id
+    uniqueId
+    description
+    metadata
+    lastProcessDt
+    phoneTxt
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteDevice {
+  onDeleteDevice {
+    id
+    uniqueId
+    description
+    metadata
+    lastProcessDt
+    phoneTxt
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnCreateHisSmsLog {
+  onCreateHisSmsLog {
+    id
+    uniqueId
+    clientId
+    clientIdTxt
+    lastProcessDt
+    metadata
+    carrierStatus
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateHisSmsLog {
+  onUpdateHisSmsLog {
+    id
+    uniqueId
+    clientId
+    clientIdTxt
+    lastProcessDt
+    metadata
+    carrierStatus
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteHisSmsLog {
+  onDeleteHisSmsLog {
+    id
+    uniqueId
+    clientId
+    clientIdTxt
+    lastProcessDt
+    metadata
+    carrierStatus
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnCreateSubscriber {
+  onCreateSubscriber {
+    id
+    apiKey
+    clientId
+    limit
+    limitMax
+    currentCount
+    expires
+    lastProcessDt
+    metadata
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateSubscriber {
+  onUpdateSubscriber {
+    id
+    apiKey
+    clientId
+    limit
+    limitMax
+    currentCount
+    expires
+    lastProcessDt
+    metadata
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteSubscriber {
+  onDeleteSubscriber {
+    id
+    apiKey
+    clientId
+    limit
+    limitMax
+    currentCount
+    expires
+    lastProcessDt
+    metadata
+    status
     _version
     _deleted
     _lastChangedAt

@@ -5,6 +5,8 @@ import { map, switchMap, take, tap } from 'rxjs/operators';
 import { cloneDeep } from 'lodash-es';
 import { Label, Note } from './messages.types';
 import _lodash from 'lodash';
+
+import { AuthService } from 'app/core/auth/auth.service';
 import {
     APIService,
     Carriers,
@@ -26,13 +28,12 @@ import {
     MsgTemplate,
     MsgToGroup,
     UpdateMsgTemplateInput,
-    UpdateMsgTemplateMutation,
-} from 'app/API.service';
-import { AuthService } from 'app/core/auth/auth.service';
+    UpdateMsgTemplateMutation
+} from '../../../API.service';
 
 export type MsgtogrpNames = MsgToGroup & {
     namegroup?: string;
-}
+};
 
 @Injectable({
     providedIn: 'root',
@@ -92,9 +93,10 @@ export class MsgsService {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    async getClientId(){
+    async getClientId() {
         const { sub } = await this._auth.checkClientId();
         this.clientid = sub;
+        return Promise.resolve(sub);
     }
     /**
      * Get labels
@@ -108,13 +110,13 @@ export class MsgsService {
                 this.api.ListGroups(filter)
                     .then((value: ListGroupsQuery) => {
                         const notDeleted = value.items.filter(
-                            (item) => item._deleted !== true
+                            item => item._deleted !== true
                         );
                         this._labels.next(notDeleted);
                         resolve(notDeleted.length);
                     })
                     .catch(error => reject(error));
-        })
+        });
     }
 
     /**
@@ -131,7 +133,7 @@ export class MsgsService {
             clientId: sub
         };
         return this.api.CreateGroup(_group)
-            .then(resp => {
+            .then((resp) => {
                 this.getLabels();
                 return resp;
             })
@@ -166,9 +168,9 @@ export class MsgsService {
         const delGI: DeleteGroupInput = {
             id: grp.id,
             _version: grp._version
-        }
+        };
         return this.api.DeleteGroup(delGI)
-            .then(resp => {
+            .then((resp) => {
                 this.getLabels();
                 return resp;
             })
@@ -177,9 +179,10 @@ export class MsgsService {
 
     /**
      * Method to delete MrgToGrp with group and mgstemplate
-     * @param grp 
-     * @param msg 
-     * @returns 
+     *
+     * @param grp
+     * @param msg
+     * @returns
      */
     deleteMsgToGroup(grp: Group, msg: MsgTemplate): Promise<any> {
         let delmsg2grp: DeleteMsgToGroupInput;
@@ -188,10 +191,10 @@ export class MsgsService {
             delmsg2grp = {
                 id: filterm2g[0].id,
                 _version: filterm2g[0]._version
-            }
+            };
         });
         return this.api.DeleteMsgToGroup(delmsg2grp)
-            .then(resp => {
+            .then((resp) => {
                 this.getMsgtogroup();
                 this.getMessages();
                 return resp;
@@ -201,16 +204,17 @@ export class MsgsService {
 
     /**
      * Method to delete MsgToGrp with MsgToGrp row
-     * @param msg2grp 
-     * @returns 
+     *
+     * @param msg2grp
+     * @returns
      */
     delMsgToGroup(msg2grp: MsgToGroup): Promise<any> {
-        let delmsg2grp: DeleteMsgToGroupInput = {
+        const delmsg2grp: DeleteMsgToGroupInput = {
             id: msg2grp.id,
             _version: msg2grp._version
-        }
+        };
         return this.api.DeleteMsgToGroup(delmsg2grp)
-            .then(resp => {
+            .then((resp) => {
                 this.getMsgtogroup();
                 this.getMessages();
                 return resp;
@@ -219,23 +223,23 @@ export class MsgsService {
     }
 
     async insertMsgToGrp(msg: MsgTemplate, grp: Group): Promise<CreateMsgToGroupMutation> {
-        console.log("toggle  group", msg, grp);
+        console.log('toggle  group', msg, grp);
         const {sub} = await this._auth.checkClientId();
         const msg2grpinput: CreateMsgToGroupInput = {
             msgID: msg.id,
             groupID: grp.id,
             clientId: sub,
             status: EntityStatus.ACTIVE,
-        }
+        };
         return this.api.CreateMsgToGroup(msg2grpinput)
             .then((resp: CreateMsgToGroupMutation) => {
                 this.getMsgtogroup();
                 this.getMessages();
                 return resp;
             })
-            .catch(err => {return err});
+            .catch(err => err);
     }
-    
+
     async getMsgtogroup(): Promise<any> {
         const {sub} = await this._auth.checkClientId();
         const filter: ModelMsgToGroupFilterInput = {
@@ -245,14 +249,14 @@ export class MsgsService {
             this.api.ListMsgToGroups(filter)
                 .then((resp: ListMsgToGroupsQuery) => {
                     const notDeleted = resp.items.filter(
-                        (item) => item._deleted !== true
-                    )
+                        item => item._deleted !== true
+                    );
                     notDeleted.forEach((mtg: MsgtogrpNames) => {
-                        this.labels$.subscribe(flab => {
+                        this.labels$.subscribe((flab) => {
                             if (!_lodash.isEmpty(flab)){
                                 const flabt = flab.filter(
-                                    (f) => f.id === mtg.groupID
-                                )
+                                    f => f.id === mtg.groupID
+                                );
                                 mtg.namegroup = flabt[0]['name'];
                             }
                         });
@@ -274,12 +278,12 @@ export class MsgsService {
                 .ListMsgTemplates(filter)
                 .then((resp: ListMsgTemplatesQuery) => {
                     const notDeleted = resp.items.filter(
-                        (item) => item._deleted !== true
+                        item => item._deleted !== true
                     );
                     this._messages.next(notDeleted);
                     resolve(notDeleted.length);
                 })
-                .catch((err) => reject(err));
+                .catch(err => reject(err));
         });
     }
 
@@ -291,7 +295,7 @@ export class MsgsService {
             take(1),
             map((notes) => {
                 // Find within the folders and files
-                const note = notes.find((value) => value.id === id) || null;
+                const note = notes.find(value => value.id === id) || null;
 
                 // Update the note
                 this._note.next(note);
@@ -386,10 +390,10 @@ export class MsgsService {
                 status: note.status,
                 default: note.default,
                 _version: note._version,
-            }
+            };
             this.api.UpdateMsgTemplate(msginput)
-                .then(resp => {
-                    console.log(resp)
+                .then((resp) => {
+                    console.log(resp);
                     resolve(resp);
                 })
                 .catch(error => console.log(error));
@@ -405,9 +409,9 @@ export class MsgsService {
         const delmsgtempinput: DeleteMsgTemplateInput = {
             id: note.id,
             _version: note._version
-        }
+        };
         return this.api.DeleteMsgTemplate(delmsgtempinput)
-            .then(resp => {
+            .then((resp) => {
                 this.getMsgtogroup();
                 this.getMessages();
                 return resp;
