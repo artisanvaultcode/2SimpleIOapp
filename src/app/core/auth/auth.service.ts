@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {Observable, ReplaySubject} from 'rxjs';
@@ -127,7 +128,10 @@ export class AuthService
      *
      * @param user
      */
-    signUp(user: { name: string; username: string; email: string; password: string }): Promise<CognitoUser|any>
+    signUp(user: { name: string; username: string;
+             email: string; password: string;
+             familyName: string;
+             givenName: string; }): Promise<CognitoUser|any>
     {
         return new Promise((resolve, reject) => {
             const newUser = {
@@ -135,7 +139,9 @@ export class AuthService
                 password : user.password,
                 attributes: {
                     email: user.email,
-                    name :  `${user.name}`
+                    name :  `${user.name}`,
+                    family_name: user.familyName,
+                    given_name: user.givenName,
                 }};
            Auth.signUp(newUser)
             .then((userIn: CognitoUser | any) => {

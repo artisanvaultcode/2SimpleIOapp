@@ -81,7 +81,8 @@ export class AuthSignInComponent implements OnInit
 
         // Hide the alert
         this.showAlert = false;
-        this.signInForm.value.username =  this.signInForm.value.email.split('@')[0];
+        //this.signInForm.value.username =  this.signInForm.value.email.split('@')[0];
+        this.signInForm.value.username =  this.signInForm.value.email;
         // Sign in
         this._authService.signIn(this.signInForm.value)
             .then( (user: CognitoUser|any) => {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { DevicesService } from '../../devices.service';
@@ -13,7 +14,6 @@ import { MetadatadialogComponent } from '../metadatadialog/metadatadialog.compon
     styleUrls: ['./devices-list.component.scss'],
 })
 export class DevicesListComponent implements OnInit, OnDestroy {
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
     devices$: Observable<any[]>;
     nextPage$: Observable<any[]>;
 
@@ -30,6 +30,8 @@ export class DevicesListComponent implements OnInit, OnDestroy {
     ];
     action: string = 'update';
     newItem: any;
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
+    
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _deviceServices: DevicesService,
@@ -75,7 +77,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
 
     /**
      * Update data in UI
-     * @param newDevice 
+     * @param newDevice
      */
     onUpdateRefreshDataset(newDevice: Device) {
         console.log(this.devices$);
@@ -155,7 +157,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
         });
         dialogRef.afterClosed().subscribe(result => {
           console.log('The dialog was closed', result);
-          
+
         });
     }
 }

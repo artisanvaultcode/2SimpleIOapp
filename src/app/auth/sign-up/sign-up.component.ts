@@ -48,7 +48,9 @@ export class AuthSignUpComponent implements OnInit
                 email     : ['', [Validators.required, Validators.email]],
                 password  : ['', Validators.required],
                 username  : [''],
-                agreements: ['', Validators.requiredTrue]
+                agreements: ['', Validators.requiredTrue],
+                familyName: [''],
+                givenName: [''],
             }
         );
     }
@@ -69,7 +71,9 @@ export class AuthSignUpComponent implements OnInit
 
         this.signUpForm.disable();
         this.showAlert = false;
-        this.signUpForm.value.username =  this.signUpForm.value.email.split('@')[0];
+        //this.signUpForm.value.username =  this.signUpForm.value.email.split('@')[0];
+        this.signUpForm.value.username =  this.signUpForm.value.email;
+        console.log('Form...', this.signUpForm);
         // Sign up
         this._authService.signUp(this.signUpForm.value)
             .then((user: CognitoUser|any) => {

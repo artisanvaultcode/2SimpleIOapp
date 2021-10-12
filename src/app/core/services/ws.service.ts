@@ -52,19 +52,20 @@ export class WebsocketService {
   }
 
   /**
-   * 
-   * @returns 
+   *
+   * @returns
    */
   chkDevices(){
     var formData = new FormData();
     formData.append('topicname', 'sync-sms');
     formData.append('eventname', 'events');
+    console.log("chkDevices send", this.baseURL+'/chkdevices');
     return this._http.post(this.baseURL+'/chkdevices', formData, this.httpOptions);
   }
 
   /**
    * Set status ACTIVE in all recipients
-   * @returns 
+   * @returns
    */
   activateRecip(statdata, clientid){
     var formData = new FormData();

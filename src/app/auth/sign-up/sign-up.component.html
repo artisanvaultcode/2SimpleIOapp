@@ -31,7 +31,7 @@
 
                 <!-- Name field -->
                 <mat-form-field class="w-full">
-                    <mat-label>Full name</mat-label>
+                    <mat-label>Name</mat-label>
                     <input
                         id="name"
                         matInput
@@ -39,6 +39,24 @@
                     <mat-error *ngIf="signUpForm.get('name').hasError('required')">
                         Full name is required
                     </mat-error>
+                </mat-form-field>
+
+                <!-- Given Name field -->
+                <mat-form-field class="w-full">
+                    <mat-label>Given name</mat-label>
+                    <input
+                        id="given_name"
+                        matInput
+                        [formControlName]="'given_name'">
+                </mat-form-field>
+
+                <!-- Family Name field -->
+                <mat-form-field class="w-full">
+                    <mat-label>Family name</mat-label>
+                    <input
+                        id="family_name"
+                        matInput
+                        [formControlName]="'family_name'">
                 </mat-form-field>
 
                 <!-- Email field -->
