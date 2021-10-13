@@ -81,7 +81,6 @@ export class AuthSignInComponent implements OnInit
 
         // Hide the alert
         this.showAlert = false;
-        //this.signInForm.value.username =  this.signInForm.value.email.split('@')[0];
         this.signInForm.value.username =  this.signInForm.value.email;
         // Sign in
         this._authService.signIn(this.signInForm.value)
@@ -137,8 +136,7 @@ export class AuthSignInComponent implements OnInit
         }
         this._authService.confirmChallenge(this.signInForm.value, this.confirmUpForm.value.cnumber)
             .then((data: any)  => {
-                console.log(data);
-                this._router.navigate(['client/recipients']);
+                this._router.navigate(['client/dashboard']);
             }).catch((error: any) => {
                 let message = '';
                 if (error.code === 'CodeMismatchException') {

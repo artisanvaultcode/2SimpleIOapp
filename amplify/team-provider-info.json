@@ -13,13 +13,6 @@
     },
     "categories": {
       "function": {
-        "2simpleioapp755235cd755235cdCustomMessage": {
-          "REDIRECTURL": "https://2simple.io/confirm",
-          "EMAILSUBJECT": "!!VALIDATION!!",
-          "EMAILMESSAGE": "",
-          "deploymentBucketName": "amplify-2simpleioapp-dev-213838-deployment",
-          "s3Key": "amplify-builds/2simpleioapp755235cd755235cdCustomMessage-516d4563746b43355935-build.zip"
-        },
         "2simpleioapp755235cd755235cdPostConfirmation": {
           "GROUP": "USER",
           "deploymentBucketName": "amplify-2simpleioapp-dev-213838-deployment",

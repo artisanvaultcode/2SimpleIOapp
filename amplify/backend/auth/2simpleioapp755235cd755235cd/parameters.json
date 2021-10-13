@@ -91,7 +91,7 @@
     ],
     "userPoolGroups": true,
     "adminQueries": false,
-    "triggers": "{\n  \"CustomMessage\": [\n    \"verification-link\"\n  ],\n  \"PostConfirmation\": [\n    \"add-to-group\"\n  ]\n}",
+    "triggers": "{\n  \"PostConfirmation\": [\n    \"add-to-group\"\n  ]\n}",
     "hostedUI": false,
     "userPoolGroupList": [
         "USER",
@@ -103,21 +103,12 @@
     "parentStack": {
         "Ref": "AWS::StackId"
     },
-    "authTriggerConnections": "[\n  {\n    \"triggerType\": \"CustomMessage\",\n    \"lambdaFunctionName\": \"2simpleioapp755235cd755235cdCustomMessage\"\n  },\n  {\n    \"triggerType\": \"PostConfirmation\",\n    \"lambdaFunctionName\": \"2simpleioapp755235cd755235cdPostConfirmation\"\n  }\n]",
+    "authTriggerConnections": "[\n  {\n    \"triggerType\": \"PostConfirmation\",\n    \"lambdaFunctionName\": \"2simpleioapp755235cd755235cdPostConfirmation\"\n  }\n]",
     "breakCircularDependency": true,
     "permissions": [
         "{\n  \"policyName\": \"AddToGroupCognito\",\n  \"trigger\": \"PostConfirmation\",\n  \"effect\": \"Allow\",\n  \"actions\": [\n    \"cognito-idp:AdminAddUserToGroup\",\n    \"cognito-idp:GetGroup\",\n    \"cognito-idp:CreateGroup\"\n  ],\n  \"resource\": {\n    \"paramType\": \"!GetAtt\",\n    \"keys\": [\n      \"UserPool\",\n      \"Arn\"\n    ]\n  }\n}"
     ],
     "dependsOn": [
-        {
-            "category": "function",
-            "resourceName": "2simpleioapp755235cd755235cdCustomMessage",
-            "triggerProvider": "Cognito",
-            "attributes": [
-                "Arn",
-                "Name"
-            ]
-        },
         {
             "category": "function",
             "resourceName": "2simpleioapp755235cd755235cdPostConfirmation",

@@ -44,13 +44,14 @@ export class AuthSignUpComponent implements OnInit
     {
         // Create the form
         this.signUpForm = this._formBuilder.group({
-                name      : ['', Validators.required],
+                firstName: ['', Validators.required],
                 email     : ['', [Validators.required, Validators.email]],
                 password  : ['', Validators.required],
-                username  : [''],
                 agreements: ['', Validators.requiredTrue],
-                familyName: [''],
-                givenName: [''],
+                familyName: ['', Validators.required],
+                givenName:  [''],
+                username:  [''],
+                name:  ['']
             }
         );
     }
@@ -63,21 +64,17 @@ export class AuthSignUpComponent implements OnInit
      * Sign up
      */
     signUp(): void {
-        // Do nothing if the form is invalid
-        if ( this.signUpForm.invalid )
-        {
+        if ( this.signUpForm.invalid ) {
             return;
         }
-
         this.signUpForm.disable();
         this.showAlert = false;
-        //this.signUpForm.value.username =  this.signUpForm.value.email.split('@')[0];
         this.signUpForm.value.username =  this.signUpForm.value.email;
-        console.log('Form...', this.signUpForm);
-        // Sign up
+        this.signUpForm.value.givenName = this.signUpForm.value.givenName.length > 0 ? this.signUpForm.value.givenName : '';
+        this.signUpForm.value.name = `${this.signUpForm.value.firstName} ${this.signUpForm.value.givenName} ${this.signUpForm.value.familyName}`;
         this._authService.signUp(this.signUpForm.value)
             .then((user: CognitoUser|any) => {
-                    this._router.navigateByUrl('/client/recipients');
+                    this._router.navigateByUrl('auth/login');
                 }).catch( (error: any) => {
                     // Re-enable the form
                     this.signUpForm.enable();

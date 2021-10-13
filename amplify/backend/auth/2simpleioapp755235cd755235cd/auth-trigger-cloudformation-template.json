@@ -11,12 +11,6 @@
     "userpoolArn": {
       "Type": "String"
     },
-    "function2simpleioapp755235cd755235cdCustomMessageName": {
-      "Type": "String"
-    },
-    "function2simpleioapp755235cd755235cdCustomMessageArn": {
-      "Type": "String"
-    },
     "function2simpleioapp755235cd755235cdPostConfirmationName": {
       "Type": "String"
     },
@@ -35,19 +29,6 @@
     }
   },
   "Resources": {
-    "UserPoolCustomMessageLambdaInvokePermission": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Ref": "function2simpleioapp755235cd755235cdCustomMessageName"
-        },
-        "Principal": "cognito-idp.amazonaws.com",
-        "SourceArn": {
-          "Ref": "userpoolArn"
-        }
-      }
-    },
     "UserPoolPostConfirmationLambdaInvokePermission": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
@@ -151,13 +132,6 @@
           "Ref": "userpoolId"
         },
         "lambdaConfig": [
-          {
-            "triggerType": "CustomMessage",
-            "lambdaFunctionName": "2simpleioapp755235cd755235cdCustomMessage",
-            "lambdaFunctionArn": {
-              "Ref": "function2simpleioapp755235cd755235cdCustomMessageArn"
-            }
-          },
           {
             "triggerType": "PostConfirmation",
             "lambdaFunctionName": "2simpleioapp755235cd755235cdPostConfirmation",

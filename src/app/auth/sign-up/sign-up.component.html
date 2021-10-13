@@ -31,12 +31,12 @@
 
                 <!-- Name field -->
                 <mat-form-field class="w-full">
-                    <mat-label>Name</mat-label>
+                    <mat-label>First Name</mat-label>
                     <input
-                        id="name"
+                        id="firstName"
                         matInput
-                        [formControlName]="'name'">
-                    <mat-error *ngIf="signUpForm.get('name').hasError('required')">
+                        [formControlName]="'firstName'">
+                    <mat-error *ngIf="signUpForm.get('firstName').hasError('required')">
                         Full name is required
                     </mat-error>
                 </mat-form-field>
@@ -45,18 +45,18 @@
                 <mat-form-field class="w-full">
                     <mat-label>Given name</mat-label>
                     <input
-                        id="given_name"
+                        id="givenName"
                         matInput
-                        [formControlName]="'given_name'">
+                        [formControlName]="'givenName'">
                 </mat-form-field>
 
                 <!-- Family Name field -->
                 <mat-form-field class="w-full">
                     <mat-label>Family name</mat-label>
                     <input
-                        id="family_name"
+                        id="familyName"
                         matInput
-                        [formControlName]="'family_name'">
+                        [formControlName]="'familyName'">
                 </mat-form-field>
 
                 <!-- Email field -->
@@ -137,11 +137,7 @@
                         [diameter]="24"
                         [mode]="'indeterminate'"></mat-progress-spinner>
                 </button>
-
             </form>
-
-
-
         </div>
     </div>
     <div class="relative hidden md:flex flex-auto items-center justify-center w-1/2 h-full p-16 lg:px-28 overflow-hidden bg-gray-800 dark:border-l">

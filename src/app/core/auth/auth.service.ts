@@ -128,11 +128,14 @@ export class AuthService
      *
      * @param user
      */
-    signUp(user: { name: string; username: string;
-             email: string; password: string;
-             familyName: string;
-             givenName: string; }): Promise<CognitoUser|any>
-    {
+    signUp(user: {
+         name: string;
+         username: string;
+         email: string;
+         password: string;
+         familyName: string;
+         firstName: string;
+         givenName: string; }): Promise<CognitoUser|any> {
         return new Promise((resolve, reject) => {
             const newUser = {
                 username: user.username.toLowerCase(),
@@ -145,7 +148,7 @@ export class AuthService
                 }};
            Auth.signUp(newUser)
             .then((userIn: CognitoUser | any) => {
-                this._authenticated = true;
+                this._authenticated = false;
                 const { attributes } = userIn;
                 this._userService.user = attributes;
                 this._user.next(attributes);

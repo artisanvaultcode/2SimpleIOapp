@@ -12,16 +12,6 @@ Parameters:
   
   
   
-  function2simpleioapp755235cd755235cdCustomMessageArn:
-    Type: String
-    Default: function2simpleioapp755235cd755235cdCustomMessageArn
-  
-  function2simpleioapp755235cd755235cdCustomMessageName:
-    Type: String
-    Default: function2simpleioapp755235cd755235cdCustomMessageName
-  
-  
-  
   function2simpleioapp755235cd755235cdPostConfirmationArn:
     Type: String
     Default: function2simpleioapp755235cd755235cdPostConfirmationArn
@@ -200,11 +190,11 @@ Parameters:
   dependsOn:
     Type: CommaDelimitedList
       
-            
         
   authProviders:
     Type: CommaDelimitedList
       
+            
 Conditions:
   ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
   
