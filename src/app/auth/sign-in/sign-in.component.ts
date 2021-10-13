@@ -71,11 +71,9 @@ export class AuthSignInComponent implements OnInit
     signIn(): void
     {
         // Return if the form is invalid
-        if ( this.signInForm.invalid )
-        {
+        if ( this.signInForm.invalid ) {
             return;
         }
-
         // Disable the form
         this.signInForm.disable();
 
@@ -85,7 +83,7 @@ export class AuthSignInComponent implements OnInit
         // Sign in
         this._authService.signIn(this.signInForm.value)
             .then( (user: CognitoUser|any) => {
-                this._router.navigate(['client/recipients']);
+                this._router.navigate(['client/dashboard']);
             }).catch((error) => {
                 switch (error.code) {
                     case 'UserNotConfirmedException':
