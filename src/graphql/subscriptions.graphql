@@ -5,12 +5,26 @@ subscription OnCreateGroup {
     name
     carrier
     status
+    msgTemplateId
     clientId
     _version
     _deleted
     _lastChangedAt
     createdAt
     updatedAt
+    MsgTemplate {
+      id
+      name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
   }
 }
 subscription OnUpdateGroup {
@@ -19,12 +33,26 @@ subscription OnUpdateGroup {
     name
     carrier
     status
+    msgTemplateId
     clientId
     _version
     _deleted
     _lastChangedAt
     createdAt
     updatedAt
+    MsgTemplate {
+      id
+      name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
   }
 }
 subscription OnDeleteGroup {
@@ -33,12 +61,26 @@ subscription OnDeleteGroup {
     name
     carrier
     status
+    msgTemplateId
     clientId
     _version
     _deleted
     _lastChangedAt
     createdAt
     updatedAt
+    MsgTemplate {
+      id
+      name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
   }
 }
 subscription OnCreateRecipient {
@@ -47,6 +89,7 @@ subscription OnCreateRecipient {
     phone
     carrierStatus
     lastProcessDt
+    groupId
     phoneTxt
     status
     clientId
@@ -60,25 +103,26 @@ subscription OnCreateRecipient {
       name
       carrier
       status
+      msgTemplateId
       clientId
       _version
       _deleted
       _lastChangedAt
       createdAt
       updatedAt
-    }
-    MsgTemplate {
-      id
-      name
-      message
-      status
-      default
-      clientId
-      _version
-      _deleted
-      _lastChangedAt
-      createdAt
-      updatedAt
+      MsgTemplate {
+        id
+        name
+        message
+        status
+        default
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
     }
   }
 }
@@ -88,6 +132,7 @@ subscription OnUpdateRecipient {
     phone
     carrierStatus
     lastProcessDt
+    groupId
     phoneTxt
     status
     clientId
@@ -101,25 +146,26 @@ subscription OnUpdateRecipient {
       name
       carrier
       status
+      msgTemplateId
       clientId
       _version
       _deleted
       _lastChangedAt
       createdAt
       updatedAt
-    }
-    MsgTemplate {
-      id
-      name
-      message
-      status
-      default
-      clientId
-      _version
-      _deleted
-      _lastChangedAt
-      createdAt
-      updatedAt
+      MsgTemplate {
+        id
+        name
+        message
+        status
+        default
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
     }
   }
 }
@@ -129,6 +175,7 @@ subscription OnDeleteRecipient {
     phone
     carrierStatus
     lastProcessDt
+    groupId
     phoneTxt
     status
     clientId
@@ -142,25 +189,26 @@ subscription OnDeleteRecipient {
       name
       carrier
       status
+      msgTemplateId
       clientId
       _version
       _deleted
       _lastChangedAt
       createdAt
       updatedAt
-    }
-    MsgTemplate {
-      id
-      name
-      message
-      status
-      default
-      clientId
-      _version
-      _deleted
-      _lastChangedAt
-      createdAt
-      updatedAt
+      MsgTemplate {
+        id
+        name
+        message
+        status
+        default
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
     }
   }
 }

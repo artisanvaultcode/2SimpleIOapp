@@ -73,9 +73,7 @@ export class ProfileService {
     changePassword(oldPassword: string, newPassword: string ): Promise<any> {
         return new Promise((resolve, reject) => {
             Auth.currentAuthenticatedUser({bypassCache: true})
-                .then((user: CognitoUser|any) => {
-                    return   Auth.changePassword(user, oldPassword, newPassword);
-                }).then((user: any) => {
+                .then((user: CognitoUser|any) => Auth.changePassword(user, oldPassword, newPassword)).then((user: any) => {
                     console.log(user);
                     console.log('change -->');
                     this.userPreferences = user;
