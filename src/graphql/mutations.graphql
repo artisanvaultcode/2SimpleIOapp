@@ -8,12 +8,26 @@ mutation CreateGroup(
     name
     carrier
     status
+    msgTemplateId
     clientId
     _version
     _deleted
     _lastChangedAt
     createdAt
     updatedAt
+    MsgTemplate {
+      id
+      name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
   }
 }
 mutation UpdateGroup(
@@ -25,12 +39,26 @@ mutation UpdateGroup(
     name
     carrier
     status
+    msgTemplateId
     clientId
     _version
     _deleted
     _lastChangedAt
     createdAt
     updatedAt
+    MsgTemplate {
+      id
+      name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
   }
 }
 mutation DeleteGroup(
@@ -42,12 +70,26 @@ mutation DeleteGroup(
     name
     carrier
     status
+    msgTemplateId
     clientId
     _version
     _deleted
     _lastChangedAt
     createdAt
     updatedAt
+    MsgTemplate {
+      id
+      name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
   }
 }
 mutation CreateRecipient(
@@ -59,6 +101,7 @@ mutation CreateRecipient(
     phone
     carrierStatus
     lastProcessDt
+    groupId
     phoneTxt
     status
     clientId
@@ -72,25 +115,26 @@ mutation CreateRecipient(
       name
       carrier
       status
+      msgTemplateId
       clientId
       _version
       _deleted
       _lastChangedAt
       createdAt
       updatedAt
-    }
-    MsgTemplate {
-      id
-      name
-      message
-      status
-      default
-      clientId
-      _version
-      _deleted
-      _lastChangedAt
-      createdAt
-      updatedAt
+      MsgTemplate {
+        id
+        name
+        message
+        status
+        default
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
     }
   }
 }
@@ -103,6 +147,7 @@ mutation UpdateRecipient(
     phone
     carrierStatus
     lastProcessDt
+    groupId
     phoneTxt
     status
     clientId
@@ -116,25 +161,26 @@ mutation UpdateRecipient(
       name
       carrier
       status
+      msgTemplateId
       clientId
       _version
       _deleted
       _lastChangedAt
       createdAt
       updatedAt
-    }
-    MsgTemplate {
-      id
-      name
-      message
-      status
-      default
-      clientId
-      _version
-      _deleted
-      _lastChangedAt
-      createdAt
-      updatedAt
+      MsgTemplate {
+        id
+        name
+        message
+        status
+        default
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
     }
   }
 }
@@ -147,6 +193,7 @@ mutation DeleteRecipient(
     phone
     carrierStatus
     lastProcessDt
+    groupId
     phoneTxt
     status
     clientId
@@ -160,25 +207,26 @@ mutation DeleteRecipient(
       name
       carrier
       status
+      msgTemplateId
       clientId
       _version
       _deleted
       _lastChangedAt
       createdAt
       updatedAt
-    }
-    MsgTemplate {
-      id
-      name
-      message
-      status
-      default
-      clientId
-      _version
-      _deleted
-      _lastChangedAt
-      createdAt
-      updatedAt
+      MsgTemplate {
+        id
+        name
+        message
+        status
+        default
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
     }
   }
 }

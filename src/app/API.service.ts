@@ -38,8 +38,10 @@ export type CreateGroupInput = {
   name?: string | null;
   carrier?: Carriers | null;
   status?: EntityStatus | null;
+  msgTemplateId?: string | null;
   clientId?: string | null;
   _version?: number | null;
+  groupMsgTemplateId?: string | null;
 };
 
 export enum Carriers {
@@ -61,6 +63,7 @@ export type ModelGroupConditionInput = {
   name?: ModelStringInput | null;
   carrier?: ModelCarriersInput | null;
   status?: ModelEntityStatusInput | null;
+  msgTemplateId?: ModelIDInput | null;
   clientId?: ModelStringInput | null;
   and?: Array<ModelGroupConditionInput | null> | null;
   or?: Array<ModelGroupConditionInput | null> | null;
@@ -116,74 +119,35 @@ export type ModelEntityStatusInput = {
   ne?: EntityStatus | null;
 };
 
+export type ModelIDInput = {
+  ne?: string | null;
+  eq?: string | null;
+  le?: string | null;
+  lt?: string | null;
+  ge?: string | null;
+  gt?: string | null;
+  contains?: string | null;
+  notContains?: string | null;
+  between?: Array<string | null> | null;
+  beginsWith?: string | null;
+  attributeExists?: boolean | null;
+  attributeType?: ModelAttributeTypes | null;
+  size?: ModelSizeInput | null;
+};
+
 export type Group = {
   __typename: "Group";
   id: string;
   name?: string | null;
   carrier?: Carriers | null;
   status?: EntityStatus | null;
+  msgTemplateId?: string | null;
   clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
-};
-
-export type UpdateGroupInput = {
-  id: string;
-  name?: string | null;
-  carrier?: Carriers | null;
-  status?: EntityStatus | null;
-  clientId?: string | null;
-  _version?: number | null;
-};
-
-export type DeleteGroupInput = {
-  id: string;
-  _version?: number | null;
-};
-
-export type CreateRecipientInput = {
-  id?: string | null;
-  phone?: string | null;
-  carrierStatus?: string | null;
-  lastProcessDt?: string | null;
-  phoneTxt?: string | null;
-  status?: EntityStatus | null;
-  clientId?: string | null;
-  _version?: number | null;
-  recipientGroupId?: string | null;
-  recipientMsgTemplateId?: string | null;
-};
-
-export type ModelRecipientConditionInput = {
-  phone?: ModelStringInput | null;
-  carrierStatus?: ModelStringInput | null;
-  lastProcessDt?: ModelStringInput | null;
-  phoneTxt?: ModelStringInput | null;
-  status?: ModelEntityStatusInput | null;
-  clientId?: ModelStringInput | null;
-  and?: Array<ModelRecipientConditionInput | null> | null;
-  or?: Array<ModelRecipientConditionInput | null> | null;
-  not?: ModelRecipientConditionInput | null;
-};
-
-export type Recipient = {
-  __typename: "Recipient";
-  id: string;
-  phone?: string | null;
-  carrierStatus?: string | null;
-  lastProcessDt?: string | null;
-  phoneTxt?: string | null;
-  status?: EntityStatus | null;
-  clientId?: string | null;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  createdAt: string;
-  updatedAt: string;
-  Group?: Group | null;
   MsgTemplate?: MsgTemplate | null;
 };
 
@@ -207,18 +171,77 @@ export enum TemplateUsage {
   NONE = "NONE"
 }
 
+export type UpdateGroupInput = {
+  id: string;
+  name?: string | null;
+  carrier?: Carriers | null;
+  status?: EntityStatus | null;
+  msgTemplateId?: string | null;
+  clientId?: string | null;
+  _version?: number | null;
+  groupMsgTemplateId?: string | null;
+};
+
+export type DeleteGroupInput = {
+  id: string;
+  _version?: number | null;
+};
+
+export type CreateRecipientInput = {
+  id?: string | null;
+  phone?: string | null;
+  carrierStatus?: string | null;
+  lastProcessDt?: string | null;
+  groupId?: string | null;
+  phoneTxt?: string | null;
+  status?: EntityStatus | null;
+  clientId?: string | null;
+  _version?: number | null;
+  recipientGroupId?: string | null;
+};
+
+export type ModelRecipientConditionInput = {
+  phone?: ModelStringInput | null;
+  carrierStatus?: ModelStringInput | null;
+  lastProcessDt?: ModelStringInput | null;
+  groupId?: ModelIDInput | null;
+  phoneTxt?: ModelStringInput | null;
+  status?: ModelEntityStatusInput | null;
+  clientId?: ModelStringInput | null;
+  and?: Array<ModelRecipientConditionInput | null> | null;
+  or?: Array<ModelRecipientConditionInput | null> | null;
+  not?: ModelRecipientConditionInput | null;
+};
+
+export type Recipient = {
+  __typename: "Recipient";
+  id: string;
+  phone?: string | null;
+  carrierStatus?: string | null;
+  lastProcessDt?: string | null;
+  groupId?: string | null;
+  phoneTxt?: string | null;
+  status?: EntityStatus | null;
+  clientId?: string | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+  Group?: Group | null;
+};
+
 export type UpdateRecipientInput = {
   id: string;
   phone?: string | null;
   carrierStatus?: string | null;
   lastProcessDt?: string | null;
+  groupId?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
   clientId?: string | null;
   _version?: number | null;
-  _deleted?: boolean | null;
   recipientGroupId?: string | null;
-  recipientMsgTemplateId?: string | null;
 };
 
 export type DeleteRecipientInput = {
@@ -284,22 +307,6 @@ export type ModelMsgToGroupConditionInput = {
   and?: Array<ModelMsgToGroupConditionInput | null> | null;
   or?: Array<ModelMsgToGroupConditionInput | null> | null;
   not?: ModelMsgToGroupConditionInput | null;
-};
-
-export type ModelIDInput = {
-  ne?: string | null;
-  eq?: string | null;
-  le?: string | null;
-  lt?: string | null;
-  ge?: string | null;
-  gt?: string | null;
-  contains?: string | null;
-  notContains?: string | null;
-  between?: Array<string | null> | null;
-  beginsWith?: string | null;
-  attributeExists?: boolean | null;
-  attributeType?: ModelAttributeTypes | null;
-  size?: ModelSizeInput | null;
 };
 
 export type MsgToGroup = {
@@ -535,6 +542,7 @@ export type ModelGroupFilterInput = {
   name?: ModelStringInput | null;
   carrier?: ModelCarriersInput | null;
   status?: ModelEntityStatusInput | null;
+  msgTemplateId?: ModelIDInput | null;
   clientId?: ModelStringInput | null;
   and?: Array<ModelGroupFilterInput | null> | null;
   or?: Array<ModelGroupFilterInput | null> | null;
@@ -553,6 +561,7 @@ export type ModelRecipientFilterInput = {
   phone?: ModelStringInput | null;
   carrierStatus?: ModelStringInput | null;
   lastProcessDt?: ModelStringInput | null;
+  groupId?: ModelIDInput | null;
   phoneTxt?: ModelStringInput | null;
   status?: ModelEntityStatusInput | null;
   clientId?: ModelStringInput | null;
@@ -573,6 +582,7 @@ export type SearchableRecipientFilterInput = {
   phone?: SearchableStringFilterInput | null;
   carrierStatus?: SearchableStringFilterInput | null;
   lastProcessDt?: SearchableStringFilterInput | null;
+  groupId?: SearchableIDFilterInput | null;
   phoneTxt?: SearchableStringFilterInput | null;
   clientId?: SearchableStringFilterInput | null;
   and?: Array<SearchableRecipientFilterInput | null> | null;
@@ -624,6 +634,7 @@ export enum SearchableRecipientSortableFields {
   phone = "phone",
   carrierStatus = "carrierStatus",
   lastProcessDt = "lastProcessDt",
+  groupId = "groupId",
   phoneTxt = "phoneTxt",
   clientId = "clientId"
 }
@@ -779,12 +790,27 @@ export type CreateGroupMutation = {
   name?: string | null;
   carrier?: Carriers | null;
   status?: EntityStatus | null;
+  msgTemplateId?: string | null;
   clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+  MsgTemplate?: {
+    __typename: "MsgTemplate";
+    id: string;
+    name?: string | null;
+    message?: string | null;
+    status?: EntityStatus | null;
+    default?: TemplateUsage | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
 };
 
 export type UpdateGroupMutation = {
@@ -793,12 +819,27 @@ export type UpdateGroupMutation = {
   name?: string | null;
   carrier?: Carriers | null;
   status?: EntityStatus | null;
+  msgTemplateId?: string | null;
   clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+  MsgTemplate?: {
+    __typename: "MsgTemplate";
+    id: string;
+    name?: string | null;
+    message?: string | null;
+    status?: EntityStatus | null;
+    default?: TemplateUsage | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
 };
 
 export type DeleteGroupMutation = {
@@ -807,12 +848,27 @@ export type DeleteGroupMutation = {
   name?: string | null;
   carrier?: Carriers | null;
   status?: EntityStatus | null;
+  msgTemplateId?: string | null;
   clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+  MsgTemplate?: {
+    __typename: "MsgTemplate";
+    id: string;
+    name?: string | null;
+    message?: string | null;
+    status?: EntityStatus | null;
+    default?: TemplateUsage | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
 };
 
 export type CreateRecipientMutation = {
@@ -821,6 +877,7 @@ export type CreateRecipientMutation = {
   phone?: string | null;
   carrierStatus?: string | null;
   lastProcessDt?: string | null;
+  groupId?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
   clientId?: string | null;
@@ -835,26 +892,27 @@ export type CreateRecipientMutation = {
     name?: string | null;
     carrier?: Carriers | null;
     status?: EntityStatus | null;
+    msgTemplateId?: string | null;
     clientId?: string | null;
     _version: number;
     _deleted?: boolean | null;
     _lastChangedAt: number;
     createdAt: string;
     updatedAt: string;
-  } | null;
-  MsgTemplate?: {
-    __typename: "MsgTemplate";
-    id: string;
-    name?: string | null;
-    message?: string | null;
-    status?: EntityStatus | null;
-    default?: TemplateUsage | null;
-    clientId?: string | null;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-    createdAt: string;
-    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
   } | null;
 };
 
@@ -864,6 +922,7 @@ export type UpdateRecipientMutation = {
   phone?: string | null;
   carrierStatus?: string | null;
   lastProcessDt?: string | null;
+  groupId?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
   clientId?: string | null;
@@ -878,26 +937,27 @@ export type UpdateRecipientMutation = {
     name?: string | null;
     carrier?: Carriers | null;
     status?: EntityStatus | null;
+    msgTemplateId?: string | null;
     clientId?: string | null;
     _version: number;
     _deleted?: boolean | null;
     _lastChangedAt: number;
     createdAt: string;
     updatedAt: string;
-  } | null;
-  MsgTemplate?: {
-    __typename: "MsgTemplate";
-    id: string;
-    name?: string | null;
-    message?: string | null;
-    status?: EntityStatus | null;
-    default?: TemplateUsage | null;
-    clientId?: string | null;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-    createdAt: string;
-    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
   } | null;
 };
 
@@ -907,6 +967,7 @@ export type DeleteRecipientMutation = {
   phone?: string | null;
   carrierStatus?: string | null;
   lastProcessDt?: string | null;
+  groupId?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
   clientId?: string | null;
@@ -921,26 +982,27 @@ export type DeleteRecipientMutation = {
     name?: string | null;
     carrier?: Carriers | null;
     status?: EntityStatus | null;
+    msgTemplateId?: string | null;
     clientId?: string | null;
     _version: number;
     _deleted?: boolean | null;
     _lastChangedAt: number;
     createdAt: string;
     updatedAt: string;
-  } | null;
-  MsgTemplate?: {
-    __typename: "MsgTemplate";
-    id: string;
-    name?: string | null;
-    message?: string | null;
-    status?: EntityStatus | null;
-    default?: TemplateUsage | null;
-    clientId?: string | null;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-    createdAt: string;
-    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
   } | null;
 };
 
@@ -1190,79 +1252,13 @@ export type GetGroupQuery = {
   name?: string | null;
   carrier?: Carriers | null;
   status?: EntityStatus | null;
+  msgTemplateId?: string | null;
   clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
-};
-
-export type ListGroupsQuery = {
-  __typename: "ModelGroupConnection";
-  items?: Array<{
-    __typename: "Group";
-    id: string;
-    name?: string | null;
-    carrier?: Carriers | null;
-    status?: EntityStatus | null;
-    clientId?: string | null;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-    createdAt: string;
-    updatedAt: string;
-  } | null> | null;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type SyncGroupsQuery = {
-  __typename: "ModelGroupConnection";
-  items?: Array<{
-    __typename: "Group";
-    id: string;
-    name?: string | null;
-    carrier?: Carriers | null;
-    status?: EntityStatus | null;
-    clientId?: string | null;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-    createdAt: string;
-    updatedAt: string;
-  } | null> | null;
-  nextToken?: string | null;
-  startedAt?: number | null;
-};
-
-export type GetRecipientQuery = {
-  __typename: "Recipient";
-  id: string;
-  phone?: string | null;
-  carrierStatus?: string | null;
-  lastProcessDt?: string | null;
-  phoneTxt?: string | null;
-  status?: EntityStatus | null;
-  clientId?: string | null;
-  _version: number;
-  _deleted?: boolean | null;
-  _lastChangedAt: number;
-  createdAt: string;
-  updatedAt: string;
-  Group?: {
-    __typename: "Group";
-    id: string;
-    name?: string | null;
-    carrier?: Carriers | null;
-    status?: EntityStatus | null;
-    clientId?: string | null;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-    createdAt: string;
-    updatedAt: string;
-  } | null;
   MsgTemplate?: {
     __typename: "MsgTemplate";
     id: string;
@@ -1279,6 +1275,119 @@ export type GetRecipientQuery = {
   } | null;
 };
 
+export type ListGroupsQuery = {
+  __typename: "ModelGroupConnection";
+  items?: Array<{
+    __typename: "Group";
+    id: string;
+    name?: string | null;
+    carrier?: Carriers | null;
+    status?: EntityStatus | null;
+    msgTemplateId?: string | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null> | null;
+  nextToken?: string | null;
+  startedAt?: number | null;
+};
+
+export type SyncGroupsQuery = {
+  __typename: "ModelGroupConnection";
+  items?: Array<{
+    __typename: "Group";
+    id: string;
+    name?: string | null;
+    carrier?: Carriers | null;
+    status?: EntityStatus | null;
+    msgTemplateId?: string | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null> | null;
+  nextToken?: string | null;
+  startedAt?: number | null;
+};
+
+export type GetRecipientQuery = {
+  __typename: "Recipient";
+  id: string;
+  phone?: string | null;
+  carrierStatus?: string | null;
+  lastProcessDt?: string | null;
+  groupId?: string | null;
+  phoneTxt?: string | null;
+  status?: EntityStatus | null;
+  clientId?: string | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+  Group?: {
+    __typename: "Group";
+    id: string;
+    name?: string | null;
+    carrier?: Carriers | null;
+    status?: EntityStatus | null;
+    msgTemplateId?: string | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
+};
+
 export type ListRecipientsQuery = {
   __typename: "ModelRecipientConnection";
   items?: Array<{
@@ -1287,6 +1396,7 @@ export type ListRecipientsQuery = {
     phone?: string | null;
     carrierStatus?: string | null;
     lastProcessDt?: string | null;
+    groupId?: string | null;
     phoneTxt?: string | null;
     status?: EntityStatus | null;
     clientId?: string | null;
@@ -1301,20 +1411,7 @@ export type ListRecipientsQuery = {
       name?: string | null;
       carrier?: Carriers | null;
       status?: EntityStatus | null;
-      clientId?: string | null;
-      _version: number;
-      _deleted?: boolean | null;
-      _lastChangedAt: number;
-      createdAt: string;
-      updatedAt: string;
-    } | null;
-    MsgTemplate?: {
-      __typename: "MsgTemplate";
-      id: string;
-      name?: string | null;
-      message?: string | null;
-      status?: EntityStatus | null;
-      default?: TemplateUsage | null;
+      msgTemplateId?: string | null;
       clientId?: string | null;
       _version: number;
       _deleted?: boolean | null;
@@ -1335,6 +1432,7 @@ export type SearchRecipientsQuery = {
     phone?: string | null;
     carrierStatus?: string | null;
     lastProcessDt?: string | null;
+    groupId?: string | null;
     phoneTxt?: string | null;
     status?: EntityStatus | null;
     clientId?: string | null;
@@ -1349,20 +1447,7 @@ export type SearchRecipientsQuery = {
       name?: string | null;
       carrier?: Carriers | null;
       status?: EntityStatus | null;
-      clientId?: string | null;
-      _version: number;
-      _deleted?: boolean | null;
-      _lastChangedAt: number;
-      createdAt: string;
-      updatedAt: string;
-    } | null;
-    MsgTemplate?: {
-      __typename: "MsgTemplate";
-      id: string;
-      name?: string | null;
-      message?: string | null;
-      status?: EntityStatus | null;
-      default?: TemplateUsage | null;
+      msgTemplateId?: string | null;
       clientId?: string | null;
       _version: number;
       _deleted?: boolean | null;
@@ -1383,6 +1468,7 @@ export type SyncRecipientsQuery = {
     phone?: string | null;
     carrierStatus?: string | null;
     lastProcessDt?: string | null;
+    groupId?: string | null;
     phoneTxt?: string | null;
     status?: EntityStatus | null;
     clientId?: string | null;
@@ -1397,20 +1483,7 @@ export type SyncRecipientsQuery = {
       name?: string | null;
       carrier?: Carriers | null;
       status?: EntityStatus | null;
-      clientId?: string | null;
-      _version: number;
-      _deleted?: boolean | null;
-      _lastChangedAt: number;
-      createdAt: string;
-      updatedAt: string;
-    } | null;
-    MsgTemplate?: {
-      __typename: "MsgTemplate";
-      id: string;
-      name?: string | null;
-      message?: string | null;
-      status?: EntityStatus | null;
-      default?: TemplateUsage | null;
+      msgTemplateId?: string | null;
       clientId?: string | null;
       _version: number;
       _deleted?: boolean | null;
@@ -1740,12 +1813,27 @@ export type OnCreateGroupSubscription = {
   name?: string | null;
   carrier?: Carriers | null;
   status?: EntityStatus | null;
+  msgTemplateId?: string | null;
   clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+  MsgTemplate?: {
+    __typename: "MsgTemplate";
+    id: string;
+    name?: string | null;
+    message?: string | null;
+    status?: EntityStatus | null;
+    default?: TemplateUsage | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
 };
 
 export type OnUpdateGroupSubscription = {
@@ -1754,12 +1842,27 @@ export type OnUpdateGroupSubscription = {
   name?: string | null;
   carrier?: Carriers | null;
   status?: EntityStatus | null;
+  msgTemplateId?: string | null;
   clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+  MsgTemplate?: {
+    __typename: "MsgTemplate";
+    id: string;
+    name?: string | null;
+    message?: string | null;
+    status?: EntityStatus | null;
+    default?: TemplateUsage | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
 };
 
 export type OnDeleteGroupSubscription = {
@@ -1768,12 +1871,27 @@ export type OnDeleteGroupSubscription = {
   name?: string | null;
   carrier?: Carriers | null;
   status?: EntityStatus | null;
+  msgTemplateId?: string | null;
   clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+  MsgTemplate?: {
+    __typename: "MsgTemplate";
+    id: string;
+    name?: string | null;
+    message?: string | null;
+    status?: EntityStatus | null;
+    default?: TemplateUsage | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
 };
 
 export type OnCreateRecipientSubscription = {
@@ -1782,6 +1900,7 @@ export type OnCreateRecipientSubscription = {
   phone?: string | null;
   carrierStatus?: string | null;
   lastProcessDt?: string | null;
+  groupId?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
   clientId?: string | null;
@@ -1796,26 +1915,27 @@ export type OnCreateRecipientSubscription = {
     name?: string | null;
     carrier?: Carriers | null;
     status?: EntityStatus | null;
+    msgTemplateId?: string | null;
     clientId?: string | null;
     _version: number;
     _deleted?: boolean | null;
     _lastChangedAt: number;
     createdAt: string;
     updatedAt: string;
-  } | null;
-  MsgTemplate?: {
-    __typename: "MsgTemplate";
-    id: string;
-    name?: string | null;
-    message?: string | null;
-    status?: EntityStatus | null;
-    default?: TemplateUsage | null;
-    clientId?: string | null;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-    createdAt: string;
-    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
   } | null;
 };
 
@@ -1825,6 +1945,7 @@ export type OnUpdateRecipientSubscription = {
   phone?: string | null;
   carrierStatus?: string | null;
   lastProcessDt?: string | null;
+  groupId?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
   clientId?: string | null;
@@ -1839,26 +1960,27 @@ export type OnUpdateRecipientSubscription = {
     name?: string | null;
     carrier?: Carriers | null;
     status?: EntityStatus | null;
+    msgTemplateId?: string | null;
     clientId?: string | null;
     _version: number;
     _deleted?: boolean | null;
     _lastChangedAt: number;
     createdAt: string;
     updatedAt: string;
-  } | null;
-  MsgTemplate?: {
-    __typename: "MsgTemplate";
-    id: string;
-    name?: string | null;
-    message?: string | null;
-    status?: EntityStatus | null;
-    default?: TemplateUsage | null;
-    clientId?: string | null;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-    createdAt: string;
-    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
   } | null;
 };
 
@@ -1868,6 +1990,7 @@ export type OnDeleteRecipientSubscription = {
   phone?: string | null;
   carrierStatus?: string | null;
   lastProcessDt?: string | null;
+  groupId?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
   clientId?: string | null;
@@ -1882,26 +2005,27 @@ export type OnDeleteRecipientSubscription = {
     name?: string | null;
     carrier?: Carriers | null;
     status?: EntityStatus | null;
+    msgTemplateId?: string | null;
     clientId?: string | null;
     _version: number;
     _deleted?: boolean | null;
     _lastChangedAt: number;
     createdAt: string;
     updatedAt: string;
-  } | null;
-  MsgTemplate?: {
-    __typename: "MsgTemplate";
-    id: string;
-    name?: string | null;
-    message?: string | null;
-    status?: EntityStatus | null;
-    default?: TemplateUsage | null;
-    clientId?: string | null;
-    _version: number;
-    _deleted?: boolean | null;
-    _lastChangedAt: number;
-    createdAt: string;
-    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
   } | null;
 };
 
@@ -2160,12 +2284,27 @@ export class APIService {
           name
           carrier
           status
+          msgTemplateId
           clientId
           _version
           _deleted
           _lastChangedAt
           createdAt
           updatedAt
+          MsgTemplate {
+            __typename
+            id
+            name
+            message
+            status
+            default
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+          }
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2190,12 +2329,27 @@ export class APIService {
           name
           carrier
           status
+          msgTemplateId
           clientId
           _version
           _deleted
           _lastChangedAt
           createdAt
           updatedAt
+          MsgTemplate {
+            __typename
+            id
+            name
+            message
+            status
+            default
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+          }
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2220,12 +2374,27 @@ export class APIService {
           name
           carrier
           status
+          msgTemplateId
           clientId
           _version
           _deleted
           _lastChangedAt
           createdAt
           updatedAt
+          MsgTemplate {
+            __typename
+            id
+            name
+            message
+            status
+            default
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+          }
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2250,6 +2419,7 @@ export class APIService {
           phone
           carrierStatus
           lastProcessDt
+          groupId
           phoneTxt
           status
           clientId
@@ -2264,26 +2434,27 @@ export class APIService {
             name
             carrier
             status
+            msgTemplateId
             clientId
             _version
             _deleted
             _lastChangedAt
             createdAt
             updatedAt
-          }
-          MsgTemplate {
-            __typename
-            id
-            name
-            message
-            status
-            default
-            clientId
-            _version
-            _deleted
-            _lastChangedAt
-            createdAt
-            updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
           }
         }
       }`;
@@ -2309,6 +2480,7 @@ export class APIService {
           phone
           carrierStatus
           lastProcessDt
+          groupId
           phoneTxt
           status
           clientId
@@ -2323,26 +2495,27 @@ export class APIService {
             name
             carrier
             status
+            msgTemplateId
             clientId
             _version
             _deleted
             _lastChangedAt
             createdAt
             updatedAt
-          }
-          MsgTemplate {
-            __typename
-            id
-            name
-            message
-            status
-            default
-            clientId
-            _version
-            _deleted
-            _lastChangedAt
-            createdAt
-            updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
           }
         }
       }`;
@@ -2368,6 +2541,7 @@ export class APIService {
           phone
           carrierStatus
           lastProcessDt
+          groupId
           phoneTxt
           status
           clientId
@@ -2382,26 +2556,27 @@ export class APIService {
             name
             carrier
             status
+            msgTemplateId
             clientId
             _version
             _deleted
             _lastChangedAt
             createdAt
             updatedAt
-          }
-          MsgTemplate {
-            __typename
-            id
-            name
-            message
-            status
-            default
-            clientId
-            _version
-            _deleted
-            _lastChangedAt
-            createdAt
-            updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
           }
         }
       }`;
@@ -2904,12 +3079,27 @@ export class APIService {
           name
           carrier
           status
+          msgTemplateId
           clientId
           _version
           _deleted
           _lastChangedAt
           createdAt
           updatedAt
+          MsgTemplate {
+            __typename
+            id
+            name
+            message
+            status
+            default
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+          }
         }
       }`;
     const gqlAPIServiceArguments: any = {
@@ -2934,12 +3124,27 @@ export class APIService {
             name
             carrier
             status
+            msgTemplateId
             clientId
             _version
             _deleted
             _lastChangedAt
             createdAt
             updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
           }
           nextToken
           startedAt
@@ -2975,12 +3180,27 @@ export class APIService {
             name
             carrier
             status
+            msgTemplateId
             clientId
             _version
             _deleted
             _lastChangedAt
             createdAt
             updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
           }
           nextToken
           startedAt
@@ -3012,6 +3232,7 @@ export class APIService {
           phone
           carrierStatus
           lastProcessDt
+          groupId
           phoneTxt
           status
           clientId
@@ -3026,26 +3247,27 @@ export class APIService {
             name
             carrier
             status
+            msgTemplateId
             clientId
             _version
             _deleted
             _lastChangedAt
             createdAt
             updatedAt
-          }
-          MsgTemplate {
-            __typename
-            id
-            name
-            message
-            status
-            default
-            clientId
-            _version
-            _deleted
-            _lastChangedAt
-            createdAt
-            updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
           }
         }
       }`;
@@ -3071,6 +3293,7 @@ export class APIService {
             phone
             carrierStatus
             lastProcessDt
+            groupId
             phoneTxt
             status
             clientId
@@ -3085,20 +3308,7 @@ export class APIService {
               name
               carrier
               status
-              clientId
-              _version
-              _deleted
-              _lastChangedAt
-              createdAt
-              updatedAt
-            }
-            MsgTemplate {
-              __typename
-              id
-              name
-              message
-              status
-              default
+              msgTemplateId
               clientId
               _version
               _deleted
@@ -3142,6 +3352,7 @@ export class APIService {
             phone
             carrierStatus
             lastProcessDt
+            groupId
             phoneTxt
             status
             clientId
@@ -3156,20 +3367,7 @@ export class APIService {
               name
               carrier
               status
-              clientId
-              _version
-              _deleted
-              _lastChangedAt
-              createdAt
-              updatedAt
-            }
-            MsgTemplate {
-              __typename
-              id
-              name
-              message
-              status
-              default
+              msgTemplateId
               clientId
               _version
               _deleted
@@ -3218,6 +3416,7 @@ export class APIService {
             phone
             carrierStatus
             lastProcessDt
+            groupId
             phoneTxt
             status
             clientId
@@ -3232,20 +3431,7 @@ export class APIService {
               name
               carrier
               status
-              clientId
-              _version
-              _deleted
-              _lastChangedAt
-              createdAt
-              updatedAt
-            }
-            MsgTemplate {
-              __typename
-              id
-              name
-              message
-              status
-              default
+              msgTemplateId
               clientId
               _version
               _deleted
@@ -3907,12 +4093,27 @@ export class APIService {
           name
           carrier
           status
+          msgTemplateId
           clientId
           _version
           _deleted
           _lastChangedAt
           createdAt
           updatedAt
+          MsgTemplate {
+            __typename
+            id
+            name
+            message
+            status
+            default
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+          }
         }
       }`
     )
@@ -3931,12 +4132,27 @@ export class APIService {
           name
           carrier
           status
+          msgTemplateId
           clientId
           _version
           _deleted
           _lastChangedAt
           createdAt
           updatedAt
+          MsgTemplate {
+            __typename
+            id
+            name
+            message
+            status
+            default
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+          }
         }
       }`
     )
@@ -3955,12 +4171,27 @@ export class APIService {
           name
           carrier
           status
+          msgTemplateId
           clientId
           _version
           _deleted
           _lastChangedAt
           createdAt
           updatedAt
+          MsgTemplate {
+            __typename
+            id
+            name
+            message
+            status
+            default
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+          }
         }
       }`
     )
@@ -3979,6 +4210,7 @@ export class APIService {
           phone
           carrierStatus
           lastProcessDt
+          groupId
           phoneTxt
           status
           clientId
@@ -3993,26 +4225,27 @@ export class APIService {
             name
             carrier
             status
+            msgTemplateId
             clientId
             _version
             _deleted
             _lastChangedAt
             createdAt
             updatedAt
-          }
-          MsgTemplate {
-            __typename
-            id
-            name
-            message
-            status
-            default
-            clientId
-            _version
-            _deleted
-            _lastChangedAt
-            createdAt
-            updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
           }
         }
       }`
@@ -4032,6 +4265,7 @@ export class APIService {
           phone
           carrierStatus
           lastProcessDt
+          groupId
           phoneTxt
           status
           clientId
@@ -4046,26 +4280,27 @@ export class APIService {
             name
             carrier
             status
+            msgTemplateId
             clientId
             _version
             _deleted
             _lastChangedAt
             createdAt
             updatedAt
-          }
-          MsgTemplate {
-            __typename
-            id
-            name
-            message
-            status
-            default
-            clientId
-            _version
-            _deleted
-            _lastChangedAt
-            createdAt
-            updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
           }
         }
       }`
@@ -4085,6 +4320,7 @@ export class APIService {
           phone
           carrierStatus
           lastProcessDt
+          groupId
           phoneTxt
           status
           clientId
@@ -4099,26 +4335,27 @@ export class APIService {
             name
             carrier
             status
+            msgTemplateId
             clientId
             _version
             _deleted
             _lastChangedAt
             createdAt
             updatedAt
-          }
-          MsgTemplate {
-            __typename
-            id
-            name
-            message
-            status
-            default
-            clientId
-            _version
-            _deleted
-            _lastChangedAt
-            createdAt
-            updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
           }
         }
       }`

@@ -23,6 +23,8 @@ type Group @model @auth(rules: [{allow: public}]) @key(name: "byGroup", fields: 
   name: String
   carrier: Carriers
   status: EntityStatus
+  MsgTemplate: MsgTemplate @connection
+  msgTemplateId: ID
   clientId: String
 }
 
@@ -32,8 +34,8 @@ type Recipient @model @searchable @auth(rules: [{allow: public}]) {
   carrierStatus: String
   lastProcessDt: AWSDateTime
   Group: Group @connection
+  groupId: ID
   phoneTxt: String
-  MsgTemplate: MsgTemplate @connection
   status: EntityStatus
   clientId: String
 }
@@ -47,7 +49,7 @@ type MsgTemplate @model @auth(rules: [{allow: public}]) {
   clientId: String
 }
 
-type MsgToGroup @model @auth(rules: [{allow: public}]) @key(name: "byMsgTemplate", fields: ["msgID"]) {
+type MsgToGroup @model @auth(rules: [{allow: public}]) {
     id: ID!
     msgID: ID!
     groupID: ID!

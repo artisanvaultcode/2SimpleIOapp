@@ -5,12 +5,26 @@ query GetGroup($id: ID!) {
     name
     carrier
     status
+    msgTemplateId
     clientId
     _version
     _deleted
     _lastChangedAt
     createdAt
     updatedAt
+    MsgTemplate {
+      id
+      name
+      message
+      status
+      default
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
   }
 }
 query ListGroups(
@@ -24,12 +38,26 @@ query ListGroups(
       name
       carrier
       status
+      msgTemplateId
       clientId
       _version
       _deleted
       _lastChangedAt
       createdAt
       updatedAt
+      MsgTemplate {
+        id
+        name
+        message
+        status
+        default
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
     }
     nextToken
     startedAt
@@ -52,12 +80,26 @@ query SyncGroups(
       name
       carrier
       status
+      msgTemplateId
       clientId
       _version
       _deleted
       _lastChangedAt
       createdAt
       updatedAt
+      MsgTemplate {
+        id
+        name
+        message
+        status
+        default
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
     }
     nextToken
     startedAt
@@ -69,6 +111,7 @@ query GetRecipient($id: ID!) {
     phone
     carrierStatus
     lastProcessDt
+    groupId
     phoneTxt
     status
     clientId
@@ -82,25 +125,26 @@ query GetRecipient($id: ID!) {
       name
       carrier
       status
+      msgTemplateId
       clientId
       _version
       _deleted
       _lastChangedAt
       createdAt
       updatedAt
-    }
-    MsgTemplate {
-      id
-      name
-      message
-      status
-      default
-      clientId
-      _version
-      _deleted
-      _lastChangedAt
-      createdAt
-      updatedAt
+      MsgTemplate {
+        id
+        name
+        message
+        status
+        default
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
     }
   }
 }
@@ -115,6 +159,7 @@ query ListRecipients(
       phone
       carrierStatus
       lastProcessDt
+      groupId
       phoneTxt
       status
       clientId
@@ -128,19 +173,7 @@ query ListRecipients(
         name
         carrier
         status
-        clientId
-        _version
-        _deleted
-        _lastChangedAt
-        createdAt
-        updatedAt
-      }
-      MsgTemplate {
-        id
-        name
-        message
-        status
-        default
+        msgTemplateId
         clientId
         _version
         _deleted
@@ -172,6 +205,7 @@ query SearchRecipients(
       phone
       carrierStatus
       lastProcessDt
+      groupId
       phoneTxt
       status
       clientId
@@ -185,19 +219,7 @@ query SearchRecipients(
         name
         carrier
         status
-        clientId
-        _version
-        _deleted
-        _lastChangedAt
-        createdAt
-        updatedAt
-      }
-      MsgTemplate {
-        id
-        name
-        message
-        status
-        default
+        msgTemplateId
         clientId
         _version
         _deleted
@@ -227,6 +249,7 @@ query SyncRecipients(
       phone
       carrierStatus
       lastProcessDt
+      groupId
       phoneTxt
       status
       clientId
@@ -240,19 +263,7 @@ query SyncRecipients(
         name
         carrier
         status
-        clientId
-        _version
-        _deleted
-        _lastChangedAt
-        createdAt
-        updatedAt
-      }
-      MsgTemplate {
-        id
-        name
-        message
-        status
-        default
+        msgTemplateId
         clientId
         _version
         _deleted
