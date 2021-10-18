@@ -4,11 +4,13 @@ import { HttpClient } from '@angular/common/http';
 import {Observable, ReplaySubject} from 'rxjs';
 import {Logger} from 'aws-amplify';
 import { UserService } from 'app/core/user/user.service';
-import Auth, {CognitoHostedUIIdentityProvider} from '@aws-amplify/auth';
+import Auth from '@aws-amplify/auth';
 import {CognitoUser} from 'amazon-cognito-identity-js';
 import {User} from '../user/user.types';
 import {NavigationService} from '../navigation/navigation.service';
-import {FuseNavigationService, FuseVerticalNavigationComponent} from '../../../@fuse/components/navigation';
+import {FuseNavigationService,
+    FuseVerticalNavigationComponent}
+from '../../../@fuse/components/navigation';
 
 @Injectable()
 export class AuthService
@@ -198,6 +200,7 @@ export class AuthService
                 bypassCache: true
             }).then((currentUser: CognitoUser|any) => {
                     const { attributes } = currentUser;
+                    console.log('çlient attributes', attributes);
                     return resolve(attributes);
             }).catch( (error: any) => {
                 this.catchError(error, 'login');

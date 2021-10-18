@@ -39,10 +39,7 @@ const awsmobile = {
             "endpoint": "https://g3084wrr4c.execute-api.us-east-1.amazonaws.com/dev",
             "region": "us-east-1"
         }
-    ],
-    "redirectSignIn": "http://localhost:4200/",
-    "redirectSignOut": "http://localhost:4200/",
-
+    ]
 };
 
 

@@ -9,7 +9,7 @@ import {GroupsMessagesComponent} from '../groups/groups-messages.component';
 import {DetailsMessagesComponent} from '../details/details-messages.component';
 import {MsgsService} from '../../messages.service';
 import { AuthService } from 'app/core/auth/auth.service';
-import {EntityStatus, Group, MsgTemplate, MsgToGroup} from '../../../../../API.service';
+import {EntityStatus, Group, MsgTemplate, MsgToGroup, TemplateUsage} from '../../../../../API.service';
 
 @Component({
     selector       : 'messages-list',
@@ -103,6 +103,13 @@ export class ListMessagesComponent implements OnInit, OnDestroy
                 if (isArchive) {
                     /* filteredNotes = filteredNotes.filter(note => note.archived === isArchive); */
                     filteredNotes = filteredNotes.filter(note => note.status === EntityStatus.INACTIVE);
+                }
+
+                // Show Defaults
+                const isDefault = filter === 'default';
+                if (isDefault) {
+                    /* filteredNotes = filteredNotes.filter(note => note.archived === isArchive); */
+                    filteredNotes = filteredNotes.filter(note => note.default === TemplateUsage.DEFAULT);
                 }
 
                 // Filter by label
@@ -233,6 +240,14 @@ export class ListMessagesComponent implements OnInit, OnDestroy
     {
         this.filter$.next('archived');
     }
+
+    /**
+     * Filter by default
+     */
+     filterByDefault(): void
+     {
+         this.filter$.next('default');
+     }
 
     /**
      * Filter by label
