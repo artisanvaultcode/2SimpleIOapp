@@ -1,15 +1,26 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
+import {distinctUntilChanged, filter, map, takeUntil} from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
-import { cloneDeep } from 'lodash-es';
-import {Note} from '../../messages.types';
 import {GroupsMessagesComponent} from '../groups/groups-messages.component';
 import {DetailsMessagesComponent} from '../details/details-messages.component';
 import {MsgsService} from '../../messages.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import {EntityStatus, Group, MsgTemplate, MsgToGroup} from '../../../../../API.service';
+import {MessageModel} from '../../models/MessageModel';
+import {Hub} from 'aws-amplify';
+import {FuseDrawerService} from '../../../../../../@fuse/components/drawer';
+import {MatDrawer} from '@angular/material/sidenav';
 
 @Component({
     selector       : 'messages-list',
@@ -18,8 +29,9 @@ import {EntityStatus, Group, MsgTemplate, MsgToGroup} from '../../../../../API.s
     encapsulation  : ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ListMessagesComponent implements OnInit, OnDestroy
+export class ListMessagesComponent implements OnInit, OnDestroy, AfterViewInit
 {
+    pbOn: boolean;
     labels$: Observable<Group[]>;
     messages$: Observable<MsgTemplate[]>;
     msgtogroups$: Observable<MsgToGroup[]>;
@@ -31,6 +43,7 @@ export class ListMessagesComponent implements OnInit, OnDestroy
     masonryColumns: number = 4;
 
     clientid: string;
+    currentMsg: MessageModel;
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -40,10 +53,20 @@ export class ListMessagesComponent implements OnInit, OnDestroy
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
+        private _fuseDrawerService: FuseDrawerService,
         private _matDialog: MatDialog,
         private _messagesService: MsgsService,
         private _auth: AuthService,
-    ) {}
+    ) {
+        Hub.listen('processing', (data) => {
+            if (data.payload.event === 'progressbar') {
+                this.pbOn = data.payload.data.activate === 'on';
+                console.log(this.pbOn);
+                this._changeDetectorRef.detectChanges();
+            }
+        });
+
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
@@ -66,6 +89,7 @@ export class ListMessagesComponent implements OnInit, OnDestroy
      */
     ngOnInit(): void
     {
+
         this.getClientId();
 
         // Get labels
@@ -75,15 +99,15 @@ export class ListMessagesComponent implements OnInit, OnDestroy
         // Get notes
         this.messages$ = combineLatest([this._messagesService.messages$, this.filter$, this.searchQuery$]).pipe(
             distinctUntilChanged(),
-            map(([notes, filter, searchQuery]) => {
+            map(([lMsgs, filter, searchQuery]) => {
 
-                if ( !notes || !notes.length )
+                if ( !lMsgs || !lMsgs.length )
                 {
-                    return;
+                    return [];
                 }
 
                 // Store the filtered notes
-                let filteredNotes = notes;
+                let filteredNotes = lMsgs;
 
                 // Filter by query
                 /* if ( searchQuery )
@@ -97,7 +121,6 @@ export class ListMessagesComponent implements OnInit, OnDestroy
                 {
                     // Do nothing
                 }
-
                 // Show archive
                 const isArchive = filter === 'archived';
                 if (isArchive) {
@@ -108,20 +131,21 @@ export class ListMessagesComponent implements OnInit, OnDestroy
                 // Filter by label
                 if ( filter.startsWith('label:') ) {
                     const labelId = filter.split(':')[1];
-                    this.msgtogroups$.subscribe(msgtodata => {
+                    this.msgtogroups$.subscribe((msgtodata) => {
                         const msgtofiltered = msgtodata.filter(item => item.groupID === labelId);
                         if (msgtofiltered.length > 0) {
                             let filteredNotesTmp: MsgTemplate[] = [];
-                            for (let msg2g of msgtofiltered){
+                            for (const msg2g of msgtofiltered){
                                 const filteredNotesTmp2 = (filteredNotes.filter(note => note.id === msg2g.msgID));
                                 filteredNotesTmp = filteredNotesTmp.concat(filteredNotesTmp2);
                             }
-                            filteredNotes = filteredNotesTmp
+                            filteredNotes = filteredNotesTmp;
                         } else {
                             filteredNotes = [];
                         }
                     });
                 }
+
                 return filteredNotes;
             })
         );
@@ -174,6 +198,18 @@ export class ListMessagesComponent implements OnInit, OnDestroy
             });
     }
 
+    ngAfterViewInit(): void
+    {
+        this._fuseDrawerService.getComponent('msgDetails').openedChanged
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((isOpen) => {
+                if (!isOpen) {
+                    this.currentMsg = new MessageModel();
+                    this._changeDetectorRef.detectChanges();
+                }
+            });
+    }
+
     /**
      * On destroy
      */
@@ -184,6 +220,7 @@ export class ListMessagesComponent implements OnInit, OnDestroy
         this._unsubscribeAll.complete();
     }
 
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     private async getClientId(){
         const { sub } = await this._auth.checkClientId();
         this.clientid = sub;
@@ -196,12 +233,14 @@ export class ListMessagesComponent implements OnInit, OnDestroy
     /**
      * Add a new note
      */
-    addNewNote(): void
-    {
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    addNewMessage($event): void {
+        const newMsg = this._messagesService.createNewMessage();
         this._matDialog.open(DetailsMessagesComponent, {
             autoFocus: false,
-            data     : {
-                note: {}
+            data : {
+                message: newMsg,
+                action: 'new'
             }
         });
     }
@@ -217,13 +256,11 @@ export class ListMessagesComponent implements OnInit, OnDestroy
     /**
      * Open the note dialog
      */
-    openNoteDialog(note: Note): void {
-        this._matDialog.open(DetailsMessagesComponent, {
-            autoFocus: false,
-            data     : {
-                note: cloneDeep(note)
-            }
-        });
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    openMessageDialog(current: MessageModel): void {
+        this.toggleDrawerOpen('msgDetails');
+        this.currentMsg = current;
+        this._changeDetectorRef.detectChanges();
     }
 
     /**
@@ -274,13 +311,15 @@ export class ListMessagesComponent implements OnInit, OnDestroy
         return item.id || index;
     }
 
-    getGroups(id: string) {
-        let flabt;
-            this.msgtogroups$.subscribe(resp => {
-                flabt = resp.filter(
-                    (f) => id === f.msgID
-                )
-            })
-        return flabt;
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    toggleDrawerOpen(drawerName): void {
+        const drawer = this._fuseDrawerService.getComponent(drawerName);
+        drawer.open();
+    }
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    toggleDrawerClose(drawerName): void {
+        const drawer = this._fuseDrawerService.getComponent(drawerName);
+        drawer.close();
     }
 }

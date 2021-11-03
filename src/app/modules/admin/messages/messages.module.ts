@@ -17,27 +17,40 @@ import {DetailsMessagesComponent} from './components/details/details-messages.co
 import {MessagesComponent} from './messages.component';
 import {ListMessagesComponent} from './components/list/list-messages.component';
 import {GroupsMessagesComponent} from './components/groups/groups-messages.component';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {LabelsMessagesComponent} from './components/labels/labels-messages.component';
+import {DetailsMessagesPanelComponent} from './components/details-panel/details-messages-panel.component';
+import {FuseDrawerModule} from '../../../../@fuse/components/drawer';
+import {MatDividerModule} from '@angular/material/divider';
+import {FuseFindByKeyPipeModule} from '../../../../@fuse/pipes/find-by-key';
 
 @NgModule({
   declarations: [
       MessagesComponent,
       DetailsMessagesComponent,
       ListMessagesComponent,
-      GroupsMessagesComponent  ],
-  imports: [
-      RouterModule.forChild(msgsRoutes),
-      MatButtonModule,
-      MatCheckboxModule,
-      MatDialogModule,
-      MatFormFieldModule,
-      MatIconModule,
-      MatInputModule,
-      MatMenuModule,
-      MatRippleModule,
-      MatSidenavModule,
-      FuseAutogrowModule,
-      FuseMasonryModule,
-      SharedModule
-  ]
+      GroupsMessagesComponent,
+      LabelsMessagesComponent,
+      DetailsMessagesPanelComponent
+  ],
+    imports: [
+        RouterModule.forChild(msgsRoutes),
+        MatButtonModule,
+        MatCheckboxModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatMenuModule,
+        MatRippleModule,
+        MatSidenavModule,
+        FuseAutogrowModule,
+        FuseMasonryModule,
+        SharedModule,
+        MatProgressBarModule,
+        FuseDrawerModule,
+        MatDividerModule,
+        FuseFindByKeyPipeModule,
+    ]
 })
 export class MessagesModule { }

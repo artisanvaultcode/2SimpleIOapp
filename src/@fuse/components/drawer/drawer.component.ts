@@ -248,7 +248,6 @@ export class FuseDrawerComponent implements OnChanges, OnInit, OnDestroy
         // Close the drawer
         this._toggleOpened(false);
     }
-
     /**
      * Toggle the drawer
      */

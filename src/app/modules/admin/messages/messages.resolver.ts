@@ -19,7 +19,6 @@ export class MessagesResolver implements Resolve<boolean> {
       Promise.all([
         this._msgService.getMessages(),
         this._msgService.getLabels(),
-        this._msgService.getMsgtogroup()
       ]).then(() => {
         resolve(true);
       },

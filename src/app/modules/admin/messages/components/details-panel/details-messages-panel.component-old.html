@@ -1,0 +1,128 @@
+<div class="flex flex-auto sm:w-100 sm:min-w-100 z-999">
+    <div class="flex flex-col flex-auto p-6 pt-10 sm:p-8 sm:pt-10 overflow-y-auto">
+        <!-- Header -->
+        <div class="flex items-center justify-between -mt-3 -ml-4">
+            <ng-container *ngIf="(currentMessage$ | async) as msg">
+                <!-- Save of Create ... button -->
+                <button
+                    class="pr-4 pl-3.5"
+                    mat-button
+                    [disabled]="!saveOrCreate"
+                    (click)="updateMessage(msg)">
+
+                    <!-- Mark as complete -->
+                    <ng-container *ngIf="!msg.id">
+                        <div class="flex items-center justify-center">
+                            <mat-icon [svgIcon]="'heroicons_outline:check-circle'"></mat-icon>
+                            <span class="ml-2 font-semibold">Create Message</span>
+                        </div>
+                    </ng-container>
+
+                    <!-- Mark as incomplete -->
+                    <ng-container *ngIf="msg.id">
+                        <div class="flex items-center justify-center">
+                            <mat-icon
+                                class="text-primary"
+                                [svgIcon]="'heroicons_outline:check-circle'"></mat-icon>
+                            <span class="ml-2 font-semibold">Save Message</span>
+                        </div>
+                    </ng-container>
+                </button>
+
+                <div class="flex items-center">
+                    <!-- More menu -->
+                    <button
+                        mat-icon-button
+                        [matMenuTriggerFor]="moreMenu">
+                        <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+                    </button>
+                    <mat-menu #moreMenu="matMenu">
+                        <button
+                            mat-menu-item
+                            (click)="deleteMessage(msg)"
+                            >
+                            <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                            <span>Delete {{msg.name}}</span>
+                        </button>
+                        <button
+                            mat-menu-item
+                            (click)="toggleArchiveMessage(msg)"
+                        >
+                            <mat-icon [svgIcon]="'heroicons_outline:archive'"></mat-icon>
+                            <span>Archive {{msg.name}}</span>
+                        </button>
+                    </mat-menu>
+
+                    <!-- Close button -->
+                    <button
+                        mat-icon-button
+                        (click)="closePanel($event)"
+                        >
+                        <mat-icon [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                    </button>
+                </div>
+            </ng-container>
+
+        </div>
+
+        <mat-divider class="mt-6 mb-8"></mat-divider>
+
+        <ng-container *ngIf="(currentMessage$ | async) as msg">
+            <!-- Title -->
+            <div>
+                <input
+                    class="w-full p-2 text-2xl"
+                    [placeholder]="'Title'"
+                    [(ngModel)]="msg.name"
+                    (input)="onUpdateMessageDetails(msg)">
+            </div>
+            <!-- Message -->
+            <div>
+            <textarea
+                matInput
+                class="w-full my-2.5 p-2"
+                fuseAutogrow
+                matTextareaAutosize
+                [maxlength]="160"
+                [spellcheck]="false"
+                [placeholder]="'Message (160) Characters long'"
+                [(ngModel)]="msg.message"
+                (input)="onUpdateMessageDetails(msg)"></textarea>
+            </div>
+            <!-- Labels -->
+            <ng-container *ngIf="(labels$ | async) as grupos">
+                <labels-4message [messageId]="msg.id" [allLabels]="grupos"></labels-4message>
+            </ng-container>
+            <ng-container *ngIf="msg.id">
+                <div class="flex items-center justify-between mt-4">
+                    <div class="flex items-center space-x-2">
+                        <!-- Labels -->
+                        <button
+                            mat-icon-button
+                            [matMenuTriggerFor]="labelsMenu">
+                            <mat-icon [svgIcon]="'heroicons_outline:tag'"></mat-icon>
+                        </button>
+                        <mat-menu #labelsMenu="matMenu">
+                            <ng-container *ngIf="(labels$ | async) as labels">
+                                <ng-container *ngFor="let label of labels">
+                                    <button
+                                        mat-menu-item
+                                        (click)="toggleLabelOnMessage(msg, label)">
+                                        <span class="flex items-center">
+                                            <mat-checkbox
+                                                class="flex items-center pointer-events-none"
+                                                [color]="'primary'"
+                                                [checked]="isLabelBeenUsed(label)"
+                                                disableRipple></mat-checkbox>
+                                            <span class="ml-1 leading-5">{{label?.name}}</span>
+                                        </span>
+                                    </button>
+                                </ng-container>
+                            </ng-container>
+                        </mat-menu>
+                    </div>
+                </div>
+            </ng-container>
+        </ng-container>
+    </div>
+</div>

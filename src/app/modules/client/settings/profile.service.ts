@@ -4,7 +4,6 @@ import Auth from '@aws-amplify/auth';
 import {CognitoUser} from 'amazon-cognito-identity-js';
 import {HttpClient} from '@angular/common/http';
 import { Logger } from 'aws-amplify';
-import {FuseProgressBarService} from '../../../../@fuse/components/progress-bar/progress-bar.service';
 import {APIService} from '../../../API.service';
 
 @Injectable({
@@ -91,7 +90,6 @@ export class ProfileService {
 
     updateUserAttributes(attrToChange: any ): Promise<any> {
         const newAttributes = this.objToAttr(attrToChange);
-        console.log(newAttributes);
         return new Promise((resolve, reject) => {
             Auth.currentAuthenticatedUser({bypassCache: true})
                 .then((user: CognitoUser|any) => {

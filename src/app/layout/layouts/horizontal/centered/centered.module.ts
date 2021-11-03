@@ -20,7 +20,7 @@ import { CenteredLayoutComponent } from 'app/layout/layouts/horizontal/centered/
     declarations: [
         CenteredLayoutComponent
     ],
-    imports     : [
+    imports: [
         HttpClientModule,
         RouterModule,
         MatButtonModule,
@@ -35,7 +35,7 @@ import { CenteredLayoutComponent } from 'app/layout/layouts/horizontal/centered/
         SearchModule,
         ShortcutsModule,
         UserModule,
-        SharedModule
+        SharedModule,
     ],
     exports     : [
         CenteredLayoutComponent
