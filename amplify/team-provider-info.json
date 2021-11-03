@@ -16,7 +16,7 @@
         "2simpleioapp755235cd755235cdPostConfirmation": {
           "GROUP": "USER",
           "deploymentBucketName": "amplify-2simpleioapp-dev-213838-deployment",
-          "s3Key": "amplify-builds/2simpleioapp755235cd755235cdPostConfirmation-2b3461336966324d3147-build.zip"
+          "s3Key": "amplify-builds/2simpleioapp755235cd755235cdPostConfirmation-352f7533776a7753726e-build.zip"
         }
       },
       "auth": {
