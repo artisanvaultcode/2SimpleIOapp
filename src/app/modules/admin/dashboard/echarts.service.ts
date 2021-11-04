@@ -146,6 +146,7 @@ export class EchartsService {
     }
 
     async biweeklySms(clientid: string) {
+        this.data = [];
         const date = new Date();
         // fechas
         const datea = date;

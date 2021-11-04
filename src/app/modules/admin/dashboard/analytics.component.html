@@ -88,12 +88,14 @@
                             value="this-week"
                             #blastingWeekSelector="matButtonToggleGroup">
                             <mat-button-toggle
+                                (change)="toggleFilter('MONTH')"
                                 class="px-1.5 rounded-full overflow-hidden border-none font-medium"
-                                value="last-week">Last 14 days
+                                value="last-week">Last Month
                             </mat-button-toggle>
                             <mat-button-toggle
+                                (change)="toggleFilter('YEAR')"
                                 class="px-1.5 rounded-full overflow-hidden border-none font-medium"
-                                value="this-week">Last 7 days
+                                value="this-week">Year {{yearstr}}
                             </mat-button-toggle>
                         </mat-button-toggle-group>
                         <div class="sm:hidden">
@@ -110,7 +112,7 @@
                     </div>
                 </div>
                 <div class="flex flex-col flex-auto h-80">
-                    <app-sms-overview class="fitcontainer"></app-sms-overview>
+                    <app-sms-overview [datefilter]="dateFilter" class="fitcontainer"></app-sms-overview>
                     <!-- <apx-chart
                         class="flex-auto w-full h-full"
                         [chart]="chartBlasting.chart"
@@ -128,7 +130,7 @@
             <!-- Conversions -->
             <div class="sm:col-span-2 lg:col-span-1 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">
                 <div class="flex items-start justify-between m-6 mb-0">
-                    <div class="text-lg flex-col font-medium tracking-tight leading-6 truncate">Succesfully Sent</div> 
+                    <div class="text-lg flex-col font-medium tracking-tight leading-6 truncate">Succesfully Sent</div>
                 </div>
                 <!-- <div class="flex flex-col lg:flex-row lg:items-center mx-6 mt-3">
                     <div class="text-7xl font-bold tracking-tighter leading-tight">{{data.conversions.amount | number:'1.0-0'}}</div>
@@ -147,9 +149,15 @@
                         [yaxis]="chartConversions.yaxis"></apx-chart> -->
                 </div>
             </div>
-            <!-- Impressions -->
-            <div class="flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">
+            <!-- Messages Sent -->
+            <div class="flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden m-0 p-0">
                 <div class="flex items-start justify-between m-6 mb-0">
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Messages Sent</div>
+                </div>
+                <div class="flex flex-col flex-auto m-0 p-0" >
+                    <app-cardnumber></app-cardnumber>
+                </div>
+                <!-- <div class="flex items-start justify-between m-6 mb-0">
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">WhiteListed</div>
                 </div>
                 <div class="flex flex-col lg:flex-row lg:items-center mx-6 mt-3">
@@ -165,7 +173,7 @@
                         [tooltip]="chartWhiteListed.tooltip"
                         [xaxis]="chartWhiteListed.xaxis"
                         [yaxis]="chartWhiteListed.yaxis"></apx-chart>
-                </div>
+                </div> -->
             </div>
             <!-- Visits -->
             <div class="flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">

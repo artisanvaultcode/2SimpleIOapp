@@ -42,7 +42,6 @@ export class SmsdayGaugeComponent implements OnInit, OnDestroy {
         this.auth.checkClientId().then((resp) => {
             this.clientid = resp['sub'];
             this._echartService.todaySms(this.clientid).then((rowco: number) => {
-                console.log(rowco, 'en todaySms');
                 this.setSeries(rowco);
             });
         });

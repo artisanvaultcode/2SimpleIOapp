@@ -200,7 +200,6 @@ export class AuthService
                 bypassCache: true
             }).then((currentUser: CognitoUser|any) => {
                     const { attributes } = currentUser;
-                    console.log('çlient attributes', attributes);
                     return resolve(attributes);
             }).catch( (error: any) => {
                 this.catchError(error, 'login');

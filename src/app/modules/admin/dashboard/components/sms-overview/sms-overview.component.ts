@@ -1,19 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { AuthService } from 'app/core/auth/auth.service';
-import { EchartsService } from '../../echarts.service';
-import * as shape from 'd3-shape';
-
-export interface SmsData {
-  name: string;
-  value: number;
-  fecha00: string;
-  fecha24: string;
-}
-
-export interface Serie {
-  name: string;
-  value: number;
-}
+import { AthinaService } from './../../athina.service';
+import { curveBumpX } from 'd3-shape'
+import { forkJoin } from 'rxjs';
 
 @Component({
     selector: 'app-sms-overview',
@@ -21,8 +10,8 @@ export interface Serie {
     styleUrls: ['./sms-overview.component.scss'],
 })
 export class SmsOverviewComponent implements OnInit {
-    view: any[] = [1600, 300];
 
+    @Input() datefilter: string;
     // options
     legend: boolean = false;
     showLabels: boolean = true;
@@ -35,29 +24,98 @@ export class SmsOverviewComponent implements OnInit {
     yAxisLabel: string = 'Total sent daily';
     timeline: boolean = true;
 
-    basisCurve= shape.curveBasis;
-    gradient = false;
+    basisCurve = curveBumpX;
+    gradient = true;
 
     colorScheme = 'cool';
 
-    clientid: string;
-    data: SmsData[];
-    series: Serie[] = [];
+    datosY = [];
+    datosM = [];
     constructor(
-        private echartService: EchartsService,
-        private auth: AuthService
+        private auth: AuthService,
+        private _athina: AthinaService,
     ) {}
 
     ngOnInit(): void {
         this.auth.checkClientId().then((resp) => {
-            this.clientid = resp['sub'];
-            this.echartService.biweeklySms(this.clientid).then((resp) => {
-
-            });
+            const {sub} = resp;
+            let clientid = '';
+            const yearstr = new Date().getFullYear();
+            if (sub === 'e43c4031-be4d-4c77-8ad9-ca842f5b4dc9'){
+                clientid = `'e43c4031-be4d-4c77-8ad9-ca842f5b4dc9' OR
+                        clientId = '1f78d0af-6b51-4723-8652-6dda5008c107'`
+            } else {
+                clientid = "'" + sub + "'";
+            }
+            this.getDataYear(clientid, yearstr.toString());
+            this.getDataMonth(clientid);
         });
     }
 
-    get multi (){
-    return this.echartService.smsOverviewData;
+    getDataYear(clientid: string, yearstr: string){
+        forkJoin({
+            devices: this._athina.distinctDevices(clientid, yearstr),
+            datesstr: this._athina.distinctDates(clientid, yearstr)
+        }).subscribe(({devices, datesstr}) => {
+            const devs = devices['result'];
+            const datstr = datesstr['result'];
+            this.datosY = this.objBase(devs, datstr);
+                this._athina.yearmsgdevices(clientid, yearstr)
+                    .subscribe(res => {
+                        res['result'].forEach(elem => {
+                           let serie = this.datosY.find( x => x.name === elem[1] );
+                           let datval = serie.series.find(x => x.name === elem[0]);
+                           datval.value = elem[2]
+                        });
+                    });
+        });
     }
+
+    getDataMonth(clientid: string){
+        forkJoin({
+            devices: this._athina.distinctDevicesMonth(clientid),
+            datesstr: this._athina.distinctDatesMonth(clientid)
+        }).subscribe(({devices, datesstr}) => {
+            const devs = devices['result'];
+            const datstr = datesstr['result'];
+            this.datosM = this.objBase(devs, datstr);
+                this._athina.monthmsgdevices(clientid)
+                    .subscribe(res => {
+                        res['result'].forEach(elem => {
+                           let serie = this.datosM.find( x => x.name === elem[1] );
+                           let datval = serie.series.find(x => x.name === elem[0]);
+                           datval.value = elem[2]
+                        });
+                    });
+        });
+    }
+
+    objBase(devs: any[], dats: any[]): any[]{
+        let objbase = [];
+        devs.forEach(elem => {
+            let serie = [];
+            dats.forEach(dt => {
+                const ser = {
+                    name: dt[0],
+                    value: 0
+                }
+                serie.push(ser);
+            });
+            const ele = {
+                name: elem[0],
+                series: serie
+            }
+            objbase.push(ele);
+        });
+        return objbase
+    }
+
+    get multi (){
+        if (this.datefilter === 'YEAR') {
+            return this.datosY;
+        } else {
+            return this.datosM;
+        }
+    }
+
 }

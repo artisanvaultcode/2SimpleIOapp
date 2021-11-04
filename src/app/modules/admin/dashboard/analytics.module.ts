@@ -26,6 +26,7 @@ import * as echarts from 'echarts';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { DevdayAdvpieComponent } from './components/devday-advpie/devday-advpie.component';
 import { FuseAlertModule } from '@fuse/components/alert';
+import { CardnumberComponent } from './components/cardnumber/cardnumber.component';
 
 @NgModule({
     declarations: [
@@ -33,7 +34,8 @@ import { FuseAlertModule } from '@fuse/components/alert';
         MsgTemplateDefaultComponent,
         SmsOverviewComponent,
         SmsdayGaugeComponent,
-        DevdayAdvpieComponent
+        DevdayAdvpieComponent,
+        CardnumberComponent
     ],
     imports     : [
         RouterModule.forChild(analyticsRoutes),

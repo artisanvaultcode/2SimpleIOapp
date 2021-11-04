@@ -60,6 +60,7 @@ export class WebsocketService {
     formData.append('topicname', 'sync-sms');
     formData.append('eventname', 'events');
     console.log("chkDevices send", this.baseURL+'/chkdevices');
+    console.log("ChkDevices", formData);
     return this._http.post(this.baseURL+'/chkdevices', formData, this.httpOptions);
   }
 

@@ -46,7 +46,7 @@ export class DevdayAdvpieComponent implements OnInit {
         this.auth.checkClientId().then((resp) => {
             this.clientid = resp['sub'];
             this.echartService.todayDevSms(this.clientid).then((resp) => {
-                console.log(resp, 'en todaySms');
+                console.log(resp, 'todaySms');
             });
         });
 
