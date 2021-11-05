@@ -41,8 +41,6 @@ export class GroupsMessagesComponent implements OnInit, OnDestroy
     {
         // Get the labels
         this.labels$ = this._messagesService.labels$;
-        console.log("labels...", this.labels$);
-
         // Subscribe to label updates
         this.labelChanged
             .pipe(
@@ -79,8 +77,7 @@ export class GroupsMessagesComponent implements OnInit, OnDestroy
     addLabel(title: string): void
     {
         this._messagesService.addLabel(title)
-            .then(resp => {
-                console.log(resp);
+            .then((resp) => {
                 this.matDialogRef.close();
             })
             .catch(err => console.log(err));

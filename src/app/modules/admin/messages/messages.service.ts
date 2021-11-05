@@ -118,11 +118,12 @@ export class MsgsService {
 
 
 
-    refreshMessages() {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    refreshMessages(): void {
         of(this.getMessages());
     }
 
-    createNewMessage(): any {
+    createNewMessage(): MessageModel {
         const msgTemplate = new MessageModel();
         this._messageTemplate.next(msgTemplate);
         return msgTemplate;
@@ -284,7 +285,7 @@ export class MsgsService {
     }
     /**
      * Method to delete MrgToGrp with group and mgstemplate
-     *
+     *asdasdasdasd
      * @param grp
      * @param msg
      * @returns
@@ -309,7 +310,7 @@ export class MsgsService {
 
     /**
      * Method to delete MsgToGrp with MsgToGrp row
-     *
+     *sadasdasda
      * @param msg2grp
      * @returns
      */
@@ -349,7 +350,7 @@ export class MsgsService {
      * Get All Messages
      */
     async getMessages(status: EntityStatus = EntityStatus.ACTIVE): Promise<any> {
-        const {sub} = await this._auth.checkClientId();
+        const { sub }  = await this._auth.checkClientId();
         const filter: ModelMsgTemplateFilterInput = {
             clientId: { eq: sub },
             status: {eq: status}
@@ -374,6 +375,47 @@ export class MsgsService {
         });
     }
 
+    /**
+     * Get All Messages by Group
+     */
+    async getMessagesByGroupId(status: EntityStatus = EntityStatus.ACTIVE, gId: string): Promise<any> {
+        const { sub }= await this._auth.checkClientId();
+        const groupFilter: ModelMsgToGroupFilterInput = {
+            clientId: { eq: sub },
+            groupID: {eq: gId},
+            status: { eq: EntityStatus.ACTIVE}
+        };
+        this.activateProgressBar();
+        return new Promise((resolve, reject) => {
+            const listOfIds = [];
+            this.api.ListMsgToGroups(groupFilter)
+                .then((resp) => {
+                    const notDeleted = resp.items.filter(
+                        item => item._deleted !== true
+                    );
+                    notDeleted.forEach((item) => {
+                        listOfIds.push({ id: { eq: item.msgID} });
+                    });
+                    const filter: ModelMsgTemplateFilterInput = {
+                        clientId: { eq: sub },
+                        and: listOfIds
+                    };
+                    return this.api.ListMsgTemplates(filter);
+                }).then((resp: ListMsgTemplatesQuery) => {
+                    const notDeleted = resp.items.filter(
+                        item => item._deleted !== true
+                    );
+                    this._messages.next(notDeleted);
+                    this.activateProgressBar('off');
+                    resolve(notDeleted.length);
+                })
+                .catch((error: any) => {
+                    this.catchError(error);
+                    reject(error.message);
+                    this.activateProgressBar('off');
+                });
+        });
+    }
     /**ListMsgToGroups
      * Get labels/Groups
      */
@@ -475,7 +517,7 @@ export class MsgsService {
      * Set New Message
      */
     setNewMessage(newMsg: MessageModel): void {
-        this._messageTemplate.next(MessageModel);
+        this._messageTemplate.next(newMsg);
         this._labelsById.next([]);
     }
 
@@ -484,7 +526,7 @@ export class MsgsService {
      *
      * @param note
      */
-    async createMessage(msg: MsgTemplate): Promise<CreateMsgTemplateMutation> {
+    async createMessage(msg: MessageModel): Promise<CreateMsgTemplateMutation> {
         const {sub} = await this._auth.checkClientId();
         return new Promise((resolve, reject) => {
             const _payload: CreateMsgTemplateInput = {
@@ -575,20 +617,20 @@ export class MsgsService {
             .catch(err => console.log(err));
     }
 
-    private catchError(error): void {
-        console.log(error);
-        this.logger.debug('OOPS!', error);
-    }
-
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    private activateProgressBar(active = 'on') {
+    activateProgressBar(active = 'on') {
         Hub.dispatch(
             'processing',
             {
                 event: 'progressbar',
                 data: {
-                    activate: 'on'
+                    activate: active
                 }
             });
+    }
+
+    private catchError(error): void {
+        console.log(error);
+        this.logger.debug('OOPS!', error);
     }
 }

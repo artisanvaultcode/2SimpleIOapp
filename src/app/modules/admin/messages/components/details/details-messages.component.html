@@ -1,100 +1,42 @@
-<div class="flex flex-col flex-auto md:w-160 md:min-w-160 -m-6"
->
-    <ng-container *ngIf="(currentMessage$ | async) as msg">
-        <div class="m-4">
+<ng-container *ngIf="(currentMessage$ | async) as msg">
+    <div class="flex flex-col flex-auto md:w-160 md:min-w-160 -m-6">
+        <div class="m-6">
             <!-- Title -->
             <div>
                 <input
                     class="w-full p-2 text-2xl"
                     [placeholder]="'Title'"
+                    maxlength="120"
                     [(ngModel)]="msg.name"
                     (input)="onUpdateMessageDetails(msg)">
             </div>
             <!-- Message -->
             <div>
                 <textarea
-                    class="w-full my-2.5 p-2"
-                    fuseAutogrow
+                    #message
+                    class="w-full my-2.5 "
+                    matInput
+                    maxlength="160"
                     [placeholder]="'Message (160) Characters long'"
                     [(ngModel)]="msg.message"
                     (input)="onUpdateMessageDetails(msg)"></textarea>
-            </div>
-            <!-- Labels -->
-            <ng-container *ngIf="(labels$ | async) as grupos">
-                <labels-4message [messageId]="msg.id" [allLabels]="grupos"></labels-4message>
-            </ng-container>
-            <!-- Add Actions -->
-            <ng-container *ngIf="!msg.id">
-                <div class="flex items-center justify-end mt-4">
-                    <!-- Save -->
-                    <button
-                        mat-flat-button
-                        [color]="'primary'"
-                        [disabled]="!saveOrCreate"
-                        (click)="createMessage(msg)">
-                        Create
-                    </button>
-                </div>
-            </ng-container>
-            <!-- Edit Actions -->
-            <ng-container *ngIf="msg.id">
-                <div class="flex items-center justify-between mt-4">
-                    <div class="flex items-center space-x-2">
-                        <!-- Labels -->
-                        <button
-                            mat-icon-button
-                            [matMenuTriggerFor]="labelsMenu">
-                            <mat-icon [svgIcon]="'heroicons_outline:tag'"></mat-icon>
-                        </button>
-                        <mat-menu #labelsMenu="matMenu">
-                            <ng-container *ngIf="(labels$ | async) as labels">
-                                <ng-container *ngFor="let label of labels">
-                                    <button
-                                        mat-menu-item
-                                        (click)="toggleLabelOnMessage(msg, label)">
-                                        <span class="flex items-center">
-                                            <mat-checkbox
-                                                class="flex items-center pointer-events-none"
-                                                [color]="'primary'"
-                                                [checked]="isLabelBeenUsed(label)"
-                                                disableRipple></mat-checkbox>
-                                            <span class="ml-1 leading-5">{{label?.name}}</span>
-                                        </span>
-                                    </button>
-                                </ng-container>
-                            </ng-container>
-                        </mat-menu>
-                        <!-- Archive -->
-                        <button
-                            mat-icon-button
-                            (click)="toggleArchiveMessage(msg)">
-                            <mat-icon [svgIcon]="'heroicons_outline:archive'"></mat-icon>
-                        </button>
-                        <!-- Delete -->
-                        <button
-                            mat-icon-button
-                            (click)="deleteNote(msg)">
-                            <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
-                        </button>
-                    </div>
-                    <!-- Close -->
-                    <div class="flex items-center space-x-2">
-                        <button
-                            mat-flat-button
-                            [color]="'primary'"
-                            [disabled]="!saveOrCreate"
-                            (click)="updateMessage(msg)">
-                            Save
-                        </button>
-                        <button
-                            mat-flat-button
-                            matDialogClose>
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </ng-container>
-        </div>
-    </ng-container>
 
-</div>
+            </div>
+            <div class="flex items-center justify-end mt-4">
+                <mat-hint align="end">Don't disclose personal info {{message.value.length}} / 160</mat-hint>
+            </div>
+            <div class="flex items-center justify-end mt-4">
+                <button mat-button mat-dialog-close>Cancel</button>
+                <button
+                    mat-button
+                    [color]="'primary'"
+                    [disabled]="!saveOrCreate"
+                    (click)="createMessage(msg)">
+                    Create
+                </button>
+            </div>
+        </div>
+    </div>
+</ng-container>
+
+

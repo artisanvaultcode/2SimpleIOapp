@@ -23,6 +23,9 @@ import {DetailsMessagesPanelComponent} from './components/details-panel/details-
 import {FuseDrawerModule} from '../../../../@fuse/components/drawer';
 import {MatDividerModule} from '@angular/material/divider';
 import {FuseFindByKeyPipeModule} from '../../../../@fuse/pipes/find-by-key';
+import {DragDropModule} from "@angular/cdk/drag-drop";
+import {MatSortModule} from "@angular/material/sort";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -51,6 +54,9 @@ import {FuseFindByKeyPipeModule} from '../../../../@fuse/pipes/find-by-key';
         FuseDrawerModule,
         MatDividerModule,
         FuseFindByKeyPipeModule,
+        DragDropModule,
+        MatSortModule,
+        MatProgressSpinnerModule,
     ]
 })
 export class MessagesModule { }

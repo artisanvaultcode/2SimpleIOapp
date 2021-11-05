@@ -40,6 +40,7 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
     labelsEditMode: boolean = false;
     labels: any[];
     filteredLabels: any[];
+    detailsChanged: Subject<MessageModel> = new Subject<MessageModel>();
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     private _labelsPanelOverlayRef: OverlayRef;
     // eslint-disable-next-line @typescript-eslint/member-ordering
@@ -90,6 +91,12 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
                     this._changeDetectorRef.markForCheck();
                 }
             });
+
+        this.detailsChanged
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((result) => {
+                this.saveOrCreate = true;
+            });
     }
 
     /**
@@ -97,7 +104,6 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
      */
     ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
-        console.log('destroy')
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
         // Dispose the overlay
@@ -109,22 +115,26 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
 
     ngOnChanges(changes: SimpleChanges): void {
         const {currentMsg} = changes;
+        this._messagesService.activateProgressBar();
         if (currentMsg.currentValue && currentMsg.currentValue.id) {
             this._messagesService.getMessageById(currentMsg.currentValue.id)
                 .then((result) => {
                     if (result) {
-                        this._changeDetectorRef.markForCheck();
+                        this._messagesService.activateProgressBar('off');
                     }
                 });
         } else {
             this._messagesService.setNewMessage(currentMsg.currentValue);
-            this._changeDetectorRef.markForCheck();
+            this._messagesService.activateProgressBar('off');
         }
     }
 
 
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     toggleArchive() {}
+
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    updateMessageToDefault(msg: MessageModel) {}
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -184,17 +194,17 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
      *
      * @param note
      */
-    onUpdateMessageDetails(note: MessageModel): void
-    {
-        // this.detailsChanged.next(note);
+
+    onUpdateMessageDetails(msg: MessageModel): void {
+        this.detailsChanged.next(msg);
     }
     /**
      * Update the note details
      *
      * @param note
      */
-    updateMessage(msg: MessageModel): void
-    {
+
+    updateMessage(msg: MessageModel): void {
         console.log(msg);
     }
 
@@ -224,7 +234,7 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
         if (this.listOfLabelsById.length === 0) {
             return false;
         }
-        const found = this.listOfLabelsById.find(item => item === group.id);
+        const found = this.listOfLabelsById.find(item => item.groupID === group.id);
         return !_lodash.isEmpty(found);
     }
     /**
@@ -234,21 +244,27 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
      * @param label
      */
     toggleLabelOnMessage(msgtemplate: any, group: any): void {
-        console.log(msgtemplate,group );
+        this._messagesService.activateProgressBar();
         if ( this.isLabelBeenUsed( group) ) {
             const foundGroup = this.listOfLabelsById.find(item => item.groupID === group.id);
             console.log(foundGroup);
             this._messagesService.detachGroupFromMsg(foundGroup)
                 .then((resUpdate) => {
-                    console.log(resUpdate);
+                    this._messagesService.activateProgressBar('off');
                 })
-                .catch(error => console.log(error));
+                .catch((error) => {
+                    console.log(error);
+                    this._messagesService.activateProgressBar('off');
+                });
         } else {
             this._messagesService.attachGroupFromMsg(msgtemplate, group)
                 .then((resUpdate) => {
-                    console.log(resUpdate);
+                    this._messagesService.activateProgressBar('off');
                 })
-                .catch(error => console.log(error));
+                .catch((error) => {
+                    console.log(error);
+                    this._messagesService.activateProgressBar('off');
+                });
         }
     }
 
@@ -257,7 +273,24 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
      *
      * @param note
      */
-    toggleArchiveMessage(msg: any): void
+    toggleArchiveMessage(msg: any): void {
+        this._messagesService.activateProgressBar();
+        this._messagesService.archiveMessage(msg.id)
+            .then((resUpdate) => {
+                this._messagesService.activateProgressBar('off');
+                this.closePanel(resUpdate);
+            })
+            .catch((error) => {
+                console.log(error);
+                this._messagesService.activateProgressBar('off');
+            });
+    }
+    /**
+     * Toggle archived status on the given note
+     *
+     * @param note
+     */
+    toggleUnArchiveMessage(msg: any): void
     {
         // this._msgsService.archiveMessage(msg.id)
         //     .then(() => this._matDialogRef.close())
@@ -266,10 +299,26 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
 
     deleteMessage(msg: MessageModel): void
     {
+        // this._msgsService.archiveMessage(msg.id)
+        //     .then(() => this._matDialogRef.close())
+        //     .catch(error => console.log(error));
 
     }
 
-    closePanel($event): void {
+    /**
+     * Toggle archived status on the given note
+     *
+     * @param note
+     */
+    // toggleArchiveMessage(msg: any): void
+    // {
+    //     this._msgsService.archiveMessage(msg.id)
+    //         .then(() => this._matDialogRef.close())
+    //         .catch(error => console.log(error));
+    // }
+    //
+
+    closePanel($event: any): void {
         this.closeOrCancelEvent.emit('msgDetails');
     }
 
