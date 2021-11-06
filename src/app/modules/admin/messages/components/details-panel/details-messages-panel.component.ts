@@ -1,20 +1,30 @@
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
-    Component, ElementRef, EventEmitter,
-    Input, OnChanges,
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnChanges,
     OnDestroy,
-    OnInit, Output, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef,
+    OnInit,
+    Output,
+    SimpleChanges,
+    TemplateRef,
+    ViewChild,
+    ViewContainerRef,
     ViewEncapsulation
 } from '@angular/core';
-import { Observable, of, Subject } from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {MsgsService} from '../../messages.service';
-import { AuthService } from 'app/core/auth/auth.service';
+import {AuthService} from 'app/core/auth/auth.service';
 import {MessageModel} from '../../models/MessageModel';
 import {takeUntil} from 'rxjs/operators';
 import _lodash from 'lodash';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {Overlay, OverlayRef} from '@angular/cdk/overlay';
+import {EntityStatus} from '../../../../../API.service';
+import {FuseConfirmationService} from '../../../../../../@fuse/services/confirmation';
 
 @Component({
     selector       : 'messages-details-panel',
@@ -53,7 +63,8 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
         private _messagesService: MsgsService,
         private _auth: AuthService,
         private _overlay: Overlay,
-        private _viewContainerRef: ViewContainerRef
+        private _viewContainerRef: ViewContainerRef,
+        private _fuseConfirmationService: FuseConfirmationService,
     )
     {
         this.saveOrCreate = false;
@@ -85,7 +96,7 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
         this.labels$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((result) => {
-                if (result ) {
+                if (result) {
                     this.labels = result;
                     this.filteredLabels = result;
                     this._changeDetectorRef.markForCheck();
@@ -129,12 +140,20 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
         }
     }
 
-
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    toggleArchive() {}
+    updateMessageToDefault(msg: MessageModel) {
+        this._messagesService.activateProgressBar();
+        if (msg.id) {
+            this._messagesService.updateMessageToDefault(msg.id)
+                .then((result) => {
+                    this.closePanel('msgDetails');
+                    this._messagesService.activateProgressBar('off');
+                });
+        } else {
+            this._messagesService.activateProgressBar('off');
+        }
 
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    updateMessageToDefault(msg: MessageModel) {}
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -175,8 +194,6 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
         // If there is a tag...
         const item = this.filteredLabels[0];
         const isLabelApplied = this.listOfLabelsById.find(id => id === item.id);
-
-        console.log(isLabelApplied);
         // If the found tag is already applied to the task...
         if ( isLabelApplied )
         {
@@ -192,35 +209,30 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
     /**
      * Update the note details
      *
-     * @param note
+     * @param msg
      */
 
     onUpdateMessageDetails(msg: MessageModel): void {
         this.detailsChanged.next(msg);
     }
     /**
-     * Update the note details
+     * Update message details
      *
-     * @param note
+     * @param msg
      */
 
     updateMessage(msg: MessageModel): void {
-        console.log(msg);
-    }
-
-    /**
-     * Create a new note
-     *
-     * @param note
-     */
-    createMessage(note: MessageModel): void
-    {
-        // this._msgsService.createMessage(note)
-        //     .then((resp: MsgTemplate) => {
-        //         // Close the dialog
-        //         this._matDialogRef.close();
-        //     })
-        //     .catch(err => console.log('Error MsgService - Create...', err));
+        this._messagesService.activateProgressBar();
+        if (msg.id) {
+            this._messagesService.updateMessage(msg)
+                .then((result) => {
+                    if (result) {
+                        this._messagesService.activateProgressBar('off');
+                    }
+                });
+        } else {
+            this._messagesService.activateProgressBar('off');
+        }
     }
 
     /**
@@ -247,7 +259,6 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
         this._messagesService.activateProgressBar();
         if ( this.isLabelBeenUsed( group) ) {
             const foundGroup = this.listOfLabelsById.find(item => item.groupID === group.id);
-            console.log(foundGroup);
             this._messagesService.detachGroupFromMsg(foundGroup)
                 .then((resUpdate) => {
                     this._messagesService.activateProgressBar('off');
@@ -275,10 +286,10 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
      */
     toggleArchiveMessage(msg: any): void {
         this._messagesService.activateProgressBar();
-        this._messagesService.archiveMessage(msg.id)
+        this._messagesService.archiveMessage(msg.id, EntityStatus.INACTIVE)
             .then((resUpdate) => {
                 this._messagesService.activateProgressBar('off');
-                this.closePanel(resUpdate);
+                this.closePanel('msgDetails');
             })
             .catch((error) => {
                 console.log(error);
@@ -292,16 +303,43 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
      */
     toggleUnArchiveMessage(msg: any): void
     {
-        // this._msgsService.archiveMessage(msg.id)
-        //     .then(() => this._matDialogRef.close())
-        //     .catch(error => console.log(error));
+        this._messagesService.activateProgressBar();
+        this._messagesService.archiveMessage(msg.id, EntityStatus.ACTIVE)
+            .then((resUpdate) => {
+                this._messagesService.activateProgressBar('off');
+                this.closePanel('msgDetails');
+            })
+            .catch((error) => {
+                console.log(error);
+                this._messagesService.activateProgressBar('off');
+            });
     }
 
     deleteMessage(msg: MessageModel): void
     {
-        // this._msgsService.archiveMessage(msg.id)
-        //     .then(() => this._matDialogRef.close())
-        //     .catch(error => console.log(error));
+        const confirmation = this._fuseConfirmationService.open({
+            title  : 'Delete Message',
+            message: 'Are you sure you want to delete this Message? This action cannot be undone!',
+            actions: {
+                confirm: {
+                    label: 'Delete'
+                }
+            }
+        });
+        confirmation.afterClosed().subscribe((result) => {
+
+            // If the confirm button pressed...
+            if (result === 'confirmed') {
+                this._messagesService.deleteMessage(msg)
+                    .then((resUpdate) => {
+                        this.closePanel('msgDetails');
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+                this._changeDetectorRef.markForCheck();
+            }
+        });
 
     }
 

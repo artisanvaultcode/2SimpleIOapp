@@ -232,23 +232,24 @@
         </mat-drawer-content>
 
     </mat-drawer-container>
-    <fuse-drawer
-        class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999"
-        fixed
-        [mode]="'over'"
-        [opened]="false"
-        [name]="'msgDetails'"
-        [position]="'right'">
-         <messages-details-panel [currentMsg]="currentMsg" (closeOrCancelEvent)="toggleDrawerClose($event)"></messages-details-panel>
-    </fuse-drawer>
 
-    <fuse-drawer
-        class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999"
-        fixed
-        [mode]="'over'"
-        [opened]="false"
-        [name]="'grpDetails'"
-        [position]="'right'">
-        <groups-message (closeOrCancelEvent)="toggleDrawerClose($event)"></groups-message>
-    </fuse-drawer>
 </div>
+<fuse-drawer
+    class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999"
+    fixed
+    [mode]="'over'"
+    [opened]="false"
+    [name]="'msgDetails'"
+    [position]="'right'">
+    <messages-details-panel [currentMsg]="currentMsg" (closeOrCancelEvent)="toggleDrawerClose($event)"></messages-details-panel>
+</fuse-drawer>
+
+<fuse-drawer
+    class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999"
+    fixed
+    [mode]="'over'"
+    [opened]="false"
+    [name]="'grpDetails'"
+    [position]="'right'">
+    <groups-message (closeOrCancelEvent)="toggleDrawerClose($event)"></groups-message>
+</fuse-drawer>

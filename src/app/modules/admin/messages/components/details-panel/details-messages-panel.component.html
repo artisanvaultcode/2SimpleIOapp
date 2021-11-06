@@ -1,8 +1,8 @@
-    <div class="flex flex-auto sm:w-100 sm:min-w-100 z-999">
+<div class="flex flex-auto sm:w-100 sm:min-w-100 z-999">
+    <ng-container *ngIf="(currentMessage$ | async) as msg; else loadingMsg">
         <div class="flex flex-col flex-auto p-6 pt-10 sm:p-8 sm:pt-10 overflow-y-auto">
             <!-- Header -->
-            <ng-container *ngIf="(currentMessage$ | async) as msg; else loadingMsg">
-                <div class="flex items-center justify-between -mt-3 -ml-4">
+            <div class="flex items-center justify-between -mt-3 -ml-4">
                     <!-- Save of Create ... button -->
                     <button
                             class="pr-4 pl-3.5"
@@ -35,7 +35,7 @@
                             <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
                         </button>
                         <mat-menu #moreMenu="matMenu">
-                            <button
+                            <button *ngIf="msg.status==='INACTIVE'"
                                 mat-menu-item
                                 (click)="deleteMessage(msg)"
                                 >
@@ -65,118 +65,121 @@
                         </button>
                     </div>
                 </div>
-            </ng-container>
 
             <mat-divider class="mt-6 mb-8"></mat-divider>
 
-            <ng-container *ngIf="(currentMessage$ | async) as msg">
-                <!-- Title -->
-                <div>
+            <!-- Title -->
+            <div >
                     <input
+                        [disabled]="msg.status==='INACTIVE'"
                         class="w-full p-2 text-2xl"
                         [placeholder]="'Title'"
                         maxlength="120"
                         [(ngModel)]="msg.name"
                         (input)="onUpdateMessageDetails(msg)">
-                </div>
-                <!-- Message -->
-                <div>
-                <textarea
-                    matInput
-                    #message
-                    class="w-full my-2.5 p-2"
-                    fuseAutogrow
-                    matTextareaAutosize
-                    [maxlength]="160"
-                    [spellcheck]="false"
-                    [placeholder]="'Message (160) Characters long'"
-                    [(ngModel)]="msg.message"
-                    (input)="onUpdateMessageDetails(msg)"></textarea>
-                    <mat-hint align="end">Don't disclose personal info {{message.value.length}} / 160</mat-hint>
-                </div>
-                <!-- Labels -->
-                <div class="mt-8" *ngIf="labels.length>0 && msg.id; else loading">
-                    <div class="font-medium mb-1.5">Groups</div>
-                    <div class="flex flex-wrap items-center -m-1.5">
-                        <!-- Labels -->
-                        <ng-container *ngIf="listOfLabelsUsed.length>0 && labels.length>0">
-                            <ng-container *ngFor="let group of (listOfLabelsUsed | fuseFindByKey:'id':labels); trackBy: trackByFn">
-                                <div class="flex items-center justify-center px-4 m-1.5 rounded-full leading-9 text-gray-500 bg-gray-100 dark:text-gray-300 dark:bg-gray-700">
-                                    <span class="text-md font-medium whitespace-nowrap">{{group.name}}</span>
-                                </div>
-                            </ng-container>
+            </div>
+            <!-- Message -->
+            <div >
+                <mat-form-field class="fuse-mat-textarea fuse-mat-no-subscript w-full">
+                    <textarea
+                        [disabled]="msg.status==='INACTIVE'"
+                        matInput
+                        #message
+                        class="w-full my-2.5 p-2"
+                        fuseAutogrow
+                        matTextareaAutosize
+                        [maxlength]="160"
+                        [spellcheck]="false"
+                        [placeholder]="'Message (160) Characters long'"
+                        [(ngModel)]="msg.message"
+                        (input)="onUpdateMessageDetails(msg)"></textarea>
+
+                </mat-form-field>
+                <mat-hint align="end">Don't disclose personal info {{message.value.length}} / 160</mat-hint>
+            </div>
+            <!-- Labels -->
+            <div class="mt-8" *ngIf="labels.length>0 && msg.id; else loading">
+                <div class="font-medium mb-1.5">Groups</div>
+                <div class="flex flex-wrap items-center -m-1.5">
+                    <!-- Labels -->
+                    <ng-container *ngIf="listOfLabelsUsed.length>0 && labels.length>0">
+                        <ng-container *ngFor="let group of (listOfLabelsUsed | fuseFindByKey:'id':labels); trackBy: trackByFn">
+                            <div class="flex items-center justify-center px-4 m-1.5 rounded-full leading-9 text-gray-500 bg-gray-100 dark:text-gray-300 dark:bg-gray-700">
+                                <span class="text-md font-medium whitespace-nowrap">{{group.name}}</span>
+                            </div>
                         </ng-container>
-                        <div *ngIf="(labels$ | async) as grupos"
-                            class="flex items-center justify-center px-4 m-1.5 rounded-full leading-9 cursor-pointer text-gray-500 bg-gray-100 dark:text-gray-300 dark:bg-gray-700"
-                            (click)="openLabelsPanel()"
-                            #labelsPanelOrigin>
+                    </ng-container>
+                    <div *ngIf="(labels$ | async) as grupos"
+                        class="flex items-center justify-center px-4 m-1.5 rounded-full leading-9 cursor-pointer text-gray-500 bg-gray-100 dark:text-gray-300 dark:bg-gray-700"
+                        (click)="openLabelsPanel()"
+                        #labelsPanelOrigin>
 
-                            <ng-container *ngIf="listOfLabelsUsed.length>0">
-                                <mat-icon
-                                    class="icon-size-5"
-                                    [svgIcon]="'heroicons_solid:pencil-alt'"></mat-icon>
-                                <span class="ml-1.5 text-md font-medium whitespace-nowrap">Edit</span>
-                            </ng-container>
+                        <ng-container *ngIf="listOfLabelsUsed.length>0 && msg.status==='ACTIVE'">
+                            <mat-icon
+                                class="icon-size-5"
+                                [svgIcon]="'heroicons_solid:pencil-alt'"></mat-icon>
+                            <span class="ml-1.5 text-md font-medium whitespace-nowrap">Edit</span>
+                        </ng-container>
 
-                            <ng-container *ngIf="listOfLabelsUsed.length===0">
-                                <mat-icon
-                                    class="icon-size-5"
-                                    [svgIcon]="'heroicons_solid:plus-circle'"></mat-icon>
-                                <span class="ml-1.5 text-md font-medium whitespace-nowrap">Add</span>
-                            </ng-container>
+                        <ng-container *ngIf="listOfLabelsUsed.length===0 && msg.status==='ACTIVE'">
+                            <mat-icon
+                                class="icon-size-5"
+                                [svgIcon]="'heroicons_solid:plus-circle'"></mat-icon>
+                            <span class="ml-1.5 text-md font-medium whitespace-nowrap">Add</span>
+                        </ng-container>
 
-                            <ng-template #labelsPanel>
-                                <div class="w-60 rounded border shadow-md bg-card">
-                                    <!-- Tags panel header -->
-                                    <div class="flex items-center m-3 mr-2">
-                                        <div class="flex items-center">
-                                            <mat-icon
-                                                class="icon-size-5"
-                                                [svgIcon]="'heroicons_solid:search'"></mat-icon>
-                                            <div class="ml-2">
-                                                <input
-                                                    class="w-full min-w-0 py-1 border-0"
-                                                    type="text"
-                                                    placeholder="Enter Group Name"
-                                                    (input)="filterTags($event)"
-                                                    (keydown)="filterTagsInputKeyDown($event)"
-                                                    [maxLength]="30"
-                                                    #newTagInput>
-                                            </div>
+                        <ng-template #labelsPanel>
+                            <div class="w-60 rounded border shadow-md bg-card">
+                                <!-- Tags panel header -->
+                                <div class="flex items-center m-3 mr-2">
+                                    <div class="flex items-center">
+                                        <mat-icon
+                                            class="icon-size-5"
+                                            [svgIcon]="'heroicons_solid:search'"></mat-icon>
+                                        <div class="ml-2">
+                                            <input
+                                                class="w-full min-w-0 py-1 border-0"
+                                                type="text"
+                                                placeholder="Enter Group Name"
+                                                (input)="filterTags($event)"
+                                                (keydown)="filterTagsInputKeyDown($event)"
+                                                [maxLength]="30"
+                                                #newTagInput>
                                         </div>
                                     </div>
-                                    <div
-                                        class="flex flex-col max-h-64 py-2 border-t overflow-y-auto">
-                                        <!-- Labels -->
-                                        <ng-container *ngFor="let item of filteredLabels; trackBy: trackByFn">
-                                            <div
-                                                class="flex items-center h-10 min-h-10 px-4 cursor-pointer hover:bg-hover"
-                                                (click)="toggleLabelOnMessage(msg, item)"
-                                                matRipple>
-                                                <mat-checkbox
-                                                    class="flex items-center h-10 min-h-10"
-                                                    [color]="'primary'"
-                                                    [disabled]="listOfLabelsUsed.length===0"
-                                                    [checked]="listOfLabelsUsed.includes(item.id)">
-                                                </mat-checkbox>
-                                                <div class="ml-1">{{item.name}}</div>
-                                            </div>
-                                        </ng-container>
-                                    </div>
                                 </div>
-                            </ng-template>
-                        </div>
+                                <div
+                                    class="flex flex-col max-h-64 py-2 border-t overflow-y-auto">
+                                    <!-- Labels -->
+                                    <ng-container *ngFor="let item of filteredLabels; trackBy: trackByFn">
+                                        <div
+                                            class="flex items-center h-10 min-h-10 px-4 cursor-pointer hover:bg-hover"
+                                            (click)="toggleLabelOnMessage(msg, item)"
+                                            matRipple>
+                                            <mat-checkbox
+                                                class="flex items-center h-10 min-h-10"
+                                                [color]="'primary'"
+                                                [disabled]="listOfLabelsUsed.length===0"
+                                                [checked]="listOfLabelsUsed.includes(item.id)">
+                                            </mat-checkbox>
+                                            <div class="ml-1">{{item.name}}</div>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </ng-template>
                     </div>
                 </div>
-                <!-- Loading template -->
-                <ng-template #loading>
-                    <mat-progress-bar mode="buffer"></mat-progress-bar>
-                </ng-template>
-            </ng-container>
+            </div>
+            <!-- Loading template -->
+            <ng-template #loading>
+                <mat-progress-bar mode="buffer"></mat-progress-bar>
+            </ng-template>
         </div>
-
-    </div>
+    </ng-container>
     <!-- Loading template -->
     <ng-template #loadingMsg>
-        <mat-spinner></mat-spinner>
+        <mat-spinner class="flex flex-auto items-center"></mat-spinner>
     </ng-template>
+</div>
+

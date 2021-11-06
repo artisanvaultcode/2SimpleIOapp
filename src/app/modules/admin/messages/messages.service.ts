@@ -20,11 +20,12 @@ import {
     ListGroupsQuery,
     ListMsgTemplatesQuery,
     ListMsgToGroupsQuery,
-    ModelGroupFilterInput,
+    ModelGroupFilterInput, ModelMsgTemplateConditionInput,
     ModelMsgTemplateFilterInput,
     ModelMsgToGroupFilterInput,
     MsgTemplate,
     MsgToGroup,
+    TemplateUsage,
     UpdateMsgTemplateInput,
     UpdateMsgTemplateMutation,
     UpdateMsgToGroupInput
@@ -599,41 +600,84 @@ export class MsgsService {
      *
      * @param note
      */
-    updateNote(note: MsgTemplate): Promise<UpdateMsgTemplateMutation> {
-        // Clone the note to prevent accidental reference based updates
-        const updatedNote = cloneDeep(note) as any;
-
-        const dateAt = new Date().toISOString();
+    updateMessage(msg: any): Promise<any> {
+        const payload: UpdateMsgTemplateInput = {
+            id: msg.id,
+            name: msg.name,
+            message: msg.message,
+            _version: msg._version,
+        };
         return new Promise((resolve, reject) => {
-            const msginput: UpdateMsgTemplateInput = {
-                id: note.id,
-                name: note.name,
-                message: note.message,
-                status: note.status,
-                default: note.default,
-                _version: note._version,
-            };
-            this.api.UpdateMsgTemplate(msginput)
+            this.api.UpdateMsgTemplate(payload)
                 .then((resp) => {
-                    console.log(resp);
-                    resolve(resp);
+                    return this.getMessages();
+                }).finally(() => {
+                    resolve(true);
                 })
                 .catch(error => console.log(error));
         });
     }
     /**
+     * Message to Default
+     *
+     * @param note
+     */
+    async updateMessageToDefault(msgId: any): Promise<any> {
+        const {sub} = await this._auth.checkClientId();
+        let currentMsg;
+        return new Promise((resolve, reject) => {
+            this.api.GetMsgTemplate(msgId)
+                .then((msgTmp) =>{
+                    currentMsg = msgTmp;
+                    const filter: ModelMsgTemplateFilterInput = {
+                        clientId: { eq: sub },
+                        default: { eq: TemplateUsage.DEFAULT}
+                    };
+                    return this.api.ListMsgTemplates(filter);
+                }).then((result) => {
+                    const notDeleted = result.items.filter(
+                        item => item._deleted !== true
+                    );
+                    const pAll = [];
+                    notDeleted.forEach((item) => {
+                        const payloadUpdate: UpdateMsgTemplateInput = {
+                            id: item.id,
+                            _version: item._version,
+                            default: TemplateUsage.NONE
+                        };
+                        pAll.push(this.api.UpdateMsgTemplate(payloadUpdate));
+                    });
+                    const payloadUpdateDefault: UpdateMsgTemplateInput = {
+                        id: currentMsg.id,
+                        _version: currentMsg._version,
+                        default: TemplateUsage.DEFAULT
+                    };
+                    pAll.push(this.api.UpdateMsgTemplate(payloadUpdateDefault));
+                    return Promise.all(pAll);
+                }).then((result) => {
+                    return this.getMessages();
+                }).finally(() => {
+                    resolve(true);
+                }).catch((error: any) => {
+                    this.catchError(error);
+                    reject(error.message);
+                });
+            });
+    }
+
+    /**
      * Archive The Message
      *
      * @param note
      */
-    archiveMessage(msgId: any): Promise<any> {
+    archiveMessage(msgId: any, status: EntityStatus): Promise<any> {
         return new Promise((resolve, reject) => {
             this.api.GetMsgTemplate(msgId)
                 .then((updateMsg) => {
                     const payload: UpdateMsgTemplateInput = {
                         id: updateMsg.id,
                         _version: updateMsg._version,
-                        status: EntityStatus.INACTIVE
+                        status: status
                     };
                     return this.api.UpdateMsgTemplate(payload);
                 }).then((result) => {
@@ -651,17 +695,22 @@ export class MsgsService {
      *
      * @param note
      */
-    deleteNote(note: MsgTemplate): Promise<any> {
-        const delmsgtempinput: DeleteMsgTemplateInput = {
-            id: note.id,
-            _version: note._version
+    deleteMessage(msg: MessageModel): Promise<any> {
+        const payload: DeleteMsgTemplateInput = {
+            id: msg.id,
+            _version: msg._version
         };
-        return this.api.DeleteMsgTemplate(delmsgtempinput)
-            .then((resp) => {
-                this.getMessages();
-                return resp;
-            })
-            .catch(err => console.log(err));
+        return new Promise((resolve, reject) => {
+            this.api.DeleteMsgTemplate(payload)
+            .then((delMsg) => {
+                return this.getMessages();
+            }).finally(() => {
+                resolve(true);
+            }).catch((error: any) => {
+                this.catchError(error);
+                reject(error.message);
+            });
+        });
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

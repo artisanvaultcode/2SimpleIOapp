@@ -93,6 +93,7 @@ export class ListMessagesComponent implements OnInit, OnDestroy, AfterViewInit
         this.msgtogroups$ = this._messagesService.msgtogroups$;
 
         this.messages$ = this._messagesService.messages$;
+
         // Filter
         this.searchQuery$
             .pipe(

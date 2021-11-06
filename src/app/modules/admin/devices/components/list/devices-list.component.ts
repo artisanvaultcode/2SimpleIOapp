@@ -31,7 +31,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
     action: string = 'update';
     newItem: any;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
-    
+
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _deviceServices: DevicesService,
@@ -81,7 +81,9 @@ export class DevicesListComponent implements OnInit, OnDestroy {
      */
     onUpdateRefreshDataset(newDevice: Device) {
         console.log(this.devices$);
-        this.devices$.subscribe((devs: Device[]) => {
+        this.devices$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((devs: Device[]) => {
             devs.forEach((dev: Device) => {
                 if (dev.id === newDevice.id) {
                     for (const property in dev) {

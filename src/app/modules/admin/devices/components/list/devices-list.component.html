@@ -17,8 +17,11 @@
                     </div>
                     <!-- Main Controls -->
                     <div class="flex control-buttons mt-4 sm:mt-0 md:mt-4">
+                        <div class="tracking-tight mr-4" *ngIf="devicesArray.length>0">
+                            <app-control [devicesAry]="devicesArray" [isAll]="true"></app-control>
+                        </div>
                         <!-- Search -->
-                        <!-- <div class="flex-auto">
+                        <div class="flex-auto">
                            <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded w-full min-w-50">
                                <mat-icon
                                    class="icon-size-5"
@@ -26,11 +29,12 @@
                                    [svgIcon]="'heroicons_solid:search'"></mat-icon>
                                <input
                                    matInput
-                                   [formControl]="searchInputControl"
+
                                    [autocomplete]="'off'"
-                                   [placeholder]="'Search recipient by phone'">
+                                   [placeholder]="'Search ..'">
                            </mat-form-field>
-                        </div> -->
+                        </div>
+                        <!--                                   [formControl]="searchInputControl"-->
                         <!-- Add contact button -->
                         <button
                             class="ml-4"
@@ -40,12 +44,7 @@
                             <mat-icon [svgIcon]="'heroicons_solid:check'"></mat-icon>
                             <span class="ml-2 mr-1">Check</span>
                         </button>
-                        <div>
-                            <div class="font-medium tracking-tight text-secondary mt-0">Select an option:</div>
-                            <div class="text-3xl font-semibold tracking-tight leading-8 mt-0">
-                                <app-control [devicesAry]="devicesArray" [isAll]="true"></app-control>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
                 <!--Content List-->
@@ -67,13 +66,13 @@
                                 <!-- Checkbox column-->
                                 <ng-container matColumnDef="Sent" class="ml-6">
                                     <th mat-header-cell *matHeaderCellDef>
-                                        <input type="checkbox" name="all" value="false" (change)="updateCheck(true, null, $event)"> All 
-                                    </th> 
+                                        <input type="checkbox" name="all" value="false" (change)="updateCheck(true, null, $event)"> All
+                                    </th>
                                     <td *matCellDef="let element">
                                         <div class="ml-4">
-                                            <input type="checkbox" [(name)]="element.uniqueId" (change)="updateCheck(false, element, $event)"> 
+                                            <input type="checkbox" [(name)]="element.uniqueId" (change)="updateCheck(false, element, $event)">
                                         </div>
-                                    </td> 
+                                    </td>
                                 </ng-container>
 
                                 <!-- uniqueId Column -->
@@ -81,13 +80,13 @@
                                   <th mat-header-cell *matHeaderCellDef> Unique ID </th>
                                   <td mat-cell *matCellDef="let element"> {{element.uniqueId}} </td>
                                 </ng-container>
-                              
+
                                 <!-- description Column -->
                                 <ng-container matColumnDef="description">
                                   <th mat-header-cell *matHeaderCellDef> Description </th>
                                   <td mat-cell *matCellDef="let element"> {{element.description}} </td>
                                 </ng-container>
-                              
+
                                 <!-- Phone Column -->
                                 <ng-container matColumnDef="phoneTxt">
                                   <th mat-header-cell *matHeaderCellDef> Phone </th>
@@ -104,33 +103,33 @@
                                 <ng-container matColumnDef="metadata">
                                     <th mat-header-cell *matHeaderCellDef>
                                         Meta Data
-                                    </th> 
+                                    </th>
                                     <td *matCellDef="let element">
                                         <div>
-                                            <button 
-                                                mat-icon-button 
-                                                color="primary" 
+                                            <button
+                                                mat-icon-button
+                                                color="primary"
                                                 (click)="metadataUpdate(element)"
                                                 aria-label="Meta Data update">
                                                 <mat-icon>assignment</mat-icon>
                                             </button>
                                         </div>
-                                    </td> 
+                                    </td>
                                 </ng-container>
 
                                 <!-- Controls column-->
                                 <ng-container matColumnDef="controls">
                                     <th mat-header-cell *matHeaderCellDef>
                                         Controls
-                                    </th> 
+                                    </th>
                                     <td *matCellDef="let element">
                                         <div>
-                                            <app-control  
+                                            <app-control
                                                 [deviceEle]="element"></app-control>
                                         </div>
-                                    </td> 
+                                    </td>
                                 </ng-container>
-                              
+
                                 <tr mat-header-row *matHeaderRowDef="devicesTableColumns"></tr>
                                 <tr mat-row *matRowDef="let row; columns: devicesTableColumns;"></tr>
                             </table>
@@ -139,7 +138,7 @@
                     </ng-container>
                     <!-- No Devices -->
                     <ng-template #noDevices>
-                        <div class="p-8 sm:p-16 border-t text-4xl font-semibold 
+                        <div class="p-8 sm:p-16 border-t text-4xl font-semibold
                                 tracking-tight text-center">
                             There are no Devices!
                         </div>

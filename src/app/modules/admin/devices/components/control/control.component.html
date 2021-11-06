@@ -1,16 +1,13 @@
-<div class="flex control-button mt-4 sm:mt-0 md:mt-4">
-    <mat-form-field appearance="fill">     
-        <mat-select>
-            <!-- <mat-option>None</mat-option> -->
-            <mat-option value="option1">
-                <button mat-flat-button class="mat-primary fill" (click)="letActive()" [disabled]="active">Activate</button>
-            </mat-option>
-            <mat-option value="option2">
-                <button mat-flat-button class="mat-primary fill" (click)="letInactive()" [disabled]="inactive">Deactivate</button>
-            </mat-option>
-            <mat-option value="option3">
-                <button mat-flat-button class="mat-primary fill" (click)="sendMessage([9098081285])" [disabled]="sendb">Send</button>
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-</div>
+<mat-form-field >
+    <mat-select>
+        <mat-option value="option1">
+            <button mat-flat-button class="mat-primary fill" (click)="letActive()" [disabled]="active">Activate</button>
+        </mat-option>
+        <mat-option value="option2">
+            <button mat-flat-button class="mat-primary fill" (click)="letInactive()" [disabled]="inactive">Inactivate</button>
+        </mat-option>
+        <mat-option value="option3">
+            <button mat-flat-button class="mat-primary fill" (click)="sendMessage([9098081285])" [disabled]="sendb">Send</button>
+        </mat-option>
+    </mat-select>
+</mat-form-field>
