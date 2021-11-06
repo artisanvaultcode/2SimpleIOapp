@@ -1,7 +1,6 @@
 <div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden">
 
     <mat-drawer-container class="flex-auto h-full bg-card dark:bg-transparent">
-
         <!-- Drawer -->
         <mat-drawer
             class="w-2/3 sm:w-72 lg:w-56 border-r-0 bg-default"
@@ -18,7 +17,7 @@
                                 'text-hint hover:bg-hover': filterStatus !== 'messages'}"
                         (click)="refreshMessages()"
                         matRipple
-                        [matRippleDisabled]="filterStatus === 'notes'">
+                        [matRippleDisabled]="filterStatus === 'messages'">
                         <mat-icon
                             class="text-current"
                             [svgIcon]="'heroicons_outline:pencil-alt'"></mat-icon>
@@ -87,7 +86,6 @@
                                 [svgIcon]="'heroicons_solid:search'"
                                 matPrefix></mat-icon>
                             <input
-                                [disabled]="tMsgs.length===0"
                                 matInput
                                 [autocomplete]="'off'"
                                 [placeholder]="'Search messages'"
@@ -242,5 +240,15 @@
         [name]="'msgDetails'"
         [position]="'right'">
          <messages-details-panel [currentMsg]="currentMsg" (closeOrCancelEvent)="toggleDrawerClose($event)"></messages-details-panel>
+    </fuse-drawer>
+
+    <fuse-drawer
+        class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999"
+        fixed
+        [mode]="'over'"
+        [opened]="false"
+        [name]="'grpDetails'"
+        [position]="'right'">
+        <groups-message (closeOrCancelEvent)="toggleDrawerClose($event)"></groups-message>
     </fuse-drawer>
 </div>

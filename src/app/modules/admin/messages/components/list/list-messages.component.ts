@@ -8,10 +8,9 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
-import {distinctUntilChanged, map, takeUntil} from 'rxjs/operators';
+import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
+import {debounceTime, switchMap, takeUntil} from 'rxjs/operators';
 import {FuseMediaWatcherService} from '@fuse/services/media-watcher';
-import {GroupsMessagesComponent} from '../groups/groups-messages.component';
 import {DetailsMessagesComponent} from '../details/details-messages.component';
 import {MsgsService} from '../../messages.service';
 import {AuthService} from 'app/core/auth/auth.service';
@@ -88,61 +87,21 @@ export class ListMessagesComponent implements OnInit, OnDestroy, AfterViewInit
     ngOnInit(): void
     {
 
-        this.getClientId();
-
         // Get labels
         this.labels$ = this._messagesService.labels$;
         // Get Msg to Groups
         this.msgtogroups$ = this._messagesService.msgtogroups$;
-        // Get notes
-        this.messages$ = combineLatest([this._messagesService.messages$, this.filter$, this.searchQuery$]).pipe(
-            distinctUntilChanged(),
-            map(([lMsgs, lFilter, searchQuery]) => {
 
-                if ( !lMsgs || !lMsgs.length )
-                {
-                    return [];
-                }
-
-                // Store the filtered notes
-                let filteredNotes = lMsgs;
-
-                // Filter by query
-                /* if ( searchQuery )
-                {
-                    searchQuery = searchQuery.trim().toLowerCase();
-                    filteredNotes = filteredNotes.filter(note => note.title.toLowerCase().includes(searchQuery) || note.content.toLowerCase().includes(searchQuery));
-                } */
-
-                // Show archive
-                const isArchive = lFilter === 'archived';
-
-                if (isArchive) {
-                    /* filteredNotes = filteredNotes.filter(note => note.archived === isArchive); */
-
-                }
-
-                // Filter by label
-                if ( lFilter.startsWith('label:') ) {
-                    const labelId = lFilter.split(':')[1];
-                    this.msgtogroups$.subscribe((msgtodata) => {
-                        const msgtofiltered = msgtodata.filter(item => item.groupID === labelId);
-                        if (msgtofiltered.length > 0) {
-                            let filteredNotesTmp: MsgTemplate[] = [];
-                            for (const msg2g of msgtofiltered){
-                                const filteredNotesTmp2 = (filteredNotes.filter(note => note.id === msg2g.msgID));
-                                filteredNotesTmp = filteredNotesTmp.concat(filteredNotesTmp2);
-                            }
-                            filteredNotes = filteredNotesTmp;
-                        } else {
-                            filteredNotes = [];
-                        }
-                    });
-                }
-
-                return filteredNotes;
-            })
-        );
+        this.messages$ = this._messagesService.messages$;
+        // Filter
+        this.searchQuery$
+            .pipe(
+                takeUntil(this._unsubscribeAll),
+                debounceTime(150),
+                switchMap(query =>
+                    of(this._messagesService.searchMessages(query))
+                )
+            ).subscribe();
 
         // Subscribe to media changes
         this._fuseMediaWatcherService.onMediaChange$
@@ -220,7 +179,7 @@ export class ListMessagesComponent implements OnInit, OnDestroy, AfterViewInit
         // this._changeDetectorRef.markForCheck();
     }
     /**
-     * Add a new note
+     * Add a new Message
      */
     // eslint-disable-next-line @typescript-eslint/member-ordering
     addNewMessage(): void {
@@ -238,9 +197,10 @@ export class ListMessagesComponent implements OnInit, OnDestroy, AfterViewInit
      * Open the edit labels dialog
      */
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    openEditLabelsDialog(): void
-    {
-        this._matDialog.open(GroupsMessagesComponent, {autoFocus: false});
+    openEditLabelsDialog(): void {
+        this.toggleDrawerOpen('grpDetails');
+
+        //this._matDialog.open(GroupsMessagesComponent, {autoFocus: false});
     }
 
     /**

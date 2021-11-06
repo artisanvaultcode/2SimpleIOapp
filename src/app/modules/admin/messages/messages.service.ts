@@ -2,9 +2,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, Observable, of} from 'rxjs';
-import {tap} from 'rxjs/operators';
 import {cloneDeep} from 'lodash-es';
-import {Label} from './messages.types';
 
 import {AuthService} from 'app/core/auth/auth.service';
 import {
@@ -22,6 +20,7 @@ import {
     ListGroupsQuery,
     ListMsgTemplatesQuery,
     ListMsgToGroupsQuery,
+    ModelGroupFilterInput,
     ModelMsgTemplateFilterInput,
     ModelMsgToGroupFilterInput,
     MsgTemplate,
@@ -135,64 +134,78 @@ export class MsgsService {
         this._clientId.next(sub);
         return Promise.resolve(sub);
     }
-
-
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods Groups
+    // -----------------------------------------------------------------------------------------------------
     /**
-     * Add label
+     * Add group
      *
-     * @param title
+     * @param name
      */
-    async addLabel(title: string): Promise<any> {
+    async addGroup(name: string): Promise<any> {
         const {sub} = await this._auth.checkClientId();
-        const _group: CreateGroupInput = {
-            name: title,
-            carrier: Carriers.PHONE,
-            status: EntityStatus.ACTIVE,
-            clientId: sub
+
+        const filter: ModelGroupFilterInput = {
+            clientId: {eq: sub },
+            status: {eq: EntityStatus.ACTIVE }
         };
-        return this.api.CreateGroup(_group)
-            .then((resp) => {
-                this.getLabels();
-                return resp;
-            })
-            .catch(error => console.log(error));
+        return new Promise((resolve, reject) => {
+            this.api.ListGroups(filter)
+                .then((iFound) => {
+                    if (iFound && iFound.items.length>15) {
+                        return null;
+                    } else {
+                        const _group: CreateGroupInput = {
+                            name: name,
+                            carrier: Carriers.NOTASSIGNED,
+                            status: EntityStatus.ACTIVE,
+                            clientId: sub
+                        };
+                        return this.api.CreateGroup(_group);
+                    }
+                }).then((labels) => {
+                    return this.getLabels();
+                }).finally(()=> {
+                    resolve(true);
+                }).catch((error: any) => {
+                    this.catchError(error);
+                    reject(error.message);
+                });
+        });
     }
-
     /**
-     * Update label
-     *
-     * @param label
-     */
-    updateLabel(label: Label): Observable<Label[]> {
-        return this._httpClient
-            .patch<Label[]>('api/apps/msgs/labels', { label })
-            .pipe(
-                tap((labels) => {
-                    /* // Update the notes
-                    this.getNotes().subscribe();
-
-                    // Update the labels
-                    this._labels.next(labels); */
-                })
-            );
-    }
-
-    /**
-     * Delete a label
+     * Delete a Group
      *
      * @param id
      */
-    deleteLabel(grp: Group): Promise<any> {
-        const delGI: DeleteGroupInput = {
-            id: grp.id,
-            _version: grp._version
+    async deleteGroup(grp: Group): Promise<any> {
+        const {sub} = await this._auth.checkClientId();
+        const filter: ModelMsgToGroupFilterInput = {
+            groupID: {eq: grp.id},
+            clientId: {eq: sub },
+            status: {eq: EntityStatus.ACTIVE }
         };
-        return this.api.DeleteGroup(delGI)
-            .then((resp) => {
-                this.getLabels();
-                return resp;
-            })
-            .catch(err => console.log(err));
+        return new Promise((resolve, reject) => {
+            this.api.ListMsgToGroups(filter)
+                .then((iFound) => {
+                    if (iFound && iFound.items.length>0) {
+                        return null;
+                    } else {
+                        const delGI: DeleteGroupInput = {
+                            id: grp.id,
+                            _version: grp._version
+                        };
+                        return this.api.DeleteGroup(delGI);
+                    }
+                }).then((labels) => {
+                    return this.getLabels();
+                }).finally(()=> {
+                    resolve(true);
+                }).catch((error: any) => {
+                    this.catchError(error);
+                    reject(error.message);
+                });
+        });
     }
     /**
      * Method to Attach Group From Message
@@ -345,7 +358,41 @@ export class MsgsService {
                 .catch(error => reject(error));
         });
     }
+    /**
+     * Search All Messages
+     */
+    async searchMessages(searchTxt: string): Promise<any> {
+        if (searchTxt === null || searchTxt.length===0) {
+            this.refreshMessages();
+            return Promise.resolve();
+        }
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        const filter: ModelMsgTemplateFilterInput = {
+            message: { contains: searchTxt },
+            or :[
+                { name: {contains: searchTxt}}
+            ]
 
+        };
+        this.activateProgressBar();
+        return new Promise((resolve, reject) => {
+            this.api.ListMsgTemplates(filter)
+                .then((resp) => {
+                    const notDeleted = resp.items.filter(
+                        item => item._deleted !== true
+                    );
+                    this._messages.next(notDeleted);
+                    this.activateProgressBar('off');
+                    resolve(notDeleted.length);
+                })
+                .catch((error: any) => {
+                    this.catchError(error);
+                    reject(error.message);
+                    this.activateProgressBar('off');
+                });
+
+        });
+    }
     /**
      * Get All Messages
      */
