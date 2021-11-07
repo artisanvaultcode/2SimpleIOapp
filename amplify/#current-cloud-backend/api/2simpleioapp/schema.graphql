@@ -1,0 +1,107 @@
+enum EntityStatus {
+  ACTIVE
+  INACTIVE
+  PROCESS
+  SENT
+  WL
+  BL
+}
+
+enum Carriers {
+  TWILIO
+  PHONE
+  NOTASSIGNED
+}
+
+enum TemplateUsage {
+    DEFAULT
+    NONE
+}
+
+type Group @model @auth(rules: [{allow: public}]) @key(name: "byGroup", fields: ["id"]) {
+  id: ID!
+  name: String
+  carrier: Carriers
+  status: EntityStatus
+  MsgTemplate: MsgTemplate @connection
+  msgTemplateId: ID
+  clientId: String
+}
+
+type Recipient @model @searchable @auth(rules: [{allow: public}]) {
+  id: ID!
+  phone: AWSPhone
+  carrierStatus: String
+  lastProcessDt: AWSDateTime
+  Group: Group @connection
+  groupId: ID
+  phoneTxt: String
+  status: EntityStatus
+  clientId: String
+}
+
+type MsgTemplate @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  message: String
+  status: EntityStatus
+  default: TemplateUsage
+  clientId: String
+}
+
+type MsgToGroup @model @auth(rules: [{allow: public}]) {
+    id: ID!
+    msgID: ID!
+    groupID: ID!
+    clientId: String
+    status: EntityStatus
+}
+
+type Device @model @searchable @auth(rules: [{allow: public}])
+    @key(name: "byDevId", fields: ["uniqueId"]) {
+    id: ID!
+    uniqueId: String
+    description: String
+    metadata: String
+    lastProcessDt: AWSDateTime
+    phoneTxt: String
+    status: EntityStatus
+    clientId: ID
+}
+
+type HisSmsLog @model @auth(rules: [{allow: public}]){
+    id: ID!
+    uniqueId: String
+    clientId: ID!
+    clientIdTxt: String
+    lastProcessDt: AWSDateTime
+    metadata: String
+    carrierStatus: String
+}
+
+enum MontlyLimit {
+    TWOK
+    TENK
+    UNLIMITED
+    TRIAL
+}
+
+enum SubsStatus {
+    ACTIVE
+    INACTIVE
+    SUSPENDED
+}
+
+type Subscriber @model @auth(rules: [{allow: public}])
+    @key(name: "byApiKey", fields: ["apiKey"]) {
+    id: ID!
+    apiKey: String!
+    clientId: ID!
+    limit: MontlyLimit
+    limitMax: String
+    currentCount: String
+    expires: String
+    lastProcessDt: AWSDateTime
+    metadata: String
+    status: SubsStatus
+}
