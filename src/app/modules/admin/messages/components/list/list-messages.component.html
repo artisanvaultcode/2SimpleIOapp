@@ -36,20 +36,6 @@
                             [svgIcon]="'heroicons_outline:archive'"></mat-icon>
                         <div class="ml-3 leading-5 select-none text-default">Archive</div>
                     </div>
-                    <!-- Default -->
-                    <div
-                        class="relative flex items-center py-2 px-4 font-medium rounded-full cursor-pointer"
-                        [ngClass]="{'bg-gray-200 dark:bg-gray-700 text-primary dark:text-primary-400': filterStatus === 'default',
-                                'text-hint hover:bg-hover': filterStatus !== 'default'}"
-                        (click)="filterByDefault()"
-                        matRipple
-                        [matRippleDisabled]="filterStatus === 'default'">
-                        <mat-icon
-                            class="text-current"
-                            [svgIcon]="'heroicons_outline:annotation'"></mat-icon>
-                        <div class="ml-3 leading-5 select-none text-default">Default</div>
-                    </div>
-                    <hr>
                     <!-- Labels -->
                     <ng-container *ngIf="(labels$ | async) as grupos">
                         <ng-container *ngFor="let label of grupos; trackBy: trackByFn">
@@ -69,8 +55,8 @@
                     </ng-container>
                     <!-- Edit Labels -->
                     <div class="relative flex items-center py-2 px-4 font-medium rounded-full cursor-pointer hover:bg-hover"
-                        (click)="openEditLabelsDialog()"
-                        matRipple>
+                         (click)="openEditLabelsDialog()"
+                         matRipple>
                         <mat-icon
                             class="text-hint"
                             [svgIcon]="'heroicons_outline:pencil'"></mat-icon>
