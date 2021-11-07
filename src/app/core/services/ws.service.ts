@@ -52,18 +52,6 @@ export class WebsocketService {
   }
 
   /**
-   *
-   * @returns
-   */
-  chkDevices(){
-    var formData = new FormData();
-    formData.append('topicname', 'sync-sms');
-    formData.append('eventname', 'events');
-    console.log("chkDevices send", this.baseURL+'/chkdevices');
-    return this._http.post(this.baseURL+'/chkdevices', formData, this.httpOptions);
-  }
-
-  /**
    * Set status ACTIVE in all recipients
    * @returns
    */
@@ -80,33 +68,6 @@ export class WebsocketService {
     if (sendbool) formData.append('enable', 'yes');
     else formData.append('enable', 'no');
     return this._http.post(this.baseURL+'/cronmsg', formData, this.httpOptions);
-  }
-
-  sendMsg(itemId: string, phone: string, eventname: string){
-    const clientId = this._userService.user;
-    console.log("Método senMsg - clientId: ", clientId, this._userService.user$);
-    var formData = new FormData();
-    formData.append('eventname', eventname);
-    console.log("send Msg - Datos: ", itemId, phone, eventname)
-    formData.append('phone', phone);
-    formData.append('itemId', itemId);
-    console.log("FormData", formData);
-    console.log(formData.get('phone'))
-    return this._http.post(this.baseURL+'/sendmsg', formData, this.httpOptions);
-  }
-
-  pushMsg() {
-    console.log("pusher service");
-    var formData = new FormData();
-    formData.append('eventname', 'noevent');
-    this._authService.checkClientId()
-      .then(resp => {
-        console.log("Respuesta de Auht", resp['sub']);
-        const clientid = resp['sub']
-        formData.append('clientId', resp);
-        return this._http.post(this.baseURL+'/pusher', formData, this.httpOptions)
-            .subscribe(resp => console.log(resp));
-      });
   }
 
 }

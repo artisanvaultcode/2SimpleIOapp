@@ -27,7 +27,6 @@ import {
     MsgToGroup,
     TemplateUsage,
     UpdateMsgTemplateInput,
-    UpdateMsgTemplateMutation,
     UpdateMsgToGroupInput
 } from '../../../API.service';
 import {Hub, Logger} from 'aws-amplify';

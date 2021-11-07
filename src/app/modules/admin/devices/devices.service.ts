@@ -11,6 +11,7 @@ import {
     SearchableDeviceFilterInput, SearchableDeviceSortableFields, SearchableDeviceSortInput,
     SearchableSortDirection, UpdateDeviceInput
 } from '../../../API.service';
+import {AuthService} from '../../../core/auth/auth.service';
 
 @Injectable({
     providedIn: 'root'
@@ -30,6 +31,7 @@ export class DevicesService
      */
     constructor(
         private api: APIService,
+        private _auth: AuthService,
         private _httpClient: HttpClient
     )
     {
@@ -72,13 +74,17 @@ export class DevicesService
     /**
      * Get devices
      */
-    getDevices(searchTxt?: string, nextToken?: string): Promise<any>
+    async getDevices(searchTxt?: string, nextToken?: string): Promise<any>
     {
+        const {sub} = await this._auth.checkClientId();
         // eslint-disable-next-line @typescript-eslint/no-shadow
-        let filter: ModelDeviceFilterInput;
+        let filter: ModelDeviceFilterInput = {
+            clientId: { eq: sub}
+        };
         if (searchTxt !== undefined && searchTxt) {
             filter = {
-                uniqueId: { contains: searchTxt},
+                clientId: { eq: sub},
+                or: [{ description: {contains: searchTxt} , uniqueId: { contains: searchTxt}}]
             };
         }
         this.nextToken = nextToken ? nextToken : null;
@@ -99,18 +105,18 @@ export class DevicesService
         });
     }
 
-    searchDevices(searchTxt: string): Promise<any> {
+    async searchDevices(searchTxt: string): Promise<any> {
         if (searchTxt.length===0) {
             this.refresh();
             return Promise.resolve();
         }
+        const {sub} = await this._auth.checkClientId();
         // eslint-disable-next-line @typescript-eslint/no-shadow
         const filter: SearchableDeviceFilterInput = {
             uniqueId: { eq: searchTxt },
             or :[
                 { phoneTxt: {match: searchTxt}}
             ]
-
         };
         const sortCriteria: SearchableDeviceSortInput = {
             field: SearchableDeviceSortableFields.uniqueId,

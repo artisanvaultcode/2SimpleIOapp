@@ -1,89 +1,81 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import { WebsocketService } from 'app/core/services/ws.service';
 import { DevicesService } from '../../devices.service';
-import {Device, EntityStatus} from '../../../../../API.service';
+import {Device} from '../../../../../API.service';
+import {ApiDevicesService} from '../../api-devices.service';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-control',
   templateUrl: './control.component.html',
   styleUrls: ['./control.component.scss']
 })
-export class ControlComponent implements OnInit {
+export class ControlComponent implements OnInit, OnChanges, OnDestroy {
 
-  @Input() deviceEle: Device;
-  @Input() devicesAry: Device[];
-  @Input() isAll: boolean = false;
-  active: boolean;
-  inactive: boolean;
-  sendb: boolean;
+    @Input() deviceEle: Device;
+    @Input() devicesAry: Device[];
+    @Input() isAll: boolean = false;
 
-  constructor(
-    private _ws: WebsocketService,
-    private _devServices: DevicesService,
-  ) { }
+    @Output() doSendMessage: EventEmitter<any> = new EventEmitter<any>();
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  ngOnInit(): void {
-    this.setStatusVar();
-    if (this.isAll) {console.log('all controls');}
-  }
+    constructor(
+        private _ws: WebsocketService,
+        private _devServices: DevicesService,
+        private _apiDevicesService: ApiDevicesService
+    ) { }
 
-  setStatusVar() {
-    if (this.isAll) {
-      console.log('ngOnInit undefined');
-      this.active = false;
-      this.inactive = false;
-      this.sendb = false;
-    } else {
-      this.active = (this.deviceEle.status == 'ACTIVE');
-      this.inactive = (this.deviceEle.status == 'INACTIVE');
-      this.sendb = !(this.deviceEle.status == 'ACTIVE');
-    }
-  }
+    ngOnInit(): void {}
 
-  letActive(): void{
-    if (this.isAll) {
-      console.log('Activate deviceArray...', this.devicesAry);
-      if (this.devicesAry.length > 0) {
-        this.devicesAry.forEach((ele) => {
-          this._devServices.updateDevice(ele, EntityStatus.ACTIVE);
-        });
-      }
-    } else {
-      this._devServices.updateDevice(this.deviceEle, EntityStatus.ACTIVE);
-      this.deviceEle.status = EntityStatus.ACTIVE;
-      console.log('Activate...');
-      this.setStatusVar();
-    };
-  }
-
-  letInactive(): void{
-    if (this.isAll) {
-      console.log('Deactivate deviceArray...', this.devicesAry);
-      if (this.devicesAry.length > 0) {
-        this.devicesAry.forEach((ele) => {
-          this._devServices.updateDevice(ele, EntityStatus.INACTIVE);
-        });
-      }
-    } else {
-      this._devServices.updateDevice(this.deviceEle, EntityStatus.INACTIVE);
-      console.log('Deactivate...');
-      this.deviceEle.status = EntityStatus.INACTIVE;
-      this.setStatusVar();
-    };
-  }
-
-  sendMessage(ids: string[]): void{
-    console.log('numero', ids.length);
-    if (ids.length > 0){
-      ids.forEach((phoid) => {
-        console.log('Send to:', phoid, '@Input', this.deviceEle.uniqueId);
-        this._ws.sendMsg('720b7167-494a-4a9f-942c-d7b0269703b8',
-            phoid, '477c9932-6096-4b51-bb60-e309e99c8201')
-            .subscribe((resp) => {
-              console.log('Send Message Response:', resp);
-            });
-      });
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.deviceEle && changes.deviceEle.currentValue) {
+          this.deviceEle = changes.deviceEle.currentValue;
+        }
+        if (changes.devicesAry && changes.devicesAry.currentValue) {
+          this.devicesAry = changes.devicesAry.currentValue;
+        }
+        if (changes.isAll && changes.isAll.currentValue) {
+          this.isAll = changes.isAll.currentValue;
+        }
     }
 
-  }
+    activateDevice(devices: any[], status: string): void {
+        const ids = [];
+        devices.forEach((item) => {
+            ids.push(item.uniqueId);
+        });
+        console.log(this.isAll, devices)
+        if(this.isAll) {
+            this._apiDevicesService.deviceStatus(ids, status)
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((response) => {
+                    console.log(response);
+                });
+        }
+        if(!this.isAll) {
+            this._apiDevicesService.deviceStatus(ids[0], status)
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((response) => {
+                    console.log(response);
+                });
+        }
+    }
+
+    /**
+     * On destroy
+     */
+    ngOnDestroy(): void {
+        // Unsubscribe from all subscriptions
+        this._unsubscribeAll.next();
+        this._unsubscribeAll.complete();
+    }
+
+    testSendMessage(devices: any[]): void {
+        const ids = [];
+        devices.forEach((item) => {
+            ids.push(item.uniqueId);
+        });
+        this.doSendMessage.next(ids);
+    }
 }

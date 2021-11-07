@@ -18,7 +18,7 @@
                     <!-- Main Controls -->
                     <div class="flex control-buttons mt-4 sm:mt-0 md:mt-4">
                         <div class="tracking-tight mr-4" *ngIf="devicesArray.length>0">
-                            <app-control [devicesAry]="devicesArray" [isAll]="true"></app-control>
+                            <app-control [devicesAry]="devicesArray" [isAll]="true" (doSendMessage)="sendSmsMessages($event)"></app-control>
                         </div>
                         <!-- Search -->
                         <div class="flex-auto">
@@ -29,9 +29,10 @@
                                    [svgIcon]="'heroicons_solid:search'"></mat-icon>
                                <input
                                    matInput
-
                                    [autocomplete]="'off'"
-                                   [placeholder]="'Search ..'">
+                                   [placeholder]="'Search messages'"
+                                   (input)="filterByQuery(searchInput.value)"
+                                   #searchInput>
                            </mat-form-field>
                         </div>
                         <!--                                   [formControl]="searchInputControl"-->
@@ -40,24 +41,23 @@
                             class="ml-4"
                             mat-flat-button
                             [color]="'primary'"
-                            (click)="checkDevices($event)">
+                            (click)="checkDeviceStatus($event)">
                             <mat-icon [svgIcon]="'heroicons_solid:check'"></mat-icon>
                             <span class="ml-2 mr-1">Check</span>
                         </button>
 
+                        <!-- Add contact button -->
+                        <button
+                            class="ml-4"
+                            mat-flat-button
+                            [color]="'secondary'"
+                            (click)="registerDevice()">
+                            <mat-icon [svgIcon]="'heroicons_solid:plus-circle'"></mat-icon>
+                            <span class="ml-2 mr-1">Register</span>
+                        </button>
+
                     </div>
                 </div>
-                <!--Content List-->
-                <!-- <div *ngIf="devices$ | async as items">
-
-                    <div *ngFor="let item of items; let i = index;">
-                        <app-device-row [item]="item" [action]="action" [newItem]="newItem"></app-device-row>
-                    </div>
-                </div>
-
-                <ng-template #noContacts>
-                    <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">There are no Devices!</div>
-                </ng-template> -->
                 <div class="relative">
                     <!-- MAT TABLE Devices -->
                     <ng-container *ngIf="devices$ | async as devices">
@@ -120,12 +120,11 @@
                                 <!-- Controls column-->
                                 <ng-container matColumnDef="controls">
                                     <th mat-header-cell *matHeaderCellDef>
-                                        Controls
+                                        Action
                                     </th>
                                     <td *matCellDef="let element">
                                         <div>
-                                            <app-control
-                                                [deviceEle]="element"></app-control>
+                                            <app-control [deviceEle]="element" [isAll]="false" (doSendMessage)="sendSmsMessages($event)"></app-control>
                                         </div>
                                     </td>
                                 </ng-container>

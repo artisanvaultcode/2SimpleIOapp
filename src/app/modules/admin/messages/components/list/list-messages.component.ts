@@ -54,7 +54,7 @@ export class ListMessagesComponent implements OnInit, OnDestroy, AfterViewInit
         private _fuseDrawerService: FuseDrawerService,
         private _matDialog: MatDialog,
         private _messagesService: MsgsService,
-        private _auth: AuthService,
+        private _auth: AuthService
     ) {
         Hub.listen('processing', (data) => {
             if (data.payload.event === 'progressbar') {
@@ -200,8 +200,6 @@ export class ListMessagesComponent implements OnInit, OnDestroy, AfterViewInit
     // eslint-disable-next-line @typescript-eslint/member-ordering
     openEditLabelsDialog(): void {
         this.toggleDrawerOpen('grpDetails');
-
-        //this._matDialog.open(GroupsMessagesComponent, {autoFocus: false});
     }
 
     /**

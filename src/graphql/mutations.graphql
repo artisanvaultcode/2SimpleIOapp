@@ -347,6 +347,7 @@ mutation CreateDevice(
     lastProcessDt
     phoneTxt
     status
+    clientId
     _version
     _deleted
     _lastChangedAt
@@ -366,6 +367,7 @@ mutation UpdateDevice(
     lastProcessDt
     phoneTxt
     status
+    clientId
     _version
     _deleted
     _lastChangedAt
@@ -385,6 +387,7 @@ mutation DeleteDevice(
     lastProcessDt
     phoneTxt
     status
+    clientId
     _version
     _deleted
     _lastChangedAt
