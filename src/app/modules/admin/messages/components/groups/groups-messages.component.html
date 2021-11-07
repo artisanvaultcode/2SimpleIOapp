@@ -1,9 +1,9 @@
-<div class="flex flex-col flex-auto w-80 min-w-80 p-2 md:p-4">
+<div class="flex flex-col flex-auto w-100 min-w-100 p-2 md:p-4">
     <!-- Header -->
     <div class="flex items-center justify-between">
         <div class="text-2xl font-semibold">Edit Groups</div>
         <button
-            matDialogClose
+            (click)="closePanel($event)"
             mat-icon-button>
             <mat-icon [svgIcon]="'heroicons_outline:x'"></mat-icon>
         </button>
@@ -21,7 +21,7 @@
         <button
             [class.invisible]="newLabelInput.value.trim() === ''"
             mat-icon-button
-            (click)="addLabel(newLabelInput.value); newLabelInput.value = ''"
+            (click)="addGroup(newLabelInput.value); newLabelInput.value = ''"
             matSuffix>
             <mat-icon
                 class="icon-size-5"
@@ -30,25 +30,53 @@
     </mat-form-field>
     <!-- Labels -->
     <div class="flex flex-col mt-4">
-        <ng-container *ngIf="(labels$ | async) as labels">
-            <ng-container *ngFor="let label of labels; trackBy: trackByFn">
-                <mat-form-field class="fuse-mat-dense w-full">
-                    <button
-                        mat-icon-button
-                        matPrefix
-                        (click)="deleteLabel(label)">
-                        <mat-icon
-                            class="icon-size-5"
-                            [svgIcon]="'heroicons_solid:trash'"></mat-icon>
-                    </button>
-                    <input
-                        [autocomplete]="'off'"
-                        [(ngModel)]="label.name"
-                        (input)="updateLabel(label)"
-                        required
-                        matInput>
-                </mat-form-field>
-            </ng-container>
-        </ng-container>
+        <!-- - list -->
+        <div class="flex flex-auto overflow-hidden" >
+            <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
+                <ng-container  *ngIf="(labels$ | async) as labels; else loading">
+                    <div class="grid">
+                        <!-- Header -->
+                        <div
+                            class="group-grid z-10 sticky top-0 grid gap-4 py-4 px-6 md:px-8 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                            matSort
+                            matSortDisableClear>
+                            <div class="hidden md:block "
+                                [mat-sort-header]="'name'">
+                                Group
+                            </div>
+                            <div class="hidden md:block">
+                                Action
+                            </div>
+                        </div>
+                        <!-- Rows -->
+                        <ng-container *ngIf="(labels$ | async) as lrows;">
+                            <ng-container *ngFor="let rGroup of lrows; trackBy: trackByFn">
+                                <div class="group-grid grid items-center gap-4 py-3 px-6 md:px-8 border-b">
+                                    <!-- name -->
+                                    <div class="truncate">
+                                        {{rGroup.name}}
+                                    </div>
+                                    <button
+                                        class="hidden md:flex truncate"
+                                        mat-icon-button
+                                        matPrefix
+                                        (click)="deleteGroup(rGroup)">
+                                        <mat-icon
+                                            class="icon-size-5"
+                                            [svgIcon]="'heroicons_solid:trash'"></mat-icon>
+                                    </button>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+        <!-- Loading template -->
+        <ng-template #loading>
+            <div class="flex flex-auto flex-col items-center justify-center bg-gray-100 dark:bg-transparent">
+                <div class="mt-4 text-2xl font-semibold tracking-tight text-secondary">Loading...</div>
+            </div>
+        </ng-template>
     </div>
 </div>

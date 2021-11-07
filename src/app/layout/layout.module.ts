@@ -46,13 +46,13 @@ const layoutModules = [
     declarations: [
         LayoutComponent
     ],
-    imports     : [
+    imports: [
         MatIconModule,
         MatTooltipModule,
         FuseDrawerModule,
         SharedModule,
         GravatarModule.forRoot(gravatarConfig),
-        ...layoutModules
+        ...layoutModules,
     ],
     exports     : [
         LayoutComponent,

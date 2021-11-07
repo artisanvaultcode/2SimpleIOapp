@@ -416,6 +416,7 @@ query GetDevice($id: ID!) {
     lastProcessDt
     phoneTxt
     status
+    clientId
     _version
     _deleted
     _lastChangedAt
@@ -437,6 +438,7 @@ query ListDevices(
       lastProcessDt
       phoneTxt
       status
+      clientId
       _version
       _deleted
       _lastChangedAt
@@ -469,6 +471,7 @@ query SearchDevices(
       lastProcessDt
       phoneTxt
       status
+      clientId
       _version
       _deleted
       _lastChangedAt
@@ -499,6 +502,7 @@ query SyncDevices(
       lastProcessDt
       phoneTxt
       status
+      clientId
       _version
       _deleted
       _lastChangedAt

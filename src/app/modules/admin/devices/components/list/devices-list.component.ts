@@ -1,12 +1,15 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
 import { DevicesService } from '../../devices.service';
-import { takeUntil } from 'rxjs/operators';
+import {debounceTime, switchMap, takeUntil} from 'rxjs/operators';
 import { APIService, Device } from '../../../../../API.service';
 import { WebsocketService } from 'app/core/services/ws.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MetadatadialogComponent } from '../metadatadialog/metadatadialog.component';
+import {SendMessageDialogComponent} from '../send-message/send-message-dialog.component';
+import {AuthService} from '../../../../../core/auth/auth.service';
+import {ApiDevicesService} from '../../api-devices.service';
+import {DeviceRegistrationDialogComponent} from '../device-registration/device-registration-dialog..component';
 
 @Component({
     selector: 'app-devices-list',
@@ -30,14 +33,19 @@ export class DevicesListComponent implements OnInit, OnDestroy {
     ];
     action: string = 'update';
     newItem: any;
+
+    testMessage: 'Test Message from 2Simple Text';
+    searchQuery$: BehaviorSubject<string> = new BehaviorSubject(null);
     private _unsubscribeAll: Subject<any> = new Subject<any>();
-    
+
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _deviceServices: DevicesService,
+        private _apiDevicesService: ApiDevicesService,
         private api: APIService,
+        private _auth: AuthService,
         private _ws: WebsocketService,
-        private _matDialog: MatDialog,
+        private _matDialog: MatDialog
     ) {}
 
     ngOnInit(): void {
@@ -66,6 +74,16 @@ export class DevicesListComponent implements OnInit, OnDestroy {
             this._changeDetectorRef.detectChanges();
             this.onUpdateRefreshDataset(newDevice);
         });
+
+        // Filter
+        this.searchQuery$
+            .pipe(
+                takeUntil(this._unsubscribeAll),
+                debounceTime(150),
+                switchMap(query =>
+                    of(this._deviceServices.searchDevices(query))
+                )
+            ).subscribe();
     }
 
     ngOnDestroy(): void
@@ -74,14 +92,20 @@ export class DevicesListComponent implements OnInit, OnDestroy {
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
     }
-
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    filterByQuery(query: string): void
+    {
+        this.searchQuery$.next(query);
+    }
     /**
      * Update data in UI
+     *
      * @param newDevice
      */
-    onUpdateRefreshDataset(newDevice: Device) {
-        console.log(this.devices$);
-        this.devices$.subscribe((devs: Device[]) => {
+    onUpdateRefreshDataset(newDevice: Device): void {
+        this.devices$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((devs: Device[]) => {
             devs.forEach((dev: Device) => {
                 if (dev.id === newDevice.id) {
                     for (const property in dev) {
@@ -92,17 +116,41 @@ export class DevicesListComponent implements OnInit, OnDestroy {
         });
     }
 
+
+    async sendSmsMessages(sendDevices: any[]): Promise<void> {
+        const {sub} = await this._auth.checkClientId();
+        const dialogRef = this._matDialog.open(SendMessageDialogComponent, {
+            data: {
+                sendDevices: sendDevices
+            }
+        });
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result) {
+                this._apiDevicesService.sendMessages(sendDevices, result.phoneNumber, sub, this.testMessage)
+                    .pipe(takeUntil(this._unsubscribeAll))
+                    .subscribe((data) => {
+                        console.log(data);
+                    });
+            }
+            console.log('The dialog was closed', result);
+
+        });
+        return Promise.resolve();
+    }
     /**
      * Send message to pusher server
      * Cheking Status sender devices
+     *
      * @param event
      */
-    checkDevices(event: Event) {
-        console.log('Devices Verify Message Send');
-        // this.channel.trigger('client-events', {message: 'Hello, check devices!'})
-        this._ws.chkDevices().subscribe((resp) => {
-            console.log(resp);
-        });
+    async checkDeviceStatus(event: Event): Promise<void>  {
+        const {sub} = await this._auth.checkClientId();
+        this._apiDevicesService.deviceStatusCheck(sub)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((data) => {
+                console.log(data);
+            });
+        return Promise.resolve();
     }
 
     /**
@@ -112,7 +160,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
      * @param deviceEle
      * @param event
      */
-    updateCheck(allb: boolean, deviceEle?: Device, event?: Event) {
+    updateCheck(allb: boolean, deviceEle?: Device, event?: Event): void {
         if (allb) {
             const checkedSt = event.target['checked'];
             console.log('checked', event.target['checked']);
@@ -123,7 +171,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
                         this.devicesArray.push(dev);
                         const chkt = document.getElementsByName(dev.uniqueId);
                         chkt[0]['checked'] = true;
-                    })
+                    });
                 });
             } else {
               this.devicesArray = [];
@@ -131,33 +179,47 @@ export class DevicesListComponent implements OnInit, OnDestroy {
                     devs.forEach((dev: Device) => {
                         const chkt = document.getElementsByName(dev.uniqueId);
                         chkt[0]['checked'] = false;
-                    })
+                    });
                 });
             }
-            console.log("array", this.devicesArray);
         } else {
             const checkedSt = event.target['checked'];
             if (checkedSt) {
                 const index = this.devicesArray.indexOf(deviceEle);
-                if (index < 0) this.devicesArray.push(deviceEle);
+                if (index < 0) {this.devicesArray.push(deviceEle);}
                 console.log(this.devicesArray);
             } else {
                 const index = this.devicesArray.indexOf(deviceEle);
-                if (index > -1) this.devicesArray.splice(index, 1);
+                if (index > -1) {this.devicesArray.splice(index, 1);}
                 console.log(this.devicesArray);
             }
         }
     }
 
-    metadataUpdate(eledev: Device) {
+    metadataUpdate(eledev: Device): void {
         const dialogRef = this._matDialog.open(MetadatadialogComponent, {
-            data: {
-                devselect: eledev
-            }
+            data: { devselect: eledev}
         });
-        dialogRef.afterClosed().subscribe(result => {
-          console.log('The dialog was closed', result);
+        dialogRef.afterClosed().subscribe((result) => {});
+    }
 
+    async registerDevice(): Promise<void> {
+        const { sub } = await this._auth.checkClientId();
+        const rNumber = `${this.S4()}-${this.S4()}`;
+        const dialogRef = this._matDialog.open(DeviceRegistrationDialogComponent, {
+            data: { randomNumber: rNumber.toUpperCase()}
         });
+        dialogRef.afterClosed().subscribe((result) => {
+            this._apiDevicesService.deviceRegistration(rNumber, sub)
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((data) => {
+                    console.log(data);
+                });
+        });
+        return Promise.resolve();
+    }
+
+    private S4(): string {
+        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     }
 }

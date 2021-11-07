@@ -1,16 +1,60 @@
-<div class="flex control-button mt-4 sm:mt-0 md:mt-4">
-    <mat-form-field appearance="fill">     
-        <mat-select>
-            <!-- <mat-option>None</mat-option> -->
-            <mat-option value="option1">
-                <button mat-flat-button class="mat-primary fill" (click)="letActive()" [disabled]="active">Activate</button>
-            </mat-option>
-            <mat-option value="option2">
-                <button mat-flat-button class="mat-primary fill" (click)="letInactive()" [disabled]="inactive">Deactivate</button>
-            </mat-option>
-            <mat-option value="option3">
-                <button mat-flat-button class="mat-primary fill" (click)="sendMessage([9098081285])" [disabled]="sendb">Send</button>
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
+<div class="flex items-center"  *ngIf="!isAll">
+    <!-- More menu -->
+    <button
+        mat-icon-button
+        [matMenuTriggerFor]="moreMenu">
+        <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+    </button>
+    <mat-menu #moreMenu="matMenu">
+        <button *ngIf="deviceEle.status==='INACTIVE'"
+                mat-menu-item
+                (click)="activateDevice([deviceEle],'ACTIVE')">
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>OnLine</span>
+        </button>
+        <button *ngIf="deviceEle.status==='ACTIVE'"
+                mat-menu-item
+                (click)="activateDevice([deviceEle], 'INACTIVE')"
+        >
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>OffLine</span>
+        </button>
+        <button *ngIf="deviceEle.status==='ACTIVE'"
+                mat-menu-item
+                (click)="testSendMessage([deviceEle])"
+        >
+            <mat-icon [svgIcon]="'heroicons_outline:phone-outgoing'"></mat-icon>
+            <span >Send Test Message</span>
+        </button>
+    </mat-menu>
+</div>
+<div class="flex items-center" *ngIf="isAll">
+    <!-- More menu -->
+    <button
+        mat-icon-button
+        [matMenuTriggerFor]="moreMenu">
+        <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+    </button>
+    <mat-menu #moreMenu="matMenu">
+        <button
+                mat-menu-item
+                (click)="activateDevice(devicesAry,'ACTIVE')">
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>OnLine</span>
+        </button>
+        <button
+                mat-menu-item
+                (click)="activateDevice(devicesAry,'INACTIVE')"
+        >
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>OffLine</span>
+        </button>
+        <button
+                mat-menu-item
+                (click)="testSendMessage(devicesAry)"
+        >
+            <mat-icon [svgIcon]="'heroicons_outline:phone-outgoing'"></mat-icon>
+            <span >Send Test Message</span>
+        </button>
+    </mat-menu>
 </div>

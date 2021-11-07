@@ -5,3 +5,27 @@
 .ng-star-inserted {
     font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif !important;
 }
+
+.selected-row {
+    background-color: #475569;
+}
+
+.non-selected-row {
+    background-color: transparent;
+}
+
+.inventory-grid {
+    grid-template-columns: 80% 20%;
+
+    @screen sm {
+        grid-template-columns: 80% 10%;
+    }
+
+    @screen md {
+        grid-template-columns: 10% 60% 8% 5% 8%;
+    }
+
+    @screen lg {
+        grid-template-columns: 10% 60% 8% 5% 8%;
+    }
+}

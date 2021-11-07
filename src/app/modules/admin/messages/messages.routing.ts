@@ -12,7 +12,7 @@ export const msgsRoutes: Route[] = [
                 path     : '',
                 component: ListMessagesComponent,
                 resolve: {
-                    tasks: MessagesResolver,
+                    msgs: MessagesResolver,
                 }
             }
         ]

@@ -1,25 +1,34 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
-import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
-import { cloneDeep } from 'lodash-es';
-import {Note} from '../../messages.types';
-import {GroupsMessagesComponent} from '../groups/groups-messages.component';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewEncapsulation
+} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
+import {debounceTime, switchMap, takeUntil} from 'rxjs/operators';
+import {FuseMediaWatcherService} from '@fuse/services/media-watcher';
 import {DetailsMessagesComponent} from '../details/details-messages.component';
 import {MsgsService} from '../../messages.service';
-import { AuthService } from 'app/core/auth/auth.service';
-import {EntityStatus, Group, MsgTemplate, MsgToGroup, TemplateUsage} from '../../../../../API.service';
+import {AuthService} from 'app/core/auth/auth.service';
+import {EntityStatus, Group, MsgTemplate, MsgToGroup} from '../../../../../API.service';
+import {MessageModel} from '../../models/MessageModel';
+import {Hub} from 'aws-amplify';
+import {FuseDrawerService} from '../../../../../../@fuse/components/drawer';
 
 @Component({
     selector       : 'messages-list',
     templateUrl    : './list-messages.component.html',
-    styleUrls: ['list-messages.component.scss'],
+    styleUrls      : ['list-messages.component.scss'],
     encapsulation  : ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ListMessagesComponent implements OnInit, OnDestroy
+export class ListMessagesComponent implements OnInit, OnDestroy, AfterViewInit
 {
+    isLoading: boolean;
     labels$: Observable<Group[]>;
     messages$: Observable<MsgTemplate[]>;
     msgtogroups$: Observable<MsgToGroup[]>;
@@ -29,8 +38,10 @@ export class ListMessagesComponent implements OnInit, OnDestroy
     filter$: BehaviorSubject<string> = new BehaviorSubject('messages');
     searchQuery$: BehaviorSubject<string> = new BehaviorSubject(null);
     masonryColumns: number = 4;
+    selectedMessage: MessageModel;
 
     clientid: string;
+    currentMsg: MessageModel;
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -40,10 +51,19 @@ export class ListMessagesComponent implements OnInit, OnDestroy
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
+        private _fuseDrawerService: FuseDrawerService,
         private _matDialog: MatDialog,
         private _messagesService: MsgsService,
-        private _auth: AuthService,
-    ) {}
+        private _auth: AuthService
+    ) {
+        Hub.listen('processing', (data) => {
+            if (data.payload.event === 'progressbar') {
+                this.isLoading = data.payload.data.activate === 'on';
+                this._changeDetectorRef.markForCheck();
+            }
+        });
+
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
@@ -66,72 +86,23 @@ export class ListMessagesComponent implements OnInit, OnDestroy
      */
     ngOnInit(): void
     {
-        this.getClientId();
 
         // Get labels
         this.labels$ = this._messagesService.labels$;
         // Get Msg to Groups
         this.msgtogroups$ = this._messagesService.msgtogroups$;
-        // Get notes
-        this.messages$ = combineLatest([this._messagesService.messages$, this.filter$, this.searchQuery$]).pipe(
-            distinctUntilChanged(),
-            map(([notes, filter, searchQuery]) => {
 
-                if ( !notes || !notes.length )
-                {
-                    return;
-                }
+        this.messages$ = this._messagesService.messages$;
 
-                // Store the filtered notes
-                let filteredNotes = notes;
-
-                // Filter by query
-                /* if ( searchQuery )
-                {
-                    searchQuery = searchQuery.trim().toLowerCase();
-                    filteredNotes = filteredNotes.filter(note => note.title.toLowerCase().includes(searchQuery) || note.content.toLowerCase().includes(searchQuery));
-                } */
-
-                // Show all
-                if ( filter === 'notes' )
-                {
-                    // Do nothing
-                }
-
-                // Show archive
-                const isArchive = filter === 'archived';
-                if (isArchive) {
-                    /* filteredNotes = filteredNotes.filter(note => note.archived === isArchive); */
-                    filteredNotes = filteredNotes.filter(note => note.status === EntityStatus.INACTIVE);
-                }
-
-                // Show Defaults
-                const isDefault = filter === 'default';
-                if (isDefault) {
-                    /* filteredNotes = filteredNotes.filter(note => note.archived === isArchive); */
-                    filteredNotes = filteredNotes.filter(note => note.default === TemplateUsage.DEFAULT);
-                }
-
-                // Filter by label
-                if ( filter.startsWith('label:') ) {
-                    const labelId = filter.split(':')[1];
-                    this.msgtogroups$.subscribe(msgtodata => {
-                        const msgtofiltered = msgtodata.filter(item => item.groupID === labelId);
-                        if (msgtofiltered.length > 0) {
-                            let filteredNotesTmp: MsgTemplate[] = [];
-                            for (let msg2g of msgtofiltered){
-                                const filteredNotesTmp2 = (filteredNotes.filter(note => note.id === msg2g.msgID));
-                                filteredNotesTmp = filteredNotesTmp.concat(filteredNotesTmp2);
-                            }
-                            filteredNotes = filteredNotesTmp
-                        } else {
-                            filteredNotes = [];
-                        }
-                    });
-                }
-                return filteredNotes;
-            })
-        );
+        // Filter
+        this.searchQuery$
+            .pipe(
+                takeUntil(this._unsubscribeAll),
+                debounceTime(150),
+                switchMap(query =>
+                    of(this._messagesService.searchMessages(query))
+                )
+            ).subscribe();
 
         // Subscribe to media changes
         this._fuseMediaWatcherService.onMediaChange$
@@ -149,35 +120,20 @@ export class ListMessagesComponent implements OnInit, OnDestroy
                     this.drawerMode = 'over';
                     this.drawerOpened = false;
                 }
-
-                // Set the masonry columns
-                //
-                // This if block structured in a way so that only the
-                // biggest matching alias will be used to set the column
-                // count.
-                if ( matchingAliases.includes('xl') )
-                {
-                    this.masonryColumns = 5;
-                }
-                else if ( matchingAliases.includes('lg') )
-                {
-                    this.masonryColumns = 4;
-                }
-                else if ( matchingAliases.includes('md') )
-                {
-                    this.masonryColumns = 3;
-                }
-                else if ( matchingAliases.includes('sm') )
-                {
-                    this.masonryColumns = 2;
-                }
-                else
-                {
-                    this.masonryColumns = 1;
-                }
-
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
+            });
+    }
+
+    ngAfterViewInit(): void
+    {
+        this._fuseDrawerService.getComponent('msgDetails').openedChanged
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((isOpen) => {
+                if (!isOpen) {
+                    this.currentMsg = new MessageModel();
+                    this._changeDetectorRef.detectChanges();
+                }
             });
     }
 
@@ -191,6 +147,7 @@ export class ListMessagesComponent implements OnInit, OnDestroy
         this._unsubscribeAll.complete();
     }
 
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     private async getClientId(){
         const { sub } = await this._auth.checkClientId();
         this.clientid = sub;
@@ -199,16 +156,40 @@ export class ListMessagesComponent implements OnInit, OnDestroy
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
-
     /**
-     * Add a new note
+     * Toggle the completed status
+     * of the given task
+     *
+     * @param task
      */
-    addNewNote(): void
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    refreshMessages(): void  {
+        this.filter$.next('messages');
+        this._messagesService.refreshMessages();
+    }
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    toggleDefault(msg: MessageModel): void
     {
+        // Toggle the completed status
+        // task.completed = !task.completed;
+        //
+        // this._tasksService.updateTask(task.id, task).subscribe();
+        //
+        // this._changeDetectorRef.markForCheck();
+    }
+    /**
+     * Add a new Message
+     */
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    addNewMessage(): void {
+        const newMsg = this._messagesService.createNewMessage();
         this._matDialog.open(DetailsMessagesComponent, {
             autoFocus: false,
-            data     : {
-                note: {}
+            data : {
+                message: newMsg,
+                action: 'new'
             }
         });
     }
@@ -216,48 +197,39 @@ export class ListMessagesComponent implements OnInit, OnDestroy
     /**
      * Open the edit labels dialog
      */
-    openEditLabelsDialog(): void
-    {
-        this._matDialog.open(GroupsMessagesComponent, {autoFocus: false});
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    openEditLabelsDialog(): void {
+        this.toggleDrawerOpen('grpDetails');
     }
 
     /**
      * Open the note dialog
      */
-    openNoteDialog(note: Note): void {
-        this._matDialog.open(DetailsMessagesComponent, {
-            autoFocus: false,
-            data     : {
-                note: cloneDeep(note)
-            }
-        });
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    openMessageDialog(current: MessageModel): void {
+        this.toggleDrawerOpen('msgDetails');
+        this.currentMsg = current;
+        this._changeDetectorRef.detectChanges();
     }
 
     /**
      * Filter by archived
      */
-    filterByArchived(): void
-    {
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    filterByArchived(): void {
         this.filter$.next('archived');
+        of(this._messagesService.getMessages(EntityStatus.INACTIVE));
     }
-
-    /**
-     * Filter by default
-     */
-     filterByDefault(): void
-     {
-         this.filter$.next('default');
-     }
 
     /**
      * Filter by label
      *
      * @param labelId
      */
-    filterByLabel(labelId: string): void
-    {
-        const filterValue = `label:${labelId}`;
-        this.filter$.next(filterValue);
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    filterByLabel(labelId: string): void {
+        this.filter$.next(labelId);
+        of(this._messagesService.getMessagesByGroupId(EntityStatus.ACTIVE, labelId));
     }
 
     /**
@@ -265,17 +237,10 @@ export class ListMessagesComponent implements OnInit, OnDestroy
      *
      * @param query
      */
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     filterByQuery(query: string): void
     {
         this.searchQuery$.next(query);
-    }
-
-    /**
-     * Reset filter
-     */
-    resetFilter(): void
-    {
-        this.filter$.next('notes');
     }
 
     /**
@@ -284,18 +249,21 @@ export class ListMessagesComponent implements OnInit, OnDestroy
      * @param index
      * @param item
      */
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     trackByFn(index: number, item: any): any
     {
         return item.id || index;
     }
 
-    getGroups(id: string) {
-        let flabt;
-            this.msgtogroups$.subscribe(resp => {
-                flabt = resp.filter(
-                    (f) => id === f.msgID
-                )
-            })
-        return flabt;
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    toggleDrawerOpen(drawerName): void {
+        const drawer = this._fuseDrawerService.getComponent(drawerName);
+        drawer.open();
+    }
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    toggleDrawerClose(drawerName): void {
+        const drawer = this._fuseDrawerService.getComponent(drawerName);
+        drawer.close();
     }
 }

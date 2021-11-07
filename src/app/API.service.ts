@@ -347,6 +347,7 @@ export type CreateDeviceInput = {
   lastProcessDt?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
+  clientId?: string | null;
   _version?: number | null;
 };
 
@@ -357,6 +358,7 @@ export type ModelDeviceConditionInput = {
   lastProcessDt?: ModelStringInput | null;
   phoneTxt?: ModelStringInput | null;
   status?: ModelEntityStatusInput | null;
+  clientId?: ModelIDInput | null;
   and?: Array<ModelDeviceConditionInput | null> | null;
   or?: Array<ModelDeviceConditionInput | null> | null;
   not?: ModelDeviceConditionInput | null;
@@ -371,6 +373,7 @@ export type Device = {
   lastProcessDt?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
+  clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -386,6 +389,7 @@ export type UpdateDeviceInput = {
   lastProcessDt?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
+  clientId?: string | null;
   _version?: number | null;
 };
 
@@ -698,6 +702,7 @@ export type ModelDeviceFilterInput = {
   lastProcessDt?: ModelStringInput | null;
   phoneTxt?: ModelStringInput | null;
   status?: ModelEntityStatusInput | null;
+  clientId?: ModelIDInput | null;
   and?: Array<ModelDeviceFilterInput | null> | null;
   or?: Array<ModelDeviceFilterInput | null> | null;
   not?: ModelDeviceFilterInput | null;
@@ -717,6 +722,7 @@ export type SearchableDeviceFilterInput = {
   metadata?: SearchableStringFilterInput | null;
   lastProcessDt?: SearchableStringFilterInput | null;
   phoneTxt?: SearchableStringFilterInput | null;
+  clientId?: SearchableIDFilterInput | null;
   and?: Array<SearchableDeviceFilterInput | null> | null;
   or?: Array<SearchableDeviceFilterInput | null> | null;
   not?: SearchableDeviceFilterInput | null;
@@ -733,7 +739,8 @@ export enum SearchableDeviceSortableFields {
   description = "description",
   metadata = "metadata",
   lastProcessDt = "lastProcessDt",
-  phoneTxt = "phoneTxt"
+  phoneTxt = "phoneTxt",
+  clientId = "clientId"
 }
 
 export type SearchableDeviceConnection = {
@@ -1104,6 +1111,7 @@ export type CreateDeviceMutation = {
   lastProcessDt?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
+  clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -1120,6 +1128,7 @@ export type UpdateDeviceMutation = {
   lastProcessDt?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
+  clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -1136,6 +1145,7 @@ export type DeleteDeviceMutation = {
   lastProcessDt?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
+  clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -1614,6 +1624,7 @@ export type GetDeviceQuery = {
   lastProcessDt?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
+  clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -1632,6 +1643,7 @@ export type ListDevicesQuery = {
     lastProcessDt?: string | null;
     phoneTxt?: string | null;
     status?: EntityStatus | null;
+    clientId?: string | null;
     _version: number;
     _deleted?: boolean | null;
     _lastChangedAt: number;
@@ -1653,6 +1665,7 @@ export type SearchDevicesQuery = {
     lastProcessDt?: string | null;
     phoneTxt?: string | null;
     status?: EntityStatus | null;
+    clientId?: string | null;
     _version: number;
     _deleted?: boolean | null;
     _lastChangedAt: number;
@@ -1674,6 +1687,7 @@ export type SyncDevicesQuery = {
     lastProcessDt?: string | null;
     phoneTxt?: string | null;
     status?: EntityStatus | null;
+    clientId?: string | null;
     _version: number;
     _deleted?: boolean | null;
     _lastChangedAt: number;
@@ -2127,6 +2141,7 @@ export type OnCreateDeviceSubscription = {
   lastProcessDt?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
+  clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -2143,6 +2158,7 @@ export type OnUpdateDeviceSubscription = {
   lastProcessDt?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
+  clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -2159,6 +2175,7 @@ export type OnDeleteDeviceSubscription = {
   lastProcessDt?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
+  clientId?: string | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -2790,6 +2807,7 @@ export class APIService {
           lastProcessDt
           phoneTxt
           status
+          clientId
           _version
           _deleted
           _lastChangedAt
@@ -2822,6 +2840,7 @@ export class APIService {
           lastProcessDt
           phoneTxt
           status
+          clientId
           _version
           _deleted
           _lastChangedAt
@@ -2854,6 +2873,7 @@ export class APIService {
           lastProcessDt
           phoneTxt
           status
+          clientId
           _version
           _deleted
           _lastChangedAt
@@ -3694,6 +3714,7 @@ export class APIService {
           lastProcessDt
           phoneTxt
           status
+          clientId
           _version
           _deleted
           _lastChangedAt
@@ -3726,6 +3747,7 @@ export class APIService {
             lastProcessDt
             phoneTxt
             status
+            clientId
             _version
             _deleted
             _lastChangedAt
@@ -3770,6 +3792,7 @@ export class APIService {
             lastProcessDt
             phoneTxt
             status
+            clientId
             _version
             _deleted
             _lastChangedAt
@@ -3819,6 +3842,7 @@ export class APIService {
             lastProcessDt
             phoneTxt
             status
+            clientId
             _version
             _deleted
             _lastChangedAt
@@ -4527,6 +4551,7 @@ export class APIService {
           lastProcessDt
           phoneTxt
           status
+          clientId
           _version
           _deleted
           _lastChangedAt
@@ -4553,6 +4578,7 @@ export class APIService {
           lastProcessDt
           phoneTxt
           status
+          clientId
           _version
           _deleted
           _lastChangedAt
@@ -4579,6 +4605,7 @@ export class APIService {
           lastProcessDt
           phoneTxt
           status
+          clientId
           _version
           _deleted
           _lastChangedAt

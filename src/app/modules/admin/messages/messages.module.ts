@@ -17,27 +17,46 @@ import {DetailsMessagesComponent} from './components/details/details-messages.co
 import {MessagesComponent} from './messages.component';
 import {ListMessagesComponent} from './components/list/list-messages.component';
 import {GroupsMessagesComponent} from './components/groups/groups-messages.component';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {LabelsMessagesComponent} from './components/labels/labels-messages.component';
+import {DetailsMessagesPanelComponent} from './components/details-panel/details-messages-panel.component';
+import {FuseDrawerModule} from '../../../../@fuse/components/drawer';
+import {MatDividerModule} from '@angular/material/divider';
+import {FuseFindByKeyPipeModule} from '../../../../@fuse/pipes/find-by-key';
+import {DragDropModule} from "@angular/cdk/drag-drop";
+import {MatSortModule} from "@angular/material/sort";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
       MessagesComponent,
       DetailsMessagesComponent,
       ListMessagesComponent,
-      GroupsMessagesComponent  ],
-  imports: [
-      RouterModule.forChild(msgsRoutes),
-      MatButtonModule,
-      MatCheckboxModule,
-      MatDialogModule,
-      MatFormFieldModule,
-      MatIconModule,
-      MatInputModule,
-      MatMenuModule,
-      MatRippleModule,
-      MatSidenavModule,
-      FuseAutogrowModule,
-      FuseMasonryModule,
-      SharedModule
-  ]
+      GroupsMessagesComponent,
+      LabelsMessagesComponent,
+      DetailsMessagesPanelComponent
+  ],
+    imports: [
+        RouterModule.forChild(msgsRoutes),
+        MatButtonModule,
+        MatCheckboxModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatMenuModule,
+        MatRippleModule,
+        MatSidenavModule,
+        FuseAutogrowModule,
+        FuseMasonryModule,
+        SharedModule,
+        MatProgressBarModule,
+        FuseDrawerModule,
+        MatDividerModule,
+        FuseFindByKeyPipeModule,
+        DragDropModule,
+        MatSortModule,
+        MatProgressSpinnerModule,
+    ]
 })
 export class MessagesModule { }

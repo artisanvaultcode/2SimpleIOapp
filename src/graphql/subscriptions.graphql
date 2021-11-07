@@ -308,6 +308,7 @@ subscription OnCreateDevice {
     lastProcessDt
     phoneTxt
     status
+    clientId
     _version
     _deleted
     _lastChangedAt
@@ -324,6 +325,7 @@ subscription OnUpdateDevice {
     lastProcessDt
     phoneTxt
     status
+    clientId
     _version
     _deleted
     _lastChangedAt
@@ -340,6 +342,7 @@ subscription OnDeleteDevice {
     lastProcessDt
     phoneTxt
     status
+    clientId
     _version
     _deleted
     _lastChangedAt

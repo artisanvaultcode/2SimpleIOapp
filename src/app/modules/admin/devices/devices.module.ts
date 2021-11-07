@@ -16,6 +16,9 @@ import { DeviceRowComponent } from './components/device-row/device-row.component
 import { MetadatadialogComponent } from './components/metadatadialog/metadatadialog.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import {MatMenuModule} from '@angular/material/menu';
+import {SendMessageDialogComponent} from './components/send-message/send-message-dialog.component';
+import {DeviceRegistrationDialogComponent} from './components/device-registration/device-registration-dialog..component';
 
 
 @NgModule({
@@ -25,18 +28,21 @@ import { MatInputModule } from '@angular/material/input';
     ControlComponent,
     DevicesListComponent,
     DeviceRowComponent,
-    MetadatadialogComponent
+    MetadatadialogComponent,
+    SendMessageDialogComponent,
+    DeviceRegistrationDialogComponent
   ],
-  imports: [
-    RouterModule.forChild(devicesRoute),
-    SharedModule,
-    MatTableModule,
-    MatSidenavModule,
-    MatIconModule,
-    MatButtonModule,
-    MatSelectModule,
-    MatFormFieldModule,
-    MatInputModule,
-  ]
+    imports: [
+        RouterModule.forChild(devicesRoute),
+        SharedModule,
+        MatTableModule,
+        MatSidenavModule,
+        MatIconModule,
+        MatButtonModule,
+        MatSelectModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatMenuModule,
+    ]
 })
 export class DevicesModule { }
