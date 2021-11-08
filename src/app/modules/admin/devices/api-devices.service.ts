@@ -45,6 +45,7 @@ export class ApiDevicesService
     sendMessages(deviceIds=[], phoneTo: string,  sub: string, txtMsg: string): Observable<any> {
         const payload = {
             topicName : 'sync-sms',
+            event: 'sms',
             phone: phoneTo,
             message: txtMsg,
             deviceIds: deviceIds,
@@ -59,12 +60,12 @@ export class ApiDevicesService
                 catchError(this.catchError)
             );
     }
-
+    // OK/Revisado
     deviceRegistration(tempKey: string, sub: string): Observable<any> {
         const payload = {
             topicName : 'sync-sms',
-            eventName : 'events',
-            event: 'REGISTRATION',
+            event: tempKey,
+            deviceIds: 'REGISTRATION',
             clientId: sub
         };
         const endPoint = `${this.baseURL}/device/add`;
@@ -76,31 +77,17 @@ export class ApiDevicesService
                 catchError(this.catchError)
             );
     }
-
-    deviceStatus(deviceIds=[], status: string): Observable<any> {
+    // OK/Revisado
+    // Status: ACTIVE/INACTIVE/INFO/TOTALS/KINESIS/PING
+    deviceStatus(deviceIds= [], eventCMD: string, sub: string): Observable<any> {
         const payload = {
             topicName : 'sync-sms',
-            eventName : 'events',
-            event: status,
-            deviceIds: deviceIds
-        };
-        const endPoint = `${this.baseURL}/device/status`;
-        const headers = this.httpHeaders;
-        return this._httpClient
-            .post<any>(endPoint, JSON.stringify(payload), { headers })
-            .pipe(
-                retry(1),
-                catchError(this.catchError)
-            );
-    }
-
-    deviceStatusCheck( sub: string): Observable<any> {
-        const payload = {
-            topicName : 'sync-sms',
-            eventName : 'events',
+            event: eventCMD,
+            deviceIds: deviceIds,
+            metaData: {},
             clientId: sub
         };
-        const endPoint = `${this.baseURL}/device/check`;
+        const endPoint = `${this.baseURL}/device/status`;
         const headers = this.httpHeaders;
         return this._httpClient
             .post<any>(endPoint, JSON.stringify(payload), { headers })

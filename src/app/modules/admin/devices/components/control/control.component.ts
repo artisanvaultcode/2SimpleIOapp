@@ -15,6 +15,7 @@ export class ControlComponent implements OnInit, OnChanges, OnDestroy {
 
     @Input() deviceEle: Device;
     @Input() devicesAry: Device[];
+    @Input() clientId: string;
     @Input() isAll: boolean = false;
 
     @Output() doSendMessage: EventEmitter<any> = new EventEmitter<any>();
@@ -38,6 +39,9 @@ export class ControlComponent implements OnInit, OnChanges, OnDestroy {
         if (changes.isAll && changes.isAll.currentValue) {
           this.isAll = changes.isAll.currentValue;
         }
+        if (changes.clientId && changes.clientId.currentValue) {
+            this.clientId = changes.clientId.currentValue;
+        }
     }
 
     activateDevice(devices: any[], status: string): void {
@@ -45,16 +49,16 @@ export class ControlComponent implements OnInit, OnChanges, OnDestroy {
         devices.forEach((item) => {
             ids.push(item.uniqueId);
         });
-        console.log(this.isAll, devices)
-        if(this.isAll) {
-            this._apiDevicesService.deviceStatus(ids, status)
+
+        if(this.isAll && this.clientId) {
+            this._apiDevicesService.deviceStatus(ids, status, this.clientId)
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((response) => {
                     console.log(response);
                 });
         }
-        if(!this.isAll) {
-            this._apiDevicesService.deviceStatus(ids[0], status)
+        if(!this.isAll && this.clientId) {
+            this._apiDevicesService.deviceStatus(ids[0], status, this.clientId)
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((response) => {
                     console.log(response);

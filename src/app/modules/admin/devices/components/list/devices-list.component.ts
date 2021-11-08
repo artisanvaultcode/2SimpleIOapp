@@ -19,6 +19,7 @@ import {DeviceRegistrationDialogComponent} from '../device-registration/device-r
 export class DevicesListComponent implements OnInit, OnDestroy {
     devices$: Observable<any[]>;
     nextPage$: Observable<any[]>;
+    clientId$: Observable<any[]>;
 
     devicesArray: Device[] = [];
     devicesCount: number = 0;
@@ -33,7 +34,6 @@ export class DevicesListComponent implements OnInit, OnDestroy {
     ];
     action: string = 'update';
     newItem: any;
-
     testMessage: 'Test Message from 2Simple Text';
     searchQuery$: BehaviorSubject<string> = new BehaviorSubject(null);
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -48,12 +48,13 @@ export class DevicesListComponent implements OnInit, OnDestroy {
         private _matDialog: MatDialog
     ) {}
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         /**
          * Get Devices
          */
         this.devices$ = this._deviceServices.devices$;
         this.nextPage$ = this._deviceServices.nextPage$;
+        this.clientId$ = this._deviceServices.clientId$;
         this._deviceServices.devices$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((devices: any[]) => {
@@ -86,15 +87,13 @@ export class DevicesListComponent implements OnInit, OnDestroy {
             ).subscribe();
     }
 
-    ngOnDestroy(): void
-    {
+    ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
     }
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    filterByQuery(query: string): void
-    {
+    filterByQuery(query: string): void {
         this.searchQuery$.next(query);
     }
     /**
@@ -115,7 +114,6 @@ export class DevicesListComponent implements OnInit, OnDestroy {
             });
         });
     }
-
 
     async sendSmsMessages(sendDevices: any[]): Promise<void> {
         const {sub} = await this._auth.checkClientId();
@@ -138,19 +136,12 @@ export class DevicesListComponent implements OnInit, OnDestroy {
         return Promise.resolve();
     }
     /**
-     * Send message to pusher server
-     * Cheking Status sender devices
+     * Refresh
      *
      * @param event
      */
-    async checkDeviceStatus(event: Event): Promise<void>  {
-        const {sub} = await this._auth.checkClientId();
-        this._apiDevicesService.deviceStatusCheck(sub)
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((data) => {
-                console.log(data);
-            });
-        return Promise.resolve();
+    refresh($event): void {
+        of(this._deviceServices.refresh());
     }
 
     /**
@@ -220,6 +211,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
     }
 
     private S4(): string {
+        // eslint-disable-next-line no-bitwise
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     }
 }

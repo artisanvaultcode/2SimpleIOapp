@@ -24,6 +24,7 @@ export class DevicesService
     nextToken: string = null;
     private logger = new Logger('Devices List');
     private _device: BehaviorSubject<any | null> = new BehaviorSubject(null);
+    private _clientId: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private _devices: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _pageChange: BehaviorSubject<any | null> = new BehaviorSubject(null);
     /**
@@ -45,6 +46,10 @@ export class DevicesService
     /**
      * Getter for device
      */
+    get clientId$(): Observable<any>
+    {
+        return this._clientId.asObservable();
+    }
 
     get nextPage$(): Observable<any>
     {
@@ -77,6 +82,7 @@ export class DevicesService
     async getDevices(searchTxt?: string, nextToken?: string): Promise<any>
     {
         const {sub} = await this._auth.checkClientId();
+        this._clientId.next(sub);
         // eslint-disable-next-line @typescript-eslint/no-shadow
         let filter: ModelDeviceFilterInput = {
             clientId: { eq: sub}
