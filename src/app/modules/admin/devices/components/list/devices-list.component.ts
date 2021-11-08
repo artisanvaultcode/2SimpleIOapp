@@ -210,6 +210,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
         return Promise.resolve();
     }
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     private S4(): string {
         // eslint-disable-next-line no-bitwise
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
