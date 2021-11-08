@@ -45,7 +45,7 @@ export class ApiDevicesService
     sendMessages(deviceIds=[], phoneTo: string,  sub: string, txtMsg: string): Observable<any> {
         const payload = {
             topicName : 'sync-sms',
-            event: 'sms',
+            event: 'SMS',
             phone: phoneTo,
             message: txtMsg,
             deviceIds: deviceIds,
