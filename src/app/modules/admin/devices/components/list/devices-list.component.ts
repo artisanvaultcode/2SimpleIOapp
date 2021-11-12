@@ -34,7 +34,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
     ];
     action: string = 'update';
     newItem: any;
-    testMessage: 'Test Message from 2Simple Text';
+    testMessage = 'Test Message from 2Simple Text';
     searchQuery$: BehaviorSubject<string> = new BehaviorSubject(null);
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
