@@ -77,8 +77,7 @@ export class ApiDevicesService
                 catchError(this.catchError)
             );
     }
-    // OK/Revisado
-    // Status: ACTIVE/INACTIVE/INFO/TOTALS/KINESIS/PING
+
     deviceStatus(deviceIds= [], eventCMD: string, sub: string): Observable<any> {
         const payload = {
             topicName : 'sync-sms',

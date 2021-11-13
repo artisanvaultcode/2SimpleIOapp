@@ -5,6 +5,7 @@ import { AuthService } from 'app/core/auth/auth.service';
 import { APIService } from 'app/API.service';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { WebsocketService } from 'app/core/services/ws.service';
 
 @Component({
     selector: 'app-smsday-gauge',
@@ -12,23 +13,24 @@ import { takeUntil } from 'rxjs/operators';
     styleUrls: ['./smsday-gauge.component.scss'],
 })
 export class SmsdayGaugeComponent implements OnInit, OnDestroy {
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
+    /* private _unsubscribeAll: Subject<any> = new Subject<any>();
     _chartOption: EChartsOption;
     isDarkMode: boolean = false;
     _theme: string;
     countRow$: Observable<number>;
     rowCount: number = 0;
-    clientid: string;
+    clientid: string; */
 
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _echartService: EchartsService,
         private api: APIService,
-        private auth: AuthService
+        private auth: AuthService,
+        private _ws: WebsocketService
     ) {}
 
     ngOnInit(): void {
-        this.countRow$ = this._echartService.countRow$;
+        /* this.countRow$ = this._echartService.countRow$;
         this.countRow$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((resp) => {
@@ -44,24 +46,28 @@ export class SmsdayGaugeComponent implements OnInit, OnDestroy {
             this._echartService.todaySms(this.clientid).then((rowco: number) => {
                 this.setSeries(rowco);
             });
-        });
+        }); */
 
-        this.api.OnCreateHisSmsLogListener.subscribe((resp) => {
+        /* this.api.OnCreateHisSmsLogListener.subscribe((resp) => {
             this._echartService.todaySms(this.clientid).then((rowc) => {
                 console.log('OnCreateListener...', rowc);
                 this.setSeries(rowc);
             });
-        });
-
+        }); */
+        const cb = data => console.log("Data", data)
+        this._ws.subScribeToChannel('e43c4031-be4d-4c77-8ad9-ca842f5b4dc9_sync-ui', cb)
+        {
+            console.log("ver");
+        }
     }
 
     ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next();
-        this._unsubscribeAll.complete();
+        /* this._unsubscribeAll.next();
+        this._unsubscribeAll.complete(); */
     }
 
-    private setSeries(counts: number) {
+    /* private setSeries(counts: number) {
         this._chartOption = {
             series: [
                 {
@@ -173,5 +179,5 @@ export class SmsdayGaugeComponent implements OnInit, OnDestroy {
                 },
             ],
         };
-    }
+    } */
 }

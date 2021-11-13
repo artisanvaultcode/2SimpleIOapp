@@ -3,7 +3,6 @@ import { environment } from 'environments/environment';
 import Pusher from 'pusher-js';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UserService } from '../user/user.service';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable({
@@ -21,7 +20,6 @@ export class WebsocketService {
   }
   constructor(
     private _http: HttpClient,
-    private _userService: UserService,
     private _authService: AuthService
   ) {
     this.pusher = new Pusher(environment.pusher.key, {
@@ -31,13 +29,11 @@ export class WebsocketService {
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-types
-  subScribeToChannel(events: String[], cb: Function) {
+  subScribeToChannel(event: String, cb: Function) {
     const channel = this.pusher.subscribe('sync-sms');
-    events.forEach( event => {
-      channel.bind(event, function(data) {
-        const { message } = data;
-        cb(message);
-      });
+    channel.bind(event, function(data) {
+      const { message } = data;
+      cb(message);
     });
   }
 
@@ -81,19 +77,6 @@ export class WebsocketService {
     if (sendbool) formData.append('enable', 'yes');
     else formData.append('enable', 'no');
     return this._http.post(this.baseURL+'/cronmsg', formData, this.httpOptions);
-  }
-
-  sendMsg(itemId: string, phone: string, eventname: string){
-    const clientId = this._userService.user;
-    console.log("Método senMsg - clientId: ", clientId, this._userService.user$);
-    var formData = new FormData();
-    formData.append('eventname', eventname);
-    console.log("send Msg - Datos: ", itemId, phone, eventname)
-    formData.append('phone', phone);
-    formData.append('itemId', itemId);
-    console.log("FormData", formData);
-    console.log(formData.get('phone'))
-    return this._http.post(this.baseURL+'/sendmsg', formData, this.httpOptions);
   }
 
   pushMsg() {
