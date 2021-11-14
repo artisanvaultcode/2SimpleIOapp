@@ -60,6 +60,23 @@ export class ApiDevicesService
                 catchError(this.catchError)
             );
     }
+
+    sendAwakeTests(deviceIds=[],  sub: string): Observable<any> {
+        const payload = {
+            topicName : 'sync-sms',
+            event: 'PING',
+            deviceIds: deviceIds,
+            clientId: sub
+        };
+        const endPoint = `${this.baseURL}/device/status`;
+        const headers = this.httpHeaders;
+        return this._httpClient
+            .post<any>(endPoint, JSON.stringify(payload), { headers })
+            .pipe(
+                retry(1),
+                catchError(this.catchError)
+            );
+    }
     // OK/Revisado
     deviceRegistration(tempKey: string, sub: string): Observable<any> {
         const payload = {

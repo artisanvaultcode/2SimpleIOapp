@@ -1,0 +1,68 @@
+<div class="flex flex-auto sm:w-100 sm:min-w-100 z-999">
+<!--    <ng-container *ngIf="(currentMessage$ | async) as msg; else loadingMsg">-->
+    <ng-container >
+        <div class="flex flex-col flex-auto p-6 pt-10 sm:p-8 sm:pt-10 overflow-y-auto">
+            <!-- Header -->
+            <div class="flex items-center justify-between -mt-3 -ml-4">
+                    <!-- Save of Create ... button -->
+                    <mat-label class="text-2xl font-extrabold">
+                        Devices
+                    </mat-label>
+                    <div class="flex items-center"  *ngIf="(devicesId$ | async) as dList">
+                        <!-- More menu -->
+                        <button
+                            mat-icon-button
+                            [matMenuTriggerFor]="moreMenu">
+                            <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+                        </button>
+                        <mat-menu #moreMenu="matMenu" >
+                            <button
+                                mat-menu-item
+                                *ngFor="let item of dList"
+                                (click)="setDevice(item);"
+                                >
+                                <mat-icon [svgIcon]="'heroicons_outline:device-mobile'"></mat-icon>
+                                <span>{{item}}</span>
+                            </button>
+                        </mat-menu>
+                        <!-- Close button -->
+                        <button
+                            mat-icon-button
+                            (click)="closePanel($event)">
+                            <mat-icon [svgIcon]="'heroicons_outline:x'"></mat-icon>
+                        </button>
+                    </div>
+                </div>
+
+            <mat-divider class="mt-6 mb-8"></mat-divider>
+            <mat-card>
+                <mat-card-title *ngIf="currentDeviceId">{{currentDeviceId}}</mat-card-title>
+                <mat-card-title *ngIf="!currentDeviceId">Messages</mat-card-title>
+                <apx-chart
+                    [series]="chartOptions.series"
+                    [chart]="chartOptions.chart"
+                    [plotOptions]="chartOptions.plotOptions"
+                    [labels]="chartOptions.labels"
+                    [fill]="chartOptions.fill"
+                    [stroke]="chartOptions.stroke"
+                ></apx-chart>
+            </mat-card>
+        </div>
+    </ng-container>
+</div>
+
+<div class="flex flex-col flex-auto">
+    <ng-container *ngIf="messages && messages.length >= 0; else loadingMsg">
+        <mat-card *ngFor="let item of messages">
+            <mat-card-subtitle>{{item.subtitle | momentEventAgo }}</mat-card-subtitle>
+            <mat-card-title>{{item.title}}</mat-card-title>
+            <mat-card-content>
+                <p>{{item.content}}</p>
+            </mat-card-content>
+        </mat-card>
+    </ng-container>
+    <!-- Loading template -->
+    <ng-template #loadingMsg>
+        <mat-progress-bar mode="query" ></mat-progress-bar>
+    </ng-template>
+</div>

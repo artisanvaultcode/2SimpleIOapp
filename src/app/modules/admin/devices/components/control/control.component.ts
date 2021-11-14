@@ -19,6 +19,7 @@ export class ControlComponent implements OnInit, OnChanges, OnDestroy {
     @Input() isAll: boolean = false;
 
     @Output() doSendMessage: EventEmitter<any> = new EventEmitter<any>();
+    @Output() doSendAwake: EventEmitter<any> = new EventEmitter<any>();
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     constructor(
@@ -81,5 +82,13 @@ export class ControlComponent implements OnInit, OnChanges, OnDestroy {
             ids.push(item.uniqueId);
         });
         this.doSendMessage.next(ids);
+    }
+
+    testAwake(devices: any[]): void {
+        const ids = [];
+        devices.forEach((item) => {
+            ids.push(item.uniqueId);
+        });
+        this.doSendAwake.next(ids);
     }
 }

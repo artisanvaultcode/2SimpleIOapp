@@ -26,6 +26,13 @@
             <mat-icon [svgIcon]="'heroicons_outline:phone-outgoing'"></mat-icon>
             <span >Send Test Message</span>
         </button>
+        <button
+                mat-menu-item
+                (click)="testAwake([deviceEle])"
+        >
+            <mat-icon >refresh</mat-icon>
+            <span >Sync</span>
+        </button>
     </mat-menu>
 </div>
 <div class="flex items-center" *ngIf="isAll">
@@ -55,6 +62,13 @@
         >
             <mat-icon [svgIcon]="'heroicons_outline:phone-outgoing'"></mat-icon>
             <span >Send Test Message</span>
+        </button>
+        <button
+            mat-menu-item
+            (click)="testAwake(devicesAry)"
+        >
+            <mat-icon >refresh</mat-icon>
+            <span >Sync</span>
         </button>
     </mat-menu>
 </div>
