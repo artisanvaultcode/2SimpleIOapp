@@ -5,7 +5,7 @@ import { environment } from 'environments/environment';
 @Injectable({
     providedIn: 'root',
 })
-export class AthinaService {
+export class AthenaService {
 
     baseURL = environment.backendurl;
     httpOptions = {
@@ -107,6 +107,29 @@ export class AthinaService {
                 WHERE ssp.partition_0 = '${yearstr}' AND (ssp.clientid = ${sub})
                 ORDER BY SUBSTR(ssp.createdat, 1, 10);
                 `;
+        formData.append('query', query);
+        return this._http.post(this.baseURL+'/athenaquery', formData, this.httpOptions);
+    }
+
+    distinctDevicesDate(sub: string, datestr: string){
+        let formData = new FormData();
+        let query = `
+                SELECT DISTINCT ssp.uniqueid
+                FROM "simple2db"."simple2_parquet" AS ssp
+                WHERE SUBSTR(ssp.createdat, 1, 10) = '${datestr}' AND (ssp.clientid = ${sub});
+                `;
+        formData.append('query', query);
+        return this._http.post(this.baseURL+'/athenaquery', formData, this.httpOptions);
+    }
+
+    dateMsgDevices(sub: string, datestr: string) {
+        let formData = new FormData();
+        let query = `
+            SELECT ssp.uniqueid AS devices, count(uniqueid) AS messages
+            FROM "simple2db"."simple2_parquet" AS ssp
+            WHERE SUBSTR(ssp.createdat, 1, 10) = '${datestr}' AND (ssp.clientid = ${sub})
+            GROUP BY uniqueid
+            `;
         formData.append('query', query);
         return this._http.post(this.baseURL+'/athenaquery', formData, this.httpOptions);
     }

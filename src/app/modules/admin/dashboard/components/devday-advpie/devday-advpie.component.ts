@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { APIService } from 'app/API.service';
 import { AuthService } from 'app/core/auth/auth.service';
-import { EchartsService } from '../../echarts.service';
+import { AthenaService } from './../../athena.service';
 
 export interface DevSend {
     uniqueid: string;
@@ -16,48 +15,49 @@ export interface DevSend {
 })
 export class DevdayAdvpieComponent implements OnInit {
     devData: DevSend[];
-    clientid: string;
 
     // options
     gradient: boolean = true;
     showLegend: boolean = true;
     showLabels: boolean = true;
     isDoughnut: boolean = false;
+    animations: boolean = true;
 
-    colorScheme = 'natural';
+    colorScheme = 'cool';
 
-    single2 = [
-      {
-        "name": "Germany",
-        "value": 40632,
-        "extra": {
-          "code": "de"
-        }
-      },
-    ]
+    datos = [];
 
     constructor(
-        private echartService: EchartsService,
         private auth: AuthService,
-        private api: APIService,
+        private _athena: AthenaService
     ) {}
 
     ngOnInit(): void {
         this.auth.checkClientId().then((resp) => {
-            this.clientid = resp['sub'];
-            this.echartService.todayDevSms(this.clientid).then((resp) => {
-                console.log(resp, 'todaySms');
-            });
-        });
+            const {sub} = resp;
+            this._athena.distinctDatesMonth("'"+sub+"'")
+                .subscribe(resp => {
+                    // console.log("[DevAdv-pie] Dates Month Result  \n",resp['result']);
+                    this._athena.dateMsgDevices("'"+sub+"'",
+                                resp['result'][resp['result'].length-1][0])
+                        .subscribe(res => {
+                            let datatmp = [];
+                            res['result'].forEach(ele => {
+                                const element = {
+                                    name: ele[0],
+                                    value: ele[1]
+                                }
+                                datatmp.push(element);
+                            });
+                            this.datos = datatmp;
+                            console.log("[DevAdv-pie] DEVICES Last date  \n",this.datos);
+                        })
+                });
 
-        this.api.OnCreateHisSmsLogListener.subscribe((resp) => {
-            this.echartService.todayDevSms(this.clientid).then((resp) => {
-                console.log('OnCreateListener...', resp);
-            });
         });
     }
 
     get single() {
-        return this.echartService.devDataSent;
+        return this.datos;
     }
 }
