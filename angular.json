@@ -51,7 +51,8 @@
                             "@aws-sdk/client-s3/dist/es/protocols/Aws_restXml.js",
                             "amazon-cognito-identity-js/es/AuthenticationHelper.js",
                             "@aws-sdk/eventstream-marshaller/dist/es/EventStreamMarshaller.js",
-                            "camelcase-keys"
+                            "camelcase-keys",
+                            "clone-deep"
                         ],
                         "assets": [
                             "src/favicon-16x16.png",
