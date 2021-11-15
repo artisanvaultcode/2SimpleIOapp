@@ -1,0 +1,52 @@
+<div class="flex items-center">
+    <!-- More menu -->
+    <button
+        mat-icon-button
+        [matMenuTriggerFor]="moreMenu">
+        <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+    </button>
+    <mat-menu #moreMenu="matMenu">
+        <button *ngIf="recipientEle.status!=='WL'"
+                mat-menu-item
+                (click)="setWBList(recipientEle,'WL')">
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>White List</span>
+        </button>
+        <button *ngIf="recipientEle.status!=='BL'"
+                mat-menu-item
+                (click)="setWBList(recipientEle, 'BL')"
+        >
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>Black List</span>
+        </button>
+    </mat-menu>
+</div>
+<!-- <div class="flex items-center" *ngIf="isAll">
+    <button
+        mat-icon-button
+        [matMenuTriggerFor]="moreMenu">
+        <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+    </button>
+    <mat-menu #moreMenu="matMenu">
+        <button
+                mat-menu-item
+                (click)="activateDevice(devicesAry,'ACTIVE')">
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>OnLine</span>
+        </button>
+        <button
+                mat-menu-item
+                (click)="activateDevice(devicesAry,'INACTIVE')"
+        >
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>OffLine</span>
+        </button>
+        <button
+                mat-menu-item
+                (click)="testSendMessage(devicesAry)"
+        >
+            <mat-icon [svgIcon]="'heroicons_outline:phone-outgoing'"></mat-icon>
+            <span >Send Test Message</span>
+        </button>
+    </mat-menu>
+</div> -->

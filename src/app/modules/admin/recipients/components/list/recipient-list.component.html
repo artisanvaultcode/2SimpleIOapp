@@ -82,17 +82,22 @@
                             <ng-container *ngFor="let contact of recipients; let i = index; trackBy: trackByFn">
 
                                 <!-- Contact -->
-                                <a
-                                    class="z-20 flex items-center px-6 py-4 md:px-8 cursor-pointer border-b"
-                                    [ngClass]="{'hover:bg-gray-100 dark:hover:bg-hover': !selectedContact || selectedContact.id !== contact.id,
-                                                'bg-primary-50 dark:bg-hover': selectedContact && selectedContact.id === contact.id} "
-                                                [routerLink]="['./', contact.id]"
-                                    >
-                                    <div class="min-w-0 ml-4">
-                                        <div class="font-medium leading-5 truncate">{{contact.phone}}</div>
-                                         <div class="leading-5 truncate text-secondary">{{contact?.Group?.name}}</div>
+                                <div class="flex flex-row mb-2">
+                                    <a
+                                        class="recipients z-20 px-6 py-4 md:px-8 cursor-pointer border-b"
+                                        [ngClass]="{'hover:bg-gray-100 dark:hover:bg-hover': !selectedContact || selectedContact.id !== contact.id,
+                                                    'bg-primary-50 dark:bg-hover': selectedContact && selectedContact.id === contact.id} "
+                                                    [routerLink]="['./', contact.id]"
+                                        >
+                                        <div class="min-w-0 ml-4">
+                                            <div class="font-medium leading-5 truncate">{{contact.phone}}</div>
+                                            <div class="leading-5 truncate text-secondary">{{contact?.Group?.name}}</div>
+                                        </div>
+                                    </a> <!-- (click)="activateDevice([deviceEle], 'INACTIVE')" -->
+                                    <div class="control z-20 px-6 py-1 md:px-8 border-b">
+                                        <app-recipcontrol [recipientEle]="contact"></app-recipcontrol>
                                     </div>
-                                </a>
+                                </div>
                             </ng-container>
                         </ng-container>
 

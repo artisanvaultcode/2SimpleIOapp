@@ -1,6 +1,6 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { AuthService } from 'app/core/auth/auth.service';
-import { AthinaService } from './../../athina.service';
+import { AthenaService } from '../../athena.service';
 import { curveBumpX } from 'd3-shape'
 import { forkJoin } from 'rxjs';
 
@@ -33,7 +33,7 @@ export class SmsOverviewComponent implements OnInit {
     datosM = [];
     constructor(
         private auth: AuthService,
-        private _athina: AthinaService,
+        private _athena: AthenaService,
     ) {}
 
     ngOnInit(): void {
@@ -54,32 +54,32 @@ export class SmsOverviewComponent implements OnInit {
 
     getDataYear(clientid: string, yearstr: string){
         forkJoin({
-            devices: this._athina.distinctDevices(clientid, yearstr),
-            datesstr: this._athina.distinctDates(clientid, yearstr)
+            devices: this._athena.distinctDevices(clientid, yearstr),
+            datesstr: this._athena.distinctDates(clientid, yearstr)
         }).subscribe(({devices, datesstr}) => {
             const devs = devices['result'];
             const datstr = datesstr['result'];
             this.datosY = this.objBase(devs, datstr);
-                this._athina.yearmsgdevices(clientid, yearstr)
-                    .subscribe(res => {
-                        res['result'].forEach(elem => {
-                           let serie = this.datosY.find( x => x.name === elem[1] );
-                           let datval = serie.series.find(x => x.name === elem[0]);
-                           datval.value = elem[2]
-                        });
+            this._athena.yearmsgdevices(clientid, yearstr)
+                .subscribe(res => {
+                    res['result'].forEach(elem => {
+                       let serie = this.datosY.find( x => x.name === elem[1] );
+                       let datval = serie.series.find(x => x.name === elem[0]);
+                       datval.value = elem[2]
                     });
+                });
         });
     }
 
     getDataMonth(clientid: string){
         forkJoin({
-            devices: this._athina.distinctDevicesMonth(clientid),
-            datesstr: this._athina.distinctDatesMonth(clientid)
+            devices: this._athena.distinctDevicesMonth(clientid),
+            datesstr: this._athena.distinctDatesMonth(clientid)
         }).subscribe(({devices, datesstr}) => {
             const devs = devices['result'];
             const datstr = datesstr['result'];
             this.datosM = this.objBase(devs, datstr);
-                this._athina.monthmsgdevices(clientid)
+                this._athena.monthmsgdevices(clientid)
                     .subscribe(res => {
                         res['result'].forEach(elem => {
                            let serie = this.datosM.find( x => x.name === elem[1] );

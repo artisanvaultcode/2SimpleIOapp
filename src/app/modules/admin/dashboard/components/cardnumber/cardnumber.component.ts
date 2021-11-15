@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AthinaService } from '../../athina.service';
+import { AthenaService } from '../../athena.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import * as shape from 'd3-shape';
 
@@ -27,9 +27,12 @@ export class CardnumberComponent implements OnInit {
 
     datos = [];
     dato: any;
+    unidad: string;
+
+    client: any;
 
     constructor(
-        private athinaService: AthinaService,
+        private athenaService: AthenaService,
         private _auth: AuthService
     ) {}
 
@@ -37,7 +40,7 @@ export class CardnumberComponent implements OnInit {
         this._auth.checkClientId()
             .then(resp => {
                 const {sub} = resp;
-                this.athinaService.athenamonthmsg(sub)
+                this.athenaService.athenamonthmsg(sub)
                     .subscribe((res) => {
                         this.convertJson(res['result']);
                         this.lastday(res['result']);
@@ -61,7 +64,12 @@ export class CardnumberComponent implements OnInit {
             this.dato = result[result.length-1];
             st = this.dato[0];
             let nt = this.dato[1];
-            nt = (nt / 1000).toFixed(2);
+            if (nt > 1000){
+                nt = (nt / 1000).toFixed(2);
+                this.unidad = 'k'
+            } else {
+                this.unidad = ''
+            }
             this.dato[1] = nt;
         } else {
             this.dato = ['', 0];

@@ -20,7 +20,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MsgTemplateDefaultComponent } from './components/msgtemplate-default/msg-template-default.component';
 import {QuillModule} from 'ngx-quill';
 import { SmsOverviewComponent } from './components/sms-overview/sms-overview.component';
-import { SmsdayGaugeComponent } from './components/smsday-gauge/smsday-gauge.component';
 import { NgxEchartsModule } from 'ngx-echarts';
 import * as echarts from 'echarts';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
@@ -33,7 +32,6 @@ import { CardnumberComponent } from './components/cardnumber/cardnumber.componen
         AnalyticsComponent,
         MsgTemplateDefaultComponent,
         SmsOverviewComponent,
-        SmsdayGaugeComponent,
         DevdayAdvpieComponent,
         CardnumberComponent
     ],

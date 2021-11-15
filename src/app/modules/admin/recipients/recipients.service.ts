@@ -272,6 +272,31 @@ export class RecipientsService
     }
 
     /**
+     * Update recipient status
+     * @param recipient
+     * @returns
+     */
+    updateRecipientStatus(recipient: any, wbl: EntityStatus): Promise<any> {
+        const dateAt = new Date().toISOString();
+        return new Promise((resolve, reject) => {
+            const payloadInput: UpdateRecipientInput = {
+                id: recipient.id,
+                lastProcessDt: dateAt,
+                _version: recipient._version,
+                status: wbl,
+            };
+            this.api.UpdateRecipient(payloadInput)
+                .then((result) => {
+                    resolve(result);
+                }).catch( (error) => {
+                    this.catchError(error);
+                    resolve(error);
+            });
+        });
+    }
+
+
+    /**
      * update recipients mutable options
      *
      * @param recipient

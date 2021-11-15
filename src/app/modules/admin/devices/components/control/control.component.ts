@@ -1,6 +1,4 @@
 import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
-import { WebsocketService } from 'app/core/services/ws.service';
-import { DevicesService } from '../../devices.service';
 import {Device} from '../../../../../API.service';
 import {ApiDevicesService} from '../../api-devices.service';
 import {Subject} from 'rxjs';
@@ -23,8 +21,6 @@ export class ControlComponent implements OnInit, OnChanges, OnDestroy {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     constructor(
-        private _ws: WebsocketService,
-        private _devServices: DevicesService,
         private _apiDevicesService: ApiDevicesService
     ) { }
 
@@ -51,15 +47,8 @@ export class ControlComponent implements OnInit, OnChanges, OnDestroy {
             ids.push(item.uniqueId);
         });
 
-        if(this.isAll && this.clientId) {
+        if(this.clientId) {
             this._apiDevicesService.deviceStatus(ids, status, this.clientId)
-                .pipe(takeUntil(this._unsubscribeAll))
-                .subscribe((response) => {
-                    console.log(response);
-                });
-        }
-        if(!this.isAll && this.clientId) {
-            this._apiDevicesService.deviceStatus(ids[0], status, this.clientId)
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((response) => {
                     console.log(response);
