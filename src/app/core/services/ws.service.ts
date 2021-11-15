@@ -18,7 +18,8 @@ export class WebsocketService {
     headers: new HttpHeaders({
         'Access-Control-Allow-Origin': '*'
     })
-  }
+  };
+
   constructor(
     private _http: HttpClient,
     private _userService: UserService,
@@ -30,25 +31,14 @@ export class WebsocketService {
     this.channel = this.pusher.subscribe('sync-sms');
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
+  // eslint-disable-next-line @typescript-eslint/ban-types,@typescript-eslint/explicit-function-return-type
   subScribeToChannel(events: String[], cb: Function) {
-    const channel = this.pusher.subscribe('sync-sms');
-    events.forEach( event => {
-      channel.bind(event, function(data) {
-        const { message } = data;
-        cb(message);
-      });
+    events.forEach( (event) => {
+        this.channel.bind(event, function(data) {
+            const { message } = data;
+            cb(message);
+        });
     });
-  }
-
-  sendCommandToDeviceChannel(command?: string) {
-    const payload = {
-        event: (command ? command : 'deviceInfo')
-    }
-    const sendMsg = this.channel.trigger("client-events", {
-        message: payload
-      })
-    console.log(sendMsg)
   }
 
   /**
@@ -94,20 +84,6 @@ export class WebsocketService {
     console.log("FormData", formData);
     console.log(formData.get('phone'))
     return this._http.post(this.baseURL+'/sendmsg', formData, this.httpOptions);
-  }
-
-  pushMsg() {
-    console.log("pusher service");
-    var formData = new FormData();
-    formData.append('eventname', 'noevent');
-    this._authService.checkClientId()
-      .then(resp => {
-        console.log("Respuesta de Auht", resp['sub']);
-        const clientid = resp['sub']
-        formData.append('clientId', resp);
-        return this._http.post(this.baseURL+'/pusher', formData, this.httpOptions)
-            .subscribe(resp => console.log(resp));
-      });
   }
 
 }

@@ -21,7 +21,7 @@ const routerConfig: ExtraOptions = {
 
 @NgModule({
     declarations: [
-        AppComponent,
+        AppComponent
     ],
     imports: [
         BrowserModule,
@@ -42,11 +42,11 @@ const routerConfig: ExtraOptions = {
         // 3rd party modules that require global configuration via forRoot
         MarkdownModule.forRoot({}),
     ],
-    bootstrap   : [
+    bootstrap: [
         AppComponent
     ],
     providers: [
-        { provide: APPS_MANAGER_OPTIONS, useValue:  defaultAppOptions},
+        {provide: APPS_MANAGER_OPTIONS, useValue: defaultAppOptions},
     ]
 })
 export class AppModule
