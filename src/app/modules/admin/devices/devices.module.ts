@@ -18,6 +18,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { SendMessageDialogComponent } from './components/send-message/send-message-dialog.component';
 import { DeviceRegistrationDialogComponent } from './components/device-registration/device-registration-dialog..component';
 import { FuseDrawerModule } from '../../../../@fuse/components/drawer';
+import {DeviceGaugePanelComponent} from './components/device-gauge-panel/device-gauge-panel.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -33,7 +34,8 @@ import { MomentAgoEventPipe } from '../../../moment-ago-event.pipe';
         MetadatadialogComponent,
         SendMessageDialogComponent,
         DeviceRegistrationDialogComponent,
-        MomentAgoEventPipe,
+        DeviceGaugePanelComponent,
+        MomentAgoEventPipe
     ],
     imports: [
         RouterModule.forChild(devicesRoute),
