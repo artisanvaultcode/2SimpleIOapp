@@ -18,7 +18,12 @@
                     <!-- Main Controls -->
                     <div class="flex control-buttons mt-4 sm:mt-0 md:mt-4">
                         <div class="tracking-tight mr-4" *ngIf="devicesArray.length>0">
-                            <app-control [clientId]="tClientId" [devicesAry]="devicesArray" [isAll]="true" (doSendMessage)="sendSmsMessages($event)"></app-control>
+                            <app-control [clientId]="tClientId"
+                                         [devicesAry]="devicesArray"
+                                         [isAll]="true"
+                                         (doSendMessage)="sendSmsMessages($event)"
+                                         (doSendAwake)="sendAwakeSync($event)"
+                            ></app-control>
                         </div>
                         <!-- Search -->
                         <div class="flex-auto">
@@ -31,11 +36,10 @@
                                    matInput
                                    [autocomplete]="'off'"
                                    [placeholder]="'Search messages'"
-                                   (input)="filterByQuery(searchInput.value)"
+                                   [formControl]="searchInputControl"
                                    #searchInput>
                            </mat-form-field>
                         </div>
-                        <!--                                   [formControl]="searchInputControl"-->
                         <!-- Add contact button -->
                         <button
                             class="ml-4"
@@ -123,7 +127,12 @@
                                     </th>
                                     <td *matCellDef="let element">
                                         <div>
-                                            <app-control [clientId]="tClientId" [deviceEle]="element" [isAll]="false" (doSendMessage)="sendSmsMessages($event)"></app-control>
+                                            <app-control [clientId]="tClientId"
+                                                         [deviceEle]="element"
+                                                         [isAll]="false"
+                                                         (doSendMessage)="sendSmsMessages($event)"
+                                                         (doSendAwake)="sendAwakeSync($event)">
+                                            </app-control>
                                         </div>
                                     </td>
                                 </ng-container>
@@ -148,3 +157,12 @@
         </mat-drawer-content>
     </mat-drawer-container>
 </div>
+<fuse-drawer
+    class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999"
+    fixed
+    [mode]="'over'"
+    [opened]="false"
+    [name]="'device-gauge'"
+    [position]="'over'">
+    <device-gauge-panel [clientId]="clientId" (closeOrCancelEvent)="toggleDrawerClose($event)"></device-gauge-panel>
+</fuse-drawer>

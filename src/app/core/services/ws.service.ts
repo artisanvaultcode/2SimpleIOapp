@@ -3,6 +3,7 @@ import { environment } from 'environments/environment';
 import Pusher from 'pusher-js';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { UserService } from '../user/user.service';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable({
@@ -17,9 +18,11 @@ export class WebsocketService {
     headers: new HttpHeaders({
         'Access-Control-Allow-Origin': '*'
     })
-  }
+  };
+
   constructor(
     private _http: HttpClient,
+    private _userService: UserService,
     private _authService: AuthService
   ) {
     this.pusher = new Pusher(environment.pusher.key, {
@@ -28,23 +31,14 @@ export class WebsocketService {
     this.channel = this.pusher.subscribe('sync-sms');
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  subScribeToChannel(event: String, cb: Function) {
-    const channel = this.pusher.subscribe('sync-sms');
-    channel.bind(event, function(data) {
-      const { message } = data;
-      cb(message);
+  // eslint-disable-next-line @typescript-eslint/ban-types,@typescript-eslint/explicit-function-return-type
+  subScribeToChannel(events: String[], cb: Function) {
+    events.forEach( (event) => {
+        this.channel.bind(event, function(data) {
+            const { message } = data;
+            cb(message);
+        });
     });
-  }
-
-  sendCommandToDeviceChannel(command?: string) {
-    const payload = {
-        event: (command ? command : 'deviceInfo')
-    }
-    const sendMsg = this.channel.trigger("client-events", {
-        message: payload
-      })
-    console.log(sendMsg)
   }
 
   /**
@@ -79,18 +73,17 @@ export class WebsocketService {
     return this._http.post(this.baseURL+'/cronmsg', formData, this.httpOptions);
   }
 
-  pushMsg() {
-    console.log("pusher service");
+  sendMsg(itemId: string, phone: string, eventname: string){
+    const clientId = this._userService.user;
+    console.log("Método senMsg - clientId: ", clientId, this._userService.user$);
     var formData = new FormData();
-    formData.append('eventname', 'noevent');
-    this._authService.checkClientId()
-      .then(resp => {
-        console.log("Respuesta de Auht", resp['sub']);
-        const clientid = resp['sub']
-        formData.append('clientId', resp);
-        return this._http.post(this.baseURL+'/pusher', formData, this.httpOptions)
-            .subscribe(resp => console.log(resp));
-      });
+    formData.append('eventname', eventname);
+    console.log("send Msg - Datos: ", itemId, phone, eventname)
+    formData.append('phone', phone);
+    formData.append('itemId', itemId);
+    console.log("FormData", formData);
+    console.log(formData.get('phone'))
+    return this._http.post(this.baseURL+'/sendmsg', formData, this.httpOptions);
   }
 
 }

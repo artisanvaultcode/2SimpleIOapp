@@ -125,8 +125,7 @@ export class ListMessagesComponent implements OnInit, OnDestroy, AfterViewInit
             });
     }
 
-    ngAfterViewInit(): void
-    {
+    ngAfterViewInit(): void {
         this._fuseDrawerService.getComponent('msgDetails').openedChanged
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((isOpen) => {

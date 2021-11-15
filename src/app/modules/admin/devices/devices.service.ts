@@ -26,6 +26,7 @@ export class DevicesService
     private _device: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private _clientId: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private _devices: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
+    private _deviceIds: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _pageChange: BehaviorSubject<any | null> = new BehaviorSubject(null);
     /**
      * Constructor
@@ -46,6 +47,12 @@ export class DevicesService
     /**
      * Getter for device
      */
+
+    get deviceIds$(): Observable<any>
+    {
+        return this._deviceIds.asObservable();
+    }
+
     get clientId$(): Observable<any>
     {
         return this._clientId.asObservable();
@@ -69,7 +76,9 @@ export class DevicesService
         return this._devices.asObservable();
     }
 
-
+    set setDevices(devices: any[]) {
+        this._deviceIds.next(devices);
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -85,7 +94,7 @@ export class DevicesService
         this._clientId.next(sub);
         // eslint-disable-next-line @typescript-eslint/no-shadow
         let filter: ModelDeviceFilterInput = {
-            clientId: { eq: sub}
+            clientId: { eq: sub }
         };
         if (searchTxt !== undefined && searchTxt) {
             filter = {
@@ -112,18 +121,19 @@ export class DevicesService
     }
 
     async searchDevices(searchTxt: string): Promise<any> {
-        if (searchTxt.length===0) {
-            this.refresh();
-            return Promise.resolve();
-        }
         const {sub} = await this._auth.checkClientId();
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        const filter: SearchableDeviceFilterInput = {
-            uniqueId: { eq: searchTxt },
-            or :[
-                { phoneTxt: {match: searchTxt}}
-            ]
+        let filter: SearchableDeviceFilterInput = {
+            clientId: { eq: sub},
         };
+        if (searchTxt && searchTxt.length>0) {
+            filter = {
+                uniqueId: { eq: searchTxt},
+                clientId: { eq: sub},
+                or: [
+                    { phoneTxt: {wildcard: '*'+searchTxt +'*'}}
+                ]
+            };
+        }
         const sortCriteria: SearchableDeviceSortInput = {
             field: SearchableDeviceSortableFields.uniqueId,
             direction: SearchableSortDirection.asc
@@ -143,8 +153,7 @@ export class DevicesService
         });
     }
 
-    deviceExists(searchTxt?: string): Promise<any>
-    {
+    deviceExists(searchTxt?: string): Promise<any> {
         // eslint-disable-next-line @typescript-eslint/no-shadow
         let filter: ModelDeviceFilterInput;
         if (searchTxt !== undefined && searchTxt) {
@@ -171,8 +180,7 @@ export class DevicesService
     /**
      * Get contact by id
      */
-    getDeviceById(id: string): Observable<any>
-    {
+    getDeviceById(id: string): Observable<any> {
         return this._devices.pipe(
             take(1),
             map((device) => {
