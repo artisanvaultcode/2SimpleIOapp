@@ -40,7 +40,6 @@ export class ListMessagesComponent implements OnInit, OnDestroy, AfterViewInit
     masonryColumns: number = 4;
     selectedMessage: MessageModel;
 
-    clientid: string;
     currentMsg: MessageModel;
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -54,7 +53,6 @@ export class ListMessagesComponent implements OnInit, OnDestroy, AfterViewInit
         private _fuseDrawerService: FuseDrawerService,
         private _matDialog: MatDialog,
         private _messagesService: MsgsService,
-        private _auth: AuthService
     ) {
         Hub.listen('processing', (data) => {
             if (data.payload.event === 'progressbar') {
@@ -146,21 +144,9 @@ export class ListMessagesComponent implements OnInit, OnDestroy, AfterViewInit
         this._unsubscribeAll.complete();
     }
 
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    private async getClientId(){
-        const { sub } = await this._auth.checkClientId();
-        this.clientid = sub;
-    };
-
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
-    /**
-     * Toggle the completed status
-     * of the given task
-     *
-     * @param task
-     */
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
     refreshMessages(): void  {
@@ -168,16 +154,6 @@ export class ListMessagesComponent implements OnInit, OnDestroy, AfterViewInit
         this._messagesService.refreshMessages();
     }
 
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    toggleDefault(msg: MessageModel): void
-    {
-        // Toggle the completed status
-        // task.completed = !task.completed;
-        //
-        // this._tasksService.updateTask(task.id, task).subscribe();
-        //
-        // this._changeDetectorRef.markForCheck();
-    }
     /**
      * Add a new Message
      */
@@ -218,6 +194,11 @@ export class ListMessagesComponent implements OnInit, OnDestroy, AfterViewInit
     filterByArchived(): void {
         this.filter$.next('archived');
         of(this._messagesService.getMessages(EntityStatus.INACTIVE));
+    }
+
+    filterByDefault(): void {
+        this.filter$.next('default');
+        of(this._messagesService.getDefaultMsg());
     }
 
     /**

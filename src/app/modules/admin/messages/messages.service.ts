@@ -1,10 +1,8 @@
 /* eslint-disable arrow-body-style */
-import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Observable, of} from 'rxjs';
-import {cloneDeep} from 'lodash-es';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
-import {AuthService} from 'app/core/auth/auth.service';
+import { AuthService } from 'app/core/auth/auth.service';
 import {
     APIService,
     Carriers,
@@ -20,17 +18,17 @@ import {
     ListGroupsQuery,
     ListMsgTemplatesQuery,
     ListMsgToGroupsQuery,
-    ModelGroupFilterInput, ModelMsgTemplateConditionInput,
+    ModelGroupFilterInput,
     ModelMsgTemplateFilterInput,
     ModelMsgToGroupFilterInput,
     MsgTemplate,
     MsgToGroup,
     TemplateUsage,
     UpdateMsgTemplateInput,
-    UpdateMsgToGroupInput
+    UpdateMsgToGroupInput,
 } from '../../../API.service';
-import {Hub, Logger} from 'aws-amplify';
-import {MessageModel} from './models/MessageModel';
+import { Hub, Logger } from 'aws-amplify';
+import { MessageModel } from './models/MessageModel';
 
 export type MsgtogrpNames = MsgToGroup & {
     namegroup?: string;
@@ -49,19 +47,11 @@ export class MsgsService {
     private _messages: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _msgtogroups: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _clientId: BehaviorSubject<any | null> = new BehaviorSubject(null);
-    private clientid: string;
 
-    private _errorMessages: BehaviorSubject<any | null> = new BehaviorSubject(null);
     /**
      * Constructor
      */
-    constructor(
-        private _httpClient: HttpClient,
-        private api: APIService,
-        private _auth: AuthService,
-    ) {
-        of(this.getClientId());
-    }
+    constructor(private api: APIService, private _auth: AuthService) {}
 
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
@@ -85,8 +75,8 @@ export class MsgsService {
         return this._labels.asObservable();
     }
     /*
-    * Client ID
-    */
+     * Client ID
+     */
     get clientId$(): Observable<any[]> {
         return this._clientId.asObservable();
     }
@@ -115,8 +105,6 @@ export class MsgsService {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-
-
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     refreshMessages(): void {
         of(this.getMessages());
@@ -127,13 +115,7 @@ export class MsgsService {
         this._messageTemplate.next(msgTemplate);
         return msgTemplate;
     }
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    async getClientId() {
-        const { sub } = await this._auth.checkClientId();
-        this.clientid = sub;
-        this._clientId.next(sub);
-        return Promise.resolve(sub);
-    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods Groups
     // -----------------------------------------------------------------------------------------------------
@@ -143,31 +125,35 @@ export class MsgsService {
      * @param name
      */
     async addGroup(name: string): Promise<any> {
-        const {sub} = await this._auth.checkClientId();
+        const { sub } = await this._auth.checkClientId();
 
         const filter: ModelGroupFilterInput = {
-            clientId: {eq: sub },
-            status: {eq: EntityStatus.ACTIVE }
+            clientId: { eq: sub },
+            status: { eq: EntityStatus.ACTIVE },
         };
         return new Promise((resolve, reject) => {
-            this.api.ListGroups(filter)
+            this.api
+                .ListGroups(filter)
                 .then((iFound) => {
-                    if (iFound && iFound.items.length>15) {
+                    if (iFound && iFound.items.length > 15) {
                         return null;
                     } else {
                         const _group: CreateGroupInput = {
                             name: name,
                             carrier: Carriers.NOTASSIGNED,
                             status: EntityStatus.ACTIVE,
-                            clientId: sub
+                            clientId: sub,
                         };
                         return this.api.CreateGroup(_group);
                     }
-                }).then((labels) => {
+                })
+                .then((labels) => {
                     return this.getLabels();
-                }).finally(()=> {
+                })
+                .finally(() => {
                     resolve(true);
-                }).catch((error: any) => {
+                })
+                .catch((error: any) => {
                     this.catchError(error);
                     reject(error.message);
                 });
@@ -179,29 +165,33 @@ export class MsgsService {
      * @param id
      */
     async deleteGroup(grp: Group): Promise<any> {
-        const {sub} = await this._auth.checkClientId();
+        const { sub } = await this._auth.checkClientId();
         const filter: ModelMsgToGroupFilterInput = {
-            groupID: {eq: grp.id},
-            clientId: {eq: sub },
-            status: {eq: EntityStatus.ACTIVE }
+            groupID: { eq: grp.id },
+            clientId: { eq: sub },
+            status: { eq: EntityStatus.ACTIVE },
         };
         return new Promise((resolve, reject) => {
-            this.api.ListMsgToGroups(filter)
+            this.api
+                .ListMsgToGroups(filter)
                 .then((iFound) => {
-                    if (iFound && iFound.items.length>0) {
+                    if (iFound && iFound.items.length > 0) {
                         return null;
                     } else {
                         const delGI: DeleteGroupInput = {
                             id: grp.id,
-                            _version: grp._version
+                            _version: grp._version,
                         };
                         return this.api.DeleteGroup(delGI);
                     }
-                }).then((labels) => {
+                })
+                .then((labels) => {
                     return this.getLabels();
-                }).finally(()=> {
+                })
+                .finally(() => {
                     resolve(true);
-                }).catch((error: any) => {
+                })
+                .catch((error: any) => {
                     this.catchError(error);
                     reject(error.message);
                 });
@@ -215,7 +205,7 @@ export class MsgsService {
      * @returns
      */
     async attachGroupFromMsg(msgtemplate: any, group: any): Promise<any> {
-        const {sub} = await this._auth.checkClientId();
+        const { sub } = await this._auth.checkClientId();
         const payload: CreateMsgToGroupInput = {
             msgID: msgtemplate.id,
             groupID: group.id,
@@ -223,23 +213,27 @@ export class MsgsService {
             status: EntityStatus.ACTIVE,
         };
         const filter: ModelMsgToGroupFilterInput = {
-            groupID: {eq: group.id},
-            clientId: {eq: sub },
-            status: {eq: EntityStatus.ACTIVE }
+            groupID: { eq: group.id },
+            clientId: { eq: sub },
+            status: { eq: EntityStatus.ACTIVE },
         };
         return new Promise((resolve, reject) => {
-            this.api.ListMsgToGroups(filter)
+            this.api
+                .ListMsgToGroups(filter)
                 .then((iFound) => {
-                    if (iFound && iFound.items.length>0) {
+                    if (iFound && iFound.items.length > 0) {
                         return null;
                     } else {
                         return this.api.CreateMsgToGroup(payload);
                     }
-                }).then((newGroup) => {
+                })
+                .then((newGroup) => {
                     return this.getLabelsByMsgId(msgtemplate.id);
-                }).then((labels: any[]) => {
+                })
+                .then((labels: any[]) => {
                     resolve(labels);
-                }).catch((error: any) => {
+                })
+                .catch((error: any) => {
                     this.catchError(error);
                     reject(error.message);
                 });
@@ -256,15 +250,18 @@ export class MsgsService {
         const payload: UpdateMsgToGroupInput = {
             id: foundGroup.id,
             status: EntityStatus.INACTIVE,
-            _version: foundGroup._version
+            _version: foundGroup._version,
         };
         return new Promise((resolve, reject) => {
-            this.api.UpdateMsgToGroup(payload)
+            this.api
+                .UpdateMsgToGroup(payload)
                 .then((updatedGroup) => {
                     return this.getLabelsByMsgId(updatedGroup.msgID);
-                }).then((labels: any[]) => {
+                })
+                .then((labels: any[]) => {
                     resolve(labels);
-                }).catch((error: any) => {
+                })
+                .catch((error: any) => {
                     this.catchError(error);
                     reject(error.message);
                 });
@@ -281,19 +278,22 @@ export class MsgsService {
         const payload: UpdateMsgToGroupInput = {
             id: foundGroupId.groupMsgId,
             status: EntityStatus.INACTIVE,
-            _version: foundGroupId._versionGroupMsg
+            _version: foundGroupId._versionGroupMsg,
         };
-        console.log(payload)
+        console.log(payload);
         return new Promise((resolve, reject) => {
-            this.api.UpdateMsgToGroup(payload)
+            this.api
+                .UpdateMsgToGroup(payload)
                 .then((updatedGroup) => {
                     return this.getLabelsByMsgId(updatedGroup.msgID);
-                }).then((labels: any[]) => {
-                resolve(labels);
-            }).catch((error: any) => {
-                this.catchError(error);
-                reject(error.message);
-            });
+                })
+                .then((labels: any[]) => {
+                    resolve(labels);
+                })
+                .catch((error: any) => {
+                    this.catchError(error);
+                    reject(error.message);
+                });
         });
     }
     /**
@@ -306,19 +306,22 @@ export class MsgsService {
     deleteMsgToGroup(grp: Group, msg: MsgTemplate): Promise<any> {
         let delmsg2grp: DeleteMsgToGroupInput;
         this._msgtogroups.subscribe((msg2grp: MsgtogrpNames[]) => {
-            const filterm2g = msg2grp.filter(m2g => m2g.groupID === grp.id && m2g.msgID === msg.id);
+            const filterm2g = msg2grp.filter(
+                (m2g) => m2g.groupID === grp.id && m2g.msgID === msg.id
+            );
             delmsg2grp = {
                 id: filterm2g[0].id,
-                _version: filterm2g[0]._version
+                _version: filterm2g[0]._version,
             };
         });
-        return this.api.DeleteMsgToGroup(delmsg2grp)
+        return this.api
+            .DeleteMsgToGroup(delmsg2grp)
             .then((resp) => {
                 this.getMsgtogroup();
                 this.getMessages();
                 return resp;
             })
-            .catch(err => console.log(err));
+            .catch((err) => console.log(err));
     }
 
     /**
@@ -330,56 +333,56 @@ export class MsgsService {
     delMsgToGroup(msg2grp: MsgToGroup): Promise<any> {
         const delmsg2grp: DeleteMsgToGroupInput = {
             id: msg2grp.id,
-            _version: msg2grp._version
+            _version: msg2grp._version,
         };
-        return this.api.DeleteMsgToGroup(delmsg2grp)
+        return this.api
+            .DeleteMsgToGroup(delmsg2grp)
             .then((resp) => {
                 this.getMsgtogroup();
                 this.getMessages();
                 return resp;
             })
-            .catch(err => console.log(err));
+            .catch((err) => console.log(err));
     }
 
     async getMsgtogroup(): Promise<any> {
-        const {sub} = await this._auth.checkClientId();
+        const { sub } = await this._auth.checkClientId();
         const filter: ModelMsgToGroupFilterInput = {
             clientId: { eq: sub },
         };
         return new Promise((resolve, reject) => {
-            this.api.ListMsgToGroups(filter)
+            this.api
+                .ListMsgToGroups(filter)
                 .then((resp: ListMsgToGroupsQuery) => {
                     const notDeleted = resp.items.filter(
-                        item => item._deleted !== true
+                        (item) => item._deleted !== true
                     );
                     this._msgtogroups.next(notDeleted);
                     resolve(notDeleted.length);
                 })
-                .catch(error => reject(error));
+                .catch((error) => reject(error));
         });
     }
     /**
      * Search All Messages
      */
     async searchMessages(searchTxt: string): Promise<any> {
-        if (searchTxt === null || searchTxt.length===0) {
+        if (searchTxt === null || searchTxt.length === 0) {
             this.refreshMessages();
             return Promise.resolve();
         }
         // eslint-disable-next-line @typescript-eslint/no-shadow
         const filter: ModelMsgTemplateFilterInput = {
             message: { contains: searchTxt },
-            or :[
-                { name: {contains: searchTxt}}
-            ]
-
+            or: [{ name: { contains: searchTxt } }],
         };
         this.activateProgressBar();
         return new Promise((resolve, reject) => {
-            this.api.ListMsgTemplates(filter)
+            this.api
+                .ListMsgTemplates(filter)
                 .then((resp) => {
                     const notDeleted = resp.items.filter(
-                        item => item._deleted !== true
+                        (item) => item._deleted !== true
                     );
                     this._messages.next(notDeleted);
                     this.activateProgressBar('off');
@@ -390,17 +393,18 @@ export class MsgsService {
                     reject(error.message);
                     this.activateProgressBar('off');
                 });
-
         });
     }
     /**
      * Get All Messages
      */
-    async getMessages(status: EntityStatus = EntityStatus.ACTIVE): Promise<any> {
-        const { sub }  = await this._auth.checkClientId();
+    async getMessages(
+        status: EntityStatus = EntityStatus.ACTIVE
+    ): Promise<any> {
+        const { sub } = await this._auth.checkClientId();
         const filter: ModelMsgTemplateFilterInput = {
             clientId: { eq: sub },
-            status: {eq: status}
+            status: { eq: status },
         };
         this.activateProgressBar();
         return new Promise((resolve, reject) => {
@@ -408,7 +412,36 @@ export class MsgsService {
                 .ListMsgTemplates(filter)
                 .then((resp: ListMsgTemplatesQuery) => {
                     const notDeleted = resp.items.filter(
-                        item => item._deleted !== true
+                        (item) => item._deleted !== true
+                    );
+                    this._messages.next(notDeleted);
+                    this.activateProgressBar('off');
+                    resolve(notDeleted.length);
+                })
+                .catch((error: any) => {
+                    this.catchError(error);
+                    reject(error.message);
+                    this.activateProgressBar('off');
+                });
+        });
+    }
+
+    /**
+     * Get Default Message
+     */
+    async getDefaultMsg(): Promise<any> {
+        const { sub } = await this._auth.checkClientId();
+        const filter: ModelMsgTemplateFilterInput = {
+            clientId: { eq: sub },
+            default: { eq: TemplateUsage.DEFAULT },
+        };
+        this.activateProgressBar();
+        return new Promise((resolve, reject) => {
+            this.api
+                .ListMsgTemplates(filter)
+                .then((resp: ListMsgTemplatesQuery) => {
+                    const notDeleted = resp.items.filter(
+                        (item) => item._deleted !== true
                     );
                     this._messages.next(notDeleted);
                     this.activateProgressBar('off');
@@ -425,32 +458,37 @@ export class MsgsService {
     /**
      * Get All Messages by Group
      */
-    async getMessagesByGroupId(status: EntityStatus = EntityStatus.ACTIVE, gId: string): Promise<any> {
-        const { sub }= await this._auth.checkClientId();
+    async getMessagesByGroupId(status: EntityStatus, gId: string): Promise<any> {
+        const { sub } = await this._auth.checkClientId();
         const groupFilter: ModelMsgToGroupFilterInput = {
             clientId: { eq: sub },
-            groupID: {eq: gId},
-            status: { eq: EntityStatus.ACTIVE}
+            groupID: { eq: gId },
+            status: { eq: status },
         };
         this.activateProgressBar();
         return new Promise((resolve, reject) => {
             const listOfIds = [];
-            this.api.ListMsgToGroups(groupFilter)
+            this.api
+                .ListMsgToGroups(groupFilter)
                 .then((resp) => {
                     const notDeleted = resp.items.filter(
-                        item => item._deleted !== true
+                        (item) => item._deleted !== true
                     );
                     notDeleted.forEach((item) => {
-                        listOfIds.push({ id: { eq: item.msgID} });
+                        listOfIds.push({ id: { eq: item.msgID } });
                     });
+                    if (listOfIds.length === 0) {
+                        listOfIds.push({ id: { eq: 'xxxxxxxxxx' } });
+                    }
                     const filter: ModelMsgTemplateFilterInput = {
                         clientId: { eq: sub },
-                        and: listOfIds
+                        and: listOfIds,
                     };
                     return this.api.ListMsgTemplates(filter);
-                }).then((resp: ListMsgTemplatesQuery) => {
+                })
+                .then((resp: ListMsgTemplatesQuery) => {
                     const notDeleted = resp.items.filter(
-                        item => item._deleted !== true
+                        (item) => item._deleted !== true
                     );
                     this._messages.next(notDeleted);
                     this.activateProgressBar('off');
@@ -467,16 +505,17 @@ export class MsgsService {
      * Get labels/Groups
      */
     async getLabels(): Promise<any> {
-        const {sub} = await this._auth.checkClientId();
+        const { sub } = await this._auth.checkClientId();
         const filter: ModelMsgTemplateFilterInput = {
             clientId: { eq: sub },
-            status: {eq : EntityStatus.ACTIVE}
+            status: { eq: EntityStatus.ACTIVE },
         };
         return new Promise((resolve, reject) => {
-            this.api.ListGroups(filter)
+            this.api
+                .ListGroups(filter)
                 .then((result: ListGroupsQuery) => {
                     const notDeleted = result.items.filter(
-                        item => item._deleted !== true
+                        (item) => item._deleted !== true
                     );
                     this._labels.next(notDeleted);
                     resolve(notDeleted.length);
@@ -492,17 +531,18 @@ export class MsgsService {
      * Get All Labels used by the Message
      */
     async getLabelsByMsgId(id: string): Promise<any> {
-        const {sub} = await this._auth.checkClientId();
+        const { sub } = await this._auth.checkClientId();
         const filter: ModelMsgToGroupFilterInput = {
             clientId: { eq: sub },
-            msgID:  {eq: id},
-            status: {eq : EntityStatus.ACTIVE}
+            msgID: { eq: id },
+            status: { eq: EntityStatus.ACTIVE },
         };
         return new Promise((resolve, reject) => {
-            this.api.ListMsgToGroups(filter)
+            this.api
+                .ListMsgToGroups(filter)
                 .then((result) => {
                     const notDeleted = result.items.filter(
-                        item => item._deleted !== true
+                        (item) => item._deleted !== true
                     );
                     this._labelsById.next(notDeleted);
                     resolve(notDeleted);
@@ -518,17 +558,18 @@ export class MsgsService {
      * Get All Labels used by the Message
      */
     async getLabelsByMsgIdAsync(id: string): Promise<any> {
-        const {sub} = await this._auth.checkClientId();
+        const { sub } = await this._auth.checkClientId();
         const filter: ModelMsgToGroupFilterInput = {
             clientId: { eq: sub },
-            msgID:  {eq: id},
-            status: {eq : EntityStatus.ACTIVE}
+            msgID: { eq: id },
+            status: { eq: EntityStatus.ACTIVE },
         };
         return new Promise((resolve, reject) => {
-            this.api.ListMsgToGroups(filter)
+            this.api
+                .ListMsgToGroups(filter)
                 .then((result) => {
                     const notDeleted = result.items.filter(
-                        item => item._deleted !== true
+                        (item) => item._deleted !== true
                     );
                     resolve(notDeleted);
                 })
@@ -545,18 +586,21 @@ export class MsgsService {
     getMessageById(id: string): Promise<any> {
         let currentMessage;
         return new Promise((resolve, reject) => {
-            this.api.GetMsgTemplate(id)
-                .then((msgIn ) => {
+            this.api
+                .GetMsgTemplate(id)
+                .then((msgIn) => {
                     currentMessage = msgIn;
                     return this.getLabelsByMsgId(msgIn.id);
-                }).then((result) => {
-                    currentMessage['labelsUsed'] =  result;
+                })
+                .then((result) => {
+                    currentMessage['labelsUsed'] = result;
                     this._messageTemplate.next(currentMessage);
                     resolve(currentMessage);
-            }).catch((error: any) => {
-                this.catchError(error);
-                reject(error.message);
-            });
+                })
+                .catch((error: any) => {
+                    this.catchError(error);
+                    reject(error.message);
+                });
         });
     }
 
@@ -574,18 +618,19 @@ export class MsgsService {
      * @param note
      */
     async createMessage(msg: MessageModel): Promise<CreateMsgTemplateMutation> {
-        const {sub} = await this._auth.checkClientId();
+        const { sub } = await this._auth.checkClientId();
         return new Promise((resolve, reject) => {
             const _payload: CreateMsgTemplateInput = {
                 id: null,
                 name: msg.name,
                 message: msg.message,
-                status: msg.status,
-                default: msg.default,
+                status: EntityStatus.ACTIVE,
+                default: TemplateUsage.NONE,
                 clientId: sub,
                 _version: msg._version,
             };
-            this.api.CreateMsgTemplate(_payload)
+            this.api
+                .CreateMsgTemplate(_payload)
                 .then((resp: CreateMsgTemplateMutation) => resolve(resp))
                 .catch((error: any) => {
                     this.catchError(error);
@@ -607,13 +652,15 @@ export class MsgsService {
             _version: msg._version,
         };
         return new Promise((resolve, reject) => {
-            this.api.UpdateMsgTemplate(payload)
+            this.api
+                .UpdateMsgTemplate(payload)
                 .then((resp) => {
                     return this.getMessages();
-                }).finally(() => {
+                })
+                .finally(() => {
                     resolve(true);
                 })
-                .catch(error => console.log(error));
+                .catch((error) => console.log(error));
         });
     }
     /**
@@ -622,46 +669,51 @@ export class MsgsService {
      * @param note
      */
     async updateMessageToDefault(msgId: any): Promise<any> {
-        const {sub} = await this._auth.checkClientId();
+        const { sub } = await this._auth.checkClientId();
         let currentMsg;
         return new Promise((resolve, reject) => {
-            this.api.GetMsgTemplate(msgId)
-                .then((msgTmp) =>{
+            this.api
+                .GetMsgTemplate(msgId)
+                .then((msgTmp) => {
                     currentMsg = msgTmp;
                     const filter: ModelMsgTemplateFilterInput = {
                         clientId: { eq: sub },
-                        default: { eq: TemplateUsage.DEFAULT}
+                        default: { eq: TemplateUsage.DEFAULT },
                     };
                     return this.api.ListMsgTemplates(filter);
-                }).then((result) => {
+                })
+                .then((result) => {
                     const notDeleted = result.items.filter(
-                        item => item._deleted !== true
+                        (item) => item._deleted !== true
                     );
                     const pAll = [];
                     notDeleted.forEach((item) => {
                         const payloadUpdate: UpdateMsgTemplateInput = {
                             id: item.id,
                             _version: item._version,
-                            default: TemplateUsage.NONE
+                            default: TemplateUsage.NONE,
                         };
                         pAll.push(this.api.UpdateMsgTemplate(payloadUpdate));
                     });
                     const payloadUpdateDefault: UpdateMsgTemplateInput = {
                         id: currentMsg.id,
                         _version: currentMsg._version,
-                        default: TemplateUsage.DEFAULT
+                        default: TemplateUsage.DEFAULT,
                     };
                     pAll.push(this.api.UpdateMsgTemplate(payloadUpdateDefault));
                     return Promise.all(pAll);
-                }).then((result) => {
+                })
+                .then((result) => {
                     return this.getMessages();
-                }).finally(() => {
+                })
+                .finally(() => {
                     resolve(true);
-                }).catch((error: any) => {
+                })
+                .catch((error: any) => {
                     this.catchError(error);
                     reject(error.message);
                 });
-            });
+        });
     }
 
     /**
@@ -671,19 +723,23 @@ export class MsgsService {
      */
     archiveMessage(msgId: any, status: EntityStatus): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.api.GetMsgTemplate(msgId)
+            this.api
+                .GetMsgTemplate(msgId)
                 .then((updateMsg) => {
                     const payload: UpdateMsgTemplateInput = {
                         id: updateMsg.id,
                         _version: updateMsg._version,
-                        status: status
+                        status: status,
                     };
                     return this.api.UpdateMsgTemplate(payload);
-                }).then((result) => {
+                })
+                .then((result) => {
                     return this.getMessages();
-                }).finally(() => {
+                })
+                .finally(() => {
                     resolve(true);
-                }).catch((error: any) => {
+                })
+                .catch((error: any) => {
                     this.catchError(error);
                     reject(error.message);
                 });
@@ -697,31 +753,32 @@ export class MsgsService {
     deleteMessage(msg: MessageModel): Promise<any> {
         const payload: DeleteMsgTemplateInput = {
             id: msg.id,
-            _version: msg._version
+            _version: msg._version,
         };
         return new Promise((resolve, reject) => {
-            this.api.DeleteMsgTemplate(payload)
-            .then((delMsg) => {
-                return this.getMessages();
-            }).finally(() => {
-                resolve(true);
-            }).catch((error: any) => {
-                this.catchError(error);
-                reject(error.message);
-            });
+            this.api
+                .DeleteMsgTemplate(payload)
+                .then((delMsg) => {
+                    return this.getMessages();
+                })
+                .finally(() => {
+                    resolve(true);
+                })
+                .catch((error: any) => {
+                    this.catchError(error);
+                    reject(error.message);
+                });
         });
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     activateProgressBar(active = 'on') {
-        Hub.dispatch(
-            'processing',
-            {
-                event: 'progressbar',
-                data: {
-                    activate: active
-                }
-            });
+        Hub.dispatch('processing', {
+            event: 'progressbar',
+            data: {
+                activate: active,
+            },
+        });
     }
 
     private catchError(error): void {

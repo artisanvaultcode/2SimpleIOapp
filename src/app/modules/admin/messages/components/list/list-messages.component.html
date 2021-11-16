@@ -36,6 +36,20 @@
                             [svgIcon]="'heroicons_outline:archive'"></mat-icon>
                         <div class="ml-3 leading-5 select-none text-default">Archive</div>
                     </div>
+                    <!-- Archive -->
+                    <div
+                        class="relative flex items-center py-2 px-4 font-medium rounded-full cursor-pointer"
+                        [ngClass]="{'bg-gray-200 dark:bg-gray-700 text-primary dark:text-primary-400': filterStatus === 'default',
+                                'text-hint hover:bg-hover': filterStatus !== 'default'}"
+                        (click)="filterByDefault()"
+                        matRipple
+                        [matRippleDisabled]="filterStatus === 'default'">
+                        <mat-icon
+                            class="text-current"
+                            [svgIcon]="'heroicons_outline:check-circle'"></mat-icon>
+                        <div class="ml-3 leading-5 select-none text-default">Default</div>
+                    </div>
+                    <hr>
                     <!-- Labels -->
                     <ng-container *ngIf="(labels$ | async) as grupos">
                         <ng-container *ngFor="let label of grupos; trackBy: trackByFn">
@@ -47,7 +61,7 @@
                                 matRipple
                                 [matRippleDisabled]="label.id === filterStatus">
                                 <mat-icon
-                                    [ngClass]="{'text-hint hover:bg-hover': label.id !== filterStatus, 'text-default dark:text-primary-400' : label.id === filterStatus}"
+                                    class="text-current"
                                     [svgIcon]="'heroicons_outline:tag'"></mat-icon>
                                 <div class="ml-3 leading-5 select-none text-default">{{label.name}}</div>
                             </div>
@@ -150,7 +164,7 @@
                                     <!-- Rows -->
                                     <ng-container *ngIf="(messages$ | async) as lrows;">
                                         <ng-container *ngFor="let rMsg of lrows; trackBy: trackByFn">
-                                            <div class="inventory-grid grid items-center gap-4 py-3 px-6 md:px-8 border-b"
+                                            <div class="inventory-grid grid items-center gap-4 py-3 px-6 md:px-8 border-b cursor-pointer"
                                                  (click)="openMessageDialog(rMsg)">
                                                 <!-- name -->
                                                 <div class="hidden md:flex truncate">

@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import {MsgsService} from '../../messages.service';
-import {MsgTemplate, MsgToGroup} from '../../../../../API.service';
+import {MsgTemplate} from '../../../../../API.service';
 import {MessageModel} from '../../models/MessageModel';
 import {takeUntil} from 'rxjs/operators';
 
@@ -24,7 +24,6 @@ export class DetailsMessagesComponent implements OnInit, OnDestroy
      * Constructor
      */
     constructor(
-        private _changeDetectorRef: ChangeDetectorRef,
         @Inject(MAT_DIALOG_DATA) private _data: { message: MessageModel; action: string },
         private _msgsService: MsgsService,
         private _matDialogRef: MatDialogRef<DetailsMessagesComponent>
