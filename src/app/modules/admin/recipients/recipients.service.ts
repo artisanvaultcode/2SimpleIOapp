@@ -130,7 +130,6 @@ export class RecipientsService
         return new Promise((resolve, reject) => {
             this.api.SearchRecipients(filter, sortCriteria)
                 .then((result) => {
-                    console.log(result.items);
                     this._recipients.next(result.items);
                     resolve(result.items.length);
                 })
@@ -309,11 +308,12 @@ export class RecipientsService
                 .then((oldRec) => {
                     const payloadInput: UpdateRecipientInput = {
                         id: oldRec.id,
-                        phoneTxt: oldRec.phone.toString(),
+                        phone: recipient.phone,
+                        phoneTxt: recipient.phone.toString(),
                         recipientGroupId: recipient.recipientGroupId,
                         lastProcessDt: dateAt,
                         _version: oldRec._version,
-                        status: oldRec.status || EntityStatus.ACTIVE
+                        status: recipient.status || EntityStatus.ACTIVE
                     };
                     return this.api.UpdateRecipient(payloadInput);
                 }).then((newRec) => {

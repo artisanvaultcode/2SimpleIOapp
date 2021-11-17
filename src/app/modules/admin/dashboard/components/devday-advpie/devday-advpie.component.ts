@@ -37,7 +37,6 @@ export class DevdayAdvpieComponent implements OnInit {
             const {sub} = resp;
             this._athena.distinctDatesMonth("'"+sub+"'")
                 .subscribe(resp => {
-                    // console.log("[DevAdv-pie] Dates Month Result  \n",resp['result']);
                     this._athena.dateMsgDevices("'"+sub+"'",
                                 resp['result'][resp['result'].length-1][0])
                         .subscribe(res => {
@@ -50,7 +49,6 @@ export class DevdayAdvpieComponent implements OnInit {
                                 datatmp.push(element);
                             });
                             this.datos = datatmp;
-                            console.log("[DevAdv-pie] DEVICES Last date  \n",this.datos);
                         })
                 });
 

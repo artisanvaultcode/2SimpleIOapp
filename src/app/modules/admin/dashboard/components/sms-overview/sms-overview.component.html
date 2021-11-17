@@ -1,17 +1,22 @@
-<div class="smsstyle">
-    <ngx-charts-area-chart
-        [scheme]="colorScheme"
-        [legend]="legend"
-        [showXAxisLabel]="showXAxisLabel"
-        [showYAxisLabel]="showYAxisLabel"
-        [xAxis]="xAxis"
-        [yAxis]="yAxis"
-        [xAxisLabel]="xAxisLabel"
-        [yAxisLabel]="yAxisLabel"
-        [timeline]="timeline"
-        [results]="multi"
-        [curve]="basisCurve"
-        [gradient]='gradient'
-    >
-    </ngx-charts-area-chart>
+<div class="flex flex-col flex-auto h-80">
+    <div class="smsstyle">
+        <ngx-charts-area-chart
+            [scheme]="colorScheme"
+            [legend]="legend"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxis]="xAxis"
+            [yAxis]="yAxis"
+            [xAxisLabel]="xAxisLabel"
+            [yAxisLabel]="yAxisLabel"
+            [timeline]="timeline"
+            [results]="multi"
+            [curve]="basisCurve"
+            [gradient]='gradient'
+        >
+        </ngx-charts-area-chart>
+    </div>
+    <ng-container *ngIf="isLoading" >
+        <mat-progress-bar mode="query" ></mat-progress-bar>
+    </ng-container>
 </div>

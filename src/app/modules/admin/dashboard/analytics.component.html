@@ -111,21 +111,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex flex-col flex-auto h-80">
-                    <app-sms-overview [datefilter]="dateFilter" class="fitcontainer"></app-sms-overview>
-                    <!-- <apx-chart
-                        class="flex-auto w-full h-full"
-                        [chart]="chartBlasting.chart"
-                        [colors]="chartBlasting.colors"
-                        [dataLabels]="chartBlasting.dataLabels"
-                        [fill]="chartBlasting.fill"
-                        [grid]="chartBlasting.grid"
-                        [series]="chartBlasting.series[blastingWeekSelector.value]"
-                        [stroke]="chartBlasting.stroke"
-                        [tooltip]="chartBlasting.tooltip"
-                        [xaxis]="chartBlasting.xaxis"
-                        [yaxis]="chartBlasting.yaxis"></apx-chart> -->
-                </div>
+                <app-sms-overview [datefilter]="dateFilter" class="fitcontainer"></app-sms-overview>
+
             </div>
             <!-- Conversions -->
             <!-- <div class="sm:col-span-2 lg:col-span-1 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">

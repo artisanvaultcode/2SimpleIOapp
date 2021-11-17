@@ -13,7 +13,6 @@ import {debounceTime, switchMap, takeUntil} from 'rxjs/operators';
 import {FuseMediaWatcherService} from '@fuse/services/media-watcher';
 import {DetailsMessagesComponent} from '../details/details-messages.component';
 import {MsgsService} from '../../messages.service';
-import {AuthService} from 'app/core/auth/auth.service';
 import {EntityStatus, Group, MsgTemplate, MsgToGroup} from '../../../../../API.service';
 import {MessageModel} from '../../models/MessageModel';
 import {Hub} from 'aws-amplify';

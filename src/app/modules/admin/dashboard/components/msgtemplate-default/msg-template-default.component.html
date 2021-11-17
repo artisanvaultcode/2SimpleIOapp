@@ -5,7 +5,7 @@
         <div class="text-lg">Default Message Template</div>
         <button
             mat-icon-button
-            (click)="saveAndClose()"
+            (click)="saveAndClose('save')"
             [tabIndex]="-1">
             <mat-icon
                 class="text-current"
@@ -13,7 +13,7 @@
         </button>
     </div>
     <!-- Warn -->
-    <fuse-alert 
+    <fuse-alert
         class="mt-8 -mb-4"
         *ngIf="showAlert"
         [type]="'warn'">
@@ -24,41 +24,34 @@
     <form
         class="flex flex-col flex-auto p-6 sm:p-8 overflow-y-auto"
         [formGroup]="composeForm">
-
-        <!-- Subject -->
-        <mat-form-field>
-            <mat-label>* Name</mat-label>
-            <input
-                matInput
-                [formControlName]="'name'">
-        </mat-form-field>
-
-        <!-- Message -->
-        <quill-editor
-            class="mt-2"
-            [formControlName]="'message'"
-            [modules]="quillModules"></quill-editor>
-        <mat-label class="text-warn" >* Required</mat-label>
-        <!-- Actions -->
+            <!-- Messasge Name -->
+            <mat-form-field>
+                <mat-label>* Name</mat-label>
+                <input
+                    matInput
+                    [formControlName]="'name'">
+            </mat-form-field>
+            <!-- Message -->
+            <mat-form-field>
+                <textarea
+                    matInput
+                    [formControlName]="'message'"></textarea>
+            </mat-form-field>
+            <mat-label class="text-warn" >* Required</mat-label>
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mt-4 sm:mt-6">
-            <!-- <div class="-ml-2">
-                -- Attach file 
-                <button mat-icon-button>
-                    <mat-icon
-                        class="icon-size-5"
-                        [svgIcon]="'heroicons_solid:paper-clip'"></mat-icon>
-                </button>
-            </div> -->
 
             <div class="flex items-center mt-4 sm:mt-0">
                 <button
                     class="order-first sm:order-last"
                     mat-flat-button
                     [color]="'primary'"
-                    (click)="saveAndClose()">
+                    (click)="saveAndClose('save')">
                     Save
                 </button>
             </div>
         </div>
     </form>
+    <ng-container *ngIf="isLoading" >
+        <mat-progress-bar mode="query" ></mat-progress-bar>
+    </ng-container>
 </div>

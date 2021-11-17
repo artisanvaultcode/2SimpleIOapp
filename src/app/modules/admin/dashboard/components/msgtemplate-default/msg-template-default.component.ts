@@ -1,9 +1,11 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { TemplateUsage } from './../../../../../API.service';
+import { AnalyticsService } from './../../analytics.service';
+import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { AuthService } from 'app/core/auth/auth.service';
 import { MsgTemplateService } from 'app/core/services/msg-template.service';
-import {CreateMsgTemplateInput, EntityStatus, MsgTemplate, TemplateUsage} from '../../../../../API.service';
+import { CreateMsgTemplateInput,MsgTemplate } from '../../../../../API.service';
+import { Hub } from 'aws-amplify';
 
 @Component({
     selector: 'msg-default',
@@ -11,11 +13,12 @@ import {CreateMsgTemplateInput, EntityStatus, MsgTemplate, TemplateUsage} from '
     encapsulation: ViewEncapsulation.None,
 })
 export class MsgTemplateDefaultComponent implements OnInit {
+
+    id: string;
+    version: number;
+    isLoading: boolean;
     msgDefault: CreateMsgTemplateInput;
     composeForm: FormGroup;
-    quillModules: any = {
-        toolbar: [['clean']],
-    };
     showAlert: boolean = false;
     clientid: string;
 
@@ -25,9 +28,17 @@ export class MsgTemplateDefaultComponent implements OnInit {
     constructor(
         public matDialogRef: MatDialogRef<MsgTemplateDefaultComponent>,
         private _formBuilder: FormBuilder,
-        private _authService: AuthService,
         private _msgTemplateService: MsgTemplateService,
-    ) {}
+        private _analyticsService: AnalyticsService,
+        private _changeDetectorRef: ChangeDetectorRef,
+    ) {
+        Hub.listen('processing', (data) => {
+            if (data.payload.event === 'progressbar') {
+                this.isLoading = data.payload.data.activate === 'on';
+                this._changeDetectorRef.markForCheck();
+            }
+        });
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -37,55 +48,69 @@ export class MsgTemplateDefaultComponent implements OnInit {
      * On init
      */
     ngOnInit(): void {
+
         this.composeForm = this._formBuilder.group({
-            name: ['', Validators.required],
-            message: ['', Validators.required],
+            name: ['', [Validators.required, Validators.minLength(4)]],
+            message: ['', [Validators.required, Validators.minLength(4)]],
         });
-        this.getClientID();
-        this.setMsgDefault();
-        this.composeForm.patchValue(this.msgDefault);
-
+        this._analyticsService.activateProgressBar();
+        this._analyticsService.getDefaultMsg()
+                .then(respt => {
+                    this.id = respt.id;
+                    this.version = respt._version;
+                    this.composeForm = this._formBuilder.group({
+                        name: [respt.name, [Validators.required, Validators.minLength(4)]],
+                        message: [respt.message, [Validators.required, Validators.minLength(4)]],
+                    });
+                    this._analyticsService.activateProgressBar('off');
+                })
+                .catch(err => {
+                    console.log("[getDefaultMsg:]",err);
+                    this._analyticsService.activateProgressBar('off');
+                });
     }
 
-    setMsgDefault(): void{
-        this.msgDefault = {
-            name: '',
-            message: ''
-        };
-        this.msgDefault.status = EntityStatus.ACTIVE;
-        this.msgDefault.default = TemplateUsage.DEFAULT;
-    }
-
-    getClientID(): void{
-        this._authService.checkClientId()
-            .then((resp) => {
-                this.clientid = resp['sub'];
-            });
-    }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
     /**
      * Save and close
      */
-    saveAndClose(): void {
+    saveAndClose(addupdate: string): void {
         // Hide the alert
         this.showAlert = false;
-        // Close the dialog
+        if (addupdate === 'save'){
+            this.updateDefaultMsg();
+        }
+    }
+
+    updateDefaultMsg(){
+        let updateMsgTemplate: MsgTemplate = this.composeForm.getRawValue();
+        if (this.composeForm.invalid) {
+            this.showAlert = true;
+        } else {
+            updateMsgTemplate.id = this.id;
+            updateMsgTemplate._version = this.version;
+            updateMsgTemplate.default = TemplateUsage.DEFAULT;
+            // Create default message
+            this._msgTemplateService.updateData(updateMsgTemplate, TemplateUsage.DEFAULT)
+            this.matDialogRef.close();
+        }
+    }
+
+    createDefaultMsg(sub: string){
         const newMgsTemplate: MsgTemplate = this.composeForm.getRawValue();
-        if (this.composeForm.invalid){
+        if (this.composeForm.invalid) {
             console.log('Validation Form invalid...');
             this.showAlert = true;
         } else {
-            this.msgDefault.clientId = this.clientid;
+            this.msgDefault.clientId = sub;
             this.msgDefault.name = newMgsTemplate.name;
-            let msgTemp = newMgsTemplate.message;
-            msgTemp = msgTemp.replace('<p>', '');
-            msgTemp = msgTemp.replace('</p>', '');
-            this.msgDefault.message = msgTemp;
+            this.msgDefault.message = newMgsTemplate.message;
             // Create default message
-            this._msgTemplateService.addDefault(this.msgDefault, this.clientid)
-                .then(resp => console.log('message saved...'));
+            this._msgTemplateService
+                .addDefault(this.msgDefault, sub)
+                .then((resp) => console.log('message saved...'));
             this.matDialogRef.close();
         }
     }

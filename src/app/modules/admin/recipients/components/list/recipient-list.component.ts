@@ -1,27 +1,36 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    Inject,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    ViewEncapsulation,
+} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { MatDrawer } from '@angular/material/sidenav';
-import {fromEvent, Observable, of, Subject} from 'rxjs';
+import { fromEvent, Observable, of, Subject } from 'rxjs';
 import { filter, switchMap, takeUntil } from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
-import {RecipientsService} from '../../recipients.service';
-import {MatBottomSheet} from '@angular/material/bottom-sheet';
-import {UploadCsvDialogComponent} from '../upload-csv-dialog/upload-csv-dialog.component';
+import { RecipientsService } from '../../recipients.service';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { UploadCsvDialogComponent } from '../upload-csv-dialog/upload-csv-dialog.component';
 
 @Component({
-    selector       : 'recipient-list',
-    templateUrl    : './recipient-list.component.html',
+    selector: 'recipient-list',
+    templateUrl: './recipient-list.component.html',
     styleUrls: ['./recipient-list.component.scss'],
-    encapsulation  : ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RecipientListComponent implements OnInit, OnDestroy
-{
-    @ViewChild('matDrawer', {static: true}) matDrawer: MatDrawer;
+export class RecipientListComponent implements OnInit, OnDestroy {
+    @ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
 
     recipients$: Observable<any[]>;
+    recipient$: Observable<any>;
     nextPage$: Observable<any[]>;
 
     recipientsCount: number = 0;
@@ -42,9 +51,7 @@ export class RecipientListComponent implements OnInit, OnDestroy
         private _router: Router,
         private _bottomSheet: MatBottomSheet,
         private _fuseMediaWatcherService: FuseMediaWatcherService
-    )
-    {
-    }
+    ) {}
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -53,15 +60,13 @@ export class RecipientListComponent implements OnInit, OnDestroy
     /**
      * On init
      */
-    ngOnInit(): void
-    {
+    ngOnInit(): void {
         // Get the contacts
-        this.recipients$= this._recipientsService.recipients$;
-        this.nextPage$= this._recipientsService.nextPage$;
+        this.recipients$ = this._recipientsService.recipients$;
+        this.nextPage$ = this._recipientsService.nextPage$;
         this._recipientsService.recipients$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((contacts: any[]) => {
-
                 // Update the counts
                 this.recipientsCount = contacts.length;
 
@@ -69,22 +74,22 @@ export class RecipientListComponent implements OnInit, OnDestroy
                 this._changeDetectorRef.markForCheck();
             });
 
+        this.recipient$ = this._recipientsService.recipient$
         // Get the contact
         this._recipientsService.recipient$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((recipient: any) => {
-
                 // Update the selected contact
                 this.selectedContact = recipient;
-
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+
         // Subscribe to search input field value changes
         this.searchInputControl.valueChanges
             .pipe(
                 takeUntil(this._unsubscribeAll),
-                switchMap(query =>
+                switchMap((query) =>
                     // Search
                     of(this._recipientsService.searchRecipients(query))
                 )
@@ -93,8 +98,7 @@ export class RecipientListComponent implements OnInit, OnDestroy
 
         // Subscribe to MatDrawer opened change
         this.matDrawer.openedChange.subscribe((opened) => {
-            if ( !opened )
-            {
+            if (!opened) {
                 // Remove the selected contact when drawer closed
                 this.selectedContact = null;
 
@@ -106,15 +110,11 @@ export class RecipientListComponent implements OnInit, OnDestroy
         // Subscribe to media changes
         this._fuseMediaWatcherService.onMediaChange$
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe(({matchingAliases}) => {
-
+            .subscribe(({ matchingAliases }) => {
                 // Set the drawerMode if the given breakpoint is active
-                if ( matchingAliases.includes('lg') )
-                {
+                if (matchingAliases.includes('lg')) {
                     this.drawerMode = 'side';
-                }
-                else
-                {
+                } else {
                     this.drawerMode = 'over';
                 }
 
@@ -126,9 +126,10 @@ export class RecipientListComponent implements OnInit, OnDestroy
         fromEvent(this._document, 'keydown')
             .pipe(
                 takeUntil(this._unsubscribeAll),
-                filter<KeyboardEvent>(event =>
-                    (event.ctrlKey === true || event.metaKey) // Ctrl or Cmd
-                    && (event.key === '/') // '/'
+                filter<KeyboardEvent>(
+                    (event) =>
+                        (event.ctrlKey === true || event.metaKey) && // Ctrl or Cmd
+                        event.key === '/' // '/'
                 )
             )
             .subscribe(() => {
@@ -140,12 +141,10 @@ export class RecipientListComponent implements OnInit, OnDestroy
         this._recipientsService.goNextPage(null, nextPage);
     }
 
-
     /**
      * On destroy
      */
-    ngOnDestroy(): void
-    {
+    ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
@@ -158,10 +157,9 @@ export class RecipientListComponent implements OnInit, OnDestroy
     /**
      * On backdrop clicked
      */
-    onBackdropClicked(): void
-    {
+    onBackdropClicked(): void {
         // Go back to the list
-        this._router.navigate(['./'], {relativeTo: this._activatedRoute});
+        this._router.navigate(['./'], { relativeTo: this._activatedRoute });
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
@@ -177,7 +175,8 @@ export class RecipientListComponent implements OnInit, OnDestroy
         });
         fileToUpload.afterDismissed().subscribe((data) => {
             if (data) {
-                this._recipientsService.importRecipients(data?.items)
+                this._recipientsService
+                    .importRecipients(data?.items)
                     .then((results) => {
                         this._recipientsService.refresh();
                     });
@@ -188,13 +187,13 @@ export class RecipientListComponent implements OnInit, OnDestroy
     /**
      * Create contact
      */
-    createContact(): void
-    {
+    createContact(): void {
         // Create the contact
         this._recipientsService.createContact().subscribe((newContact) => {
-
             // Go to the new contact
-            this._router.navigate(['./', newContact.id], {relativeTo: this._activatedRoute});
+            this._router.navigate(['./', newContact.id], {
+                relativeTo: this._activatedRoute,
+            });
 
             // Mark for check
             this._changeDetectorRef.markForCheck();
@@ -202,7 +201,7 @@ export class RecipientListComponent implements OnInit, OnDestroy
     }
 
     onPaginateChange(evet) {
-        console.log("pagination", evet)
+        console.log('pagination', evet);
     }
     /**
      * Track by function for ngFor loops
@@ -210,17 +209,15 @@ export class RecipientListComponent implements OnInit, OnDestroy
      * @param index
      * @param item
      */
-    trackByFn(index: number, item: any): any
-    {
+    trackByFn(index: number, item: any): any {
         return item.id || index;
     }
 
-    
     nextPageLeft() {
-        console.log("next page left")
+        console.log('next page left');
     }
 
     nextPageRight() {
-        console.log("next page Right")
+        console.log('next page Right');
     }
 }

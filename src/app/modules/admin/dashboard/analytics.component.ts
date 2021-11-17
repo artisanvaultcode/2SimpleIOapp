@@ -6,9 +6,7 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { ApexOptions } from 'ng-apexcharts';
-import { AnalyticsService } from './analytics.service';
 import { WebsocketService } from 'app/core/services/ws.service';
 import { MsgTemplate } from 'app/API.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -45,7 +43,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
      * Constructor
      */
     constructor(
-        private _analyticsService: AnalyticsService,
         private _wsService: WebsocketService,
         private _matDialog: MatDialog,
         private _authService: AuthService,
@@ -61,13 +58,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         // Get the data
-        this._analyticsService.data$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((data) => {
-                // Store the data
-                this.data = data;
 
-            });
 
         // Determinar el usuario
         this._authService.checkClientId()

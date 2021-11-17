@@ -1,8 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { AnalyticsService } from './../../analytics.service';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { AuthService } from 'app/core/auth/auth.service';
 import { AthenaService } from '../../athena.service';
 import { curveBumpX } from 'd3-shape'
 import { forkJoin } from 'rxjs';
+import { Hub } from 'aws-amplify';
 
 @Component({
     selector: 'app-sms-overview',
@@ -12,6 +14,7 @@ import { forkJoin } from 'rxjs';
 export class SmsOverviewComponent implements OnInit {
 
     @Input() datefilter: string;
+    isLoading: boolean;
     // options
     legend: boolean = false;
     showLabels: boolean = true;
@@ -34,9 +37,20 @@ export class SmsOverviewComponent implements OnInit {
     constructor(
         private auth: AuthService,
         private _athena: AthenaService,
-    ) {}
+        private _analyticsService: AnalyticsService,
+        private _changeDetectorRef: ChangeDetectorRef,
+    ) {
+        Hub.listen('processing', (data) => {
+            if (data.payload.event === 'progressbar') {
+                this.isLoading = data.payload.data.activate === 'on';
+                console.log("data.activate", data.payload.data.activate, "isLoading", this.isLoading);
+                this._changeDetectorRef.markForCheck();
+            }
+        });
+    }
 
     ngOnInit(): void {
+        this._analyticsService.activateProgressBar();
         this.auth.checkClientId().then((resp) => {
             const {sub} = resp;
             let clientid = '';

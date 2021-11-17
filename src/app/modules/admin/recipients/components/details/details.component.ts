@@ -126,15 +126,25 @@ export class ContactsDetailsComponent implements OnInit, OnDestroy, AfterViewIni
 
                 // Get the contact
                 this.contact = contact;
-                console.log('Recipiente', this.contact, contact);
-
-                // Patch values to the form
-                this.contactForm = this._formBuilder.group({
-                    id: [contact.id],
-                    phone: [contact.phoneTxt],
-                    recipientGroupId: [contact.Group.id],
-                    status: [contact.status],
-                });
+                if ('Group' in contact){
+                    if (contact.Group !== 'null' || contact.Group !== 'undefined'){
+                        // Patch values to the form
+                        this.contactForm = this._formBuilder.group({
+                            id: [contact.id],
+                            phone: [contact.phoneTxt],
+                            recipientGroupId: [''],
+                            status: [contact.status],
+                        });
+                    }
+                } else {
+                    // Patch values to the form
+                    this.contactForm = this._formBuilder.group({
+                        id: [contact.id],
+                        phone: [contact.phoneTxt],
+                        recipientGroupId: [contact.Group.id],
+                        status: [contact.status],
+                    });
+                }
                 // this.contactForm.patchValue(contact);
                 // Toggle the edit mode off
                 this.toggleEditMode(false);
@@ -250,7 +260,6 @@ export class ContactsDetailsComponent implements OnInit, OnDestroy, AfterViewIni
     updateContact(): void {
         // Get the contact object
         const contact = this.contactForm.getRawValue();
-        console.log(contact);
         this._recipientService.updateRecipientDetail(contact)
             .then((resp) => {
                 console.log('Recipient updated');
