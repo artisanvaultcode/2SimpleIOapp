@@ -63,9 +63,9 @@ export class AnalyticsService {
         });
     }
 
-    activateProgressBar(active = 'on') {
+    activateProgressBar(active = 'on', progressbar = 'progressbar') {
         Hub.dispatch('processing', {
-            event: 'progressbar',
+            event: progressbar,
             data: {
                 activate: active,
             },

@@ -1,5 +1,6 @@
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     OnDestroy,
     OnInit,
@@ -12,6 +13,9 @@ import { MsgTemplate } from 'app/API.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MsgTemplateDefaultComponent } from './components/msgtemplate-default/msg-template-default.component';
 import { AuthService } from 'app/core/auth/auth.service';
+import { AnalyticsService } from './analytics.service';
+import { Hub } from 'aws-amplify';
+import { FuseAlertService } from '@fuse/components/alert';
 
 @Component({
     selector: 'analytics',
@@ -23,6 +27,9 @@ import { AuthService } from 'app/core/auth/auth.service';
 export class AnalyticsComponent implements OnInit, OnDestroy {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     private clientid;
+    isLoadingActive: boolean = false;
+    showAlert: boolean = false;
+    alertMsg: string = '';
     msgdefault: string;
     dateFilter = 'YEAR'
     yearstr = '';
@@ -47,7 +54,17 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         private _matDialog: MatDialog,
         private _authService: AuthService,
         public dialog: MatDialog,
-    ) {}
+        private _changeDetectorRef: ChangeDetectorRef,
+        private _analyticsService: AnalyticsService,
+        private _fuseAlertService: FuseAlertService
+    ) {
+        Hub.listen('processing', (data) => {
+            if (data.payload.event === 'progressbaractive') {
+                this.isLoadingActive = data.payload.data.activate === 'on';
+                this._changeDetectorRef.markForCheck();
+            }
+        });
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -57,15 +74,12 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        // Get the data
-
-
+        console.log("isLoadingActive...",this.isLoadingActive);
         // Determinar el usuario
         this._authService.checkClientId()
             .then(resp => {
                 this.clientid = resp['sub'];
             });
-
         this.thisYear();
     }
 
@@ -97,18 +111,34 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
      * @param sendbool
      */
     launchMsg(sendbool) {
+        this._analyticsService.activateProgressBar('on','progressbaractive');
         this._wsService.cronMsg(sendbool, this.clientid)
-            .subscribe(resp => console.log(resp));
+        .subscribe(resp => {
+            console.log("Activate recipients", resp);
+            this._analyticsService.activateProgressBar('off','progressbaractive');
+            this.showAlert = true;
+            /* this.disAlert = false; */
+            if (sendbool){
+                this.alertMsg = "Send Message Service ACTIVATED successfully";
+            } else {
+                this.alertMsg = "Send Message Service DEACTIVATED successfully";
+            }
+            this._fuseAlertService.show('alertBox');
+        });
     }
 
     /**
      * Activate all Recipients for receive sms'
      */
     activateRecipients() {
-        // this.displayProgressSpinner=true;
+        this._analyticsService.activateProgressBar('on','progressbaractive');
         this._wsService.activateRecip('ACTIVE', this.clientid)
             .subscribe(resp => {
-                this.displayProgressSpinner=false;
+                console.log("Activate recipients", resp['body']);
+                this._analyticsService.activateProgressBar('off','progressbaractive');
+                this.showAlert = true;
+                this.alertMsg = "Recipients activated successfully, total: " + resp['body']['items'];
+                this._fuseAlertService.show('alertBox');
             });
     }
 
