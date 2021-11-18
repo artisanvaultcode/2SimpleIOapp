@@ -24,7 +24,6 @@ export class ApiDevicesService
      * Constructor
      */
     constructor(
-        private api: APIService,
         private _httpClient: HttpClient,
 
     )

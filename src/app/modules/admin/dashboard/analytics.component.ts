@@ -26,13 +26,12 @@ import { FuseAlertService } from '@fuse/components/alert';
 })
 export class AnalyticsComponent implements OnInit, OnDestroy {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
-    private clientid;
+    clientId;
     isLoadingActive: boolean = false;
     showAlert: boolean = false;
     alertMsg: string = '';
     msgdefault: string;
     dateFilter = 'YEAR'
-    yearstr = '';
     chartBlasting: ApexOptions;
     chartConversions: ApexOptions;
     chartWhiteListed: ApexOptions;
@@ -78,9 +77,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         // Determinar el usuario
         this._authService.checkClientId()
             .then(resp => {
-                this.clientid = resp['sub'];
+                this.clientId = resp['sub'];
             });
-        this.thisYear();
     }
 
     /**
@@ -97,10 +95,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
-    thisYear(){
-        const dt = new Date().getFullYear();
-        this.yearstr = dt.toString();
-    }
 
     toggleFilter(filter: string){
         this.dateFilter = filter;
@@ -112,7 +106,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
      */
     launchMsg(sendbool) {
         this._analyticsService.activateProgressBar('on','progressbaractive');
-        this._wsService.cronMsg(sendbool, this.clientid)
+        this._wsService.cronMsg(sendbool, this.clientId)
         .subscribe(resp => {
             console.log("Activate recipients", resp);
             this._analyticsService.activateProgressBar('off','progressbaractive');
@@ -132,7 +126,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
      */
     activateRecipients() {
         this._analyticsService.activateProgressBar('on','progressbaractive');
-        this._wsService.activateRecip('ACTIVE', this.clientid)
+        this._wsService.activateRecip('ACTIVE', this.clientId)
             .subscribe(resp => {
                 console.log("Activate recipients", resp['body']);
                 this._analyticsService.activateProgressBar('off','progressbaractive');
@@ -160,5 +154,10 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             .subscribe((result) => {
                 console.log('Compose dialog was closed!');
             });
+    }
+
+    get yearStr(): string{
+        const dt = new Date().getFullYear();
+        return dt.toString();
     }
 }

@@ -112,7 +112,7 @@
                             <mat-button-toggle
                                 (change)="toggleFilter('YEAR')"
                                 class="px-1.5 rounded-full overflow-hidden border-none font-medium"
-                                value="this-week">Year {{yearstr}}
+                                value="this-week">Year {{yearStr}}
                             </mat-button-toggle>
                         </mat-button-toggle-group>
                         <div class="sm:hidden">
@@ -122,14 +122,14 @@
                                 <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
                             </button>
                             <mat-menu #blastingMenu="matMenu">
-                                <button mat-menu-item>This Week</button>
-                                <button mat-menu-item>Last Week</button>
+                                <button mat-menu-item>Last Month</button>
+                                <button mat-menu-item>Year {{yearStr}}</button>
                             </mat-menu>
                         </div>
                     </div>
                 </div>
                 <div class="flex flex-col flex-auto h-80">
-                    <app-sms-overview [datefilter]="dateFilter" class="fitcontainer"></app-sms-overview>
+                    <app-sms-overview [clientId]="clientId" [datefilter]="dateFilter" class="fitcontainer"></app-sms-overview>
                 </div>
             </div>
             <!-- Messages Sent -->
@@ -138,7 +138,7 @@
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Messages Sent</div>
                 </div>
                 <div class="flex flex-col flex-auto m-0 p-0" >
-                    <app-cardnumber></app-cardnumber>
+                    <!-- <app-cardnumber></app-cardnumber> -->
                 </div>
             </div>
             <!-- Visits -->
@@ -147,7 +147,7 @@
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Devices</div>
                 </div>
                 <div class="flex flex-col flex-auto h-20 mt-0">
-                    <app-devday-advpie></app-devday-advpie>
+                    <!-- <app-devday-advpie></app-devday-advpie> -->
                 </div>
             </div>
         </div>

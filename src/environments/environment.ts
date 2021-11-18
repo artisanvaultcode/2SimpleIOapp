@@ -7,7 +7,7 @@ export const environment = {
     pusher: {
       key: '4044d2bc578d0f1bf4d2',
     },
-    backendurl: 'http://ec2-34-235-165-28.compute-1.amazonaws.com:5000'
+    backendurl: 'http://ec2-54-225-216-23.compute-1.amazonaws.com:5000'
 };
 
 /*

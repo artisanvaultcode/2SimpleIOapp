@@ -34,11 +34,8 @@ import {FuseConfirmationService} from '../../../../../../@fuse/services/confirma
 })
 export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChanges
 {
-    @Input()
-    currentMsg: any;
-
-    @Output()
-    closeOrCancelEvent: EventEmitter<any> = new EventEmitter<any>();
+    @Input() currentMsg: any;
+    @Output() closeOrCancelEvent: EventEmitter<any> = new EventEmitter<any>();
     @ViewChild('labelsPanelOrigin') private _labelPanelOrigin: ElementRef;
     @ViewChild('labelsPanel') private _labelsPanel: TemplateRef<any>;
 

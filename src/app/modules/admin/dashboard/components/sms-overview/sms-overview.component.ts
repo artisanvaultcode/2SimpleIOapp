@@ -1,19 +1,26 @@
+import {
+    ChangeDetectorRef,
+    Component,
+    Input,
+    OnChanges,
+    OnInit,
+    SimpleChanges,
+} from '@angular/core';
 import { AnalyticsService } from './../../analytics.service';
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { AuthService } from 'app/core/auth/auth.service';
 import { AthenaService } from '../../athena.service';
-import { curveBumpX } from 'd3-shape'
-import { forkJoin } from 'rxjs';
+import { curveBumpX } from 'd3-shape';
+import { forkJoin, Subject } from 'rxjs';
 import { Hub } from 'aws-amplify';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-sms-overview',
     templateUrl: './sms-overview.component.html',
     styleUrls: ['./sms-overview.component.scss'],
 })
-export class SmsOverviewComponent implements OnInit {
-
+export class SmsOverviewComponent implements OnInit, OnChanges {
     @Input() datefilter: string;
+    @Input() clientId: string;
     isLoading: boolean;
     // options
     legend: boolean = false;
@@ -34,102 +41,141 @@ export class SmsOverviewComponent implements OnInit {
 
     datosY = [];
     datosM = [];
+
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
+
     constructor(
-        private auth: AuthService,
         private _athena: AthenaService,
         private _analyticsService: AnalyticsService,
-        private _changeDetectorRef: ChangeDetectorRef,
+        private _changeDetectorRef: ChangeDetectorRef
     ) {
         Hub.listen('processing', (data) => {
             if (data.payload.event === 'progressbar') {
                 this.isLoading = data.payload.data.activate === 'on';
-                console.log("data.activate", data.payload.data.activate, "isLoading", this.isLoading);
+                console.log(
+                    'data.activate',
+                    data.payload.data.activate,
+                    'isLoading',
+                    this.isLoading
+                );
                 this._changeDetectorRef.markForCheck();
             }
         });
     }
 
     ngOnInit(): void {
-        this._analyticsService.activateProgressBar();
-        this.auth.checkClientId().then((resp) => {
-            const {sub} = resp;
-            let clientid = '';
-            const yearstr = new Date().getFullYear();
-            if (sub === 'e43c4031-be4d-4c77-8ad9-ca842f5b4dc9'){
-                clientid = `'e43c4031-be4d-4c77-8ad9-ca842f5b4dc9' OR
-                        clientId = '1f78d0af-6b51-4723-8652-6dda5008c107'`
-            } else {
-                clientid = "'" + sub + "'";
-            }
-            this.getDataYear(clientid, yearstr.toString());
-            this.getDataMonth(clientid);
-        });
+        setTimeout(() => {
+            this._changeDetectorRef.markForCheck();
+        }, 2000);
     }
 
-    getDataYear(clientid: string, yearstr: string){
-        forkJoin({
-            devices: this._athena.distinctDevices(clientid, yearstr),
-            datesstr: this._athena.distinctDates(clientid, yearstr)
-        }).subscribe(({devices, datesstr}) => {
-            const devs = devices['result'];
-            const datstr = datesstr['result'];
-            this.datosY = this.objBase(devs, datstr);
-            this._athena.yearmsgdevices(clientid, yearstr)
-                .subscribe(res => {
-                    res['result'].forEach(elem => {
-                       let serie = this.datosY.find( x => x.name === elem[1] );
-                       let datval = serie.series.find(x => x.name === elem[0]);
-                       datval.value = elem[2]
-                    });
-                });
-        });
+    ngOnChanges(changes: SimpleChanges): void {
+        const {clientId, datefilter} = changes;
+        if (clientId && clientId.currentValue){
+            this.getDataYear();
+        }
+
+
     }
 
-    getDataMonth(clientid: string){
+    getDataYear() {
+        this._athena.dbSmsOverview(this.clientId, this.thisYear)
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((response) => {
+                    const dateArray = this.distinctArray(response['result'], 0);
+                    const devArray = this.distinctArray(response['result'], 1);
+                    this.datosY = this.objSeries(devArray, response['result'], dateArray);
+                    this._changeDetectorRef.markForCheck();
+            });
+    }
+
+    objSeries(devArray: any[], dataArray: any[], dateArray: any[]): any[] {
+        let objSer = [];
+        devArray.forEach((item) => {
+            const ele = {
+                name: item,
+                series: [],
+            };
+            objSer.push(ele);
+        });
+        dateArray.forEach(date => {
+            let devTmp = devArray;
+            let dataTmp = dataArray.filter(x => x[0] === date);
+            dataTmp.forEach(dt => {
+                let objTmp = objSer.filter(x => x.name === dt[1]);
+                const ser = {
+                    name: date,
+                    value: dt[2]
+                };
+                objTmp[0].series.push(ser);
+                devTmp = devTmp.filter(x => x !== dt[1]);
+            });
+            const ser1 = {
+                name: date,
+                value: 0
+            };
+            devTmp.forEach(devt => {
+                let objTmp = objSer.filter(x => x.name === devt);
+                objTmp[0].series.push(ser1);
+            });
+        });
+        return objSer;
+    }
+
+    distinctArray(array: any[], idx: number): any[]{
+        const uniques = array.map(item => item[idx])
+          .filter((value, index, self) => self.indexOf(value) === index);
+        return uniques
+    }
+
+    getDataMonth(clientid: string) {
         forkJoin({
             devices: this._athena.distinctDevicesMonth(clientid),
-            datesstr: this._athena.distinctDatesMonth(clientid)
-        }).subscribe(({devices, datesstr}) => {
+            datesstr: this._athena.distinctDatesMonth(clientid),
+        }).subscribe(({ devices, datesstr }) => {
             const devs = devices['result'];
             const datstr = datesstr['result'];
             this.datosM = this.objBase(devs, datstr);
-                this._athena.monthmsgdevices(clientid)
-                    .subscribe(res => {
-                        res['result'].forEach(elem => {
-                           let serie = this.datosM.find( x => x.name === elem[1] );
-                           let datval = serie.series.find(x => x.name === elem[0]);
-                           datval.value = elem[2]
-                        });
-                    });
+            this._athena.monthmsgdevices(clientid).subscribe((res) => {
+                res['result'].forEach((elem) => {
+                    let serie = this.datosM.find((x) => x.name === elem[1]);
+                    let datval = serie.series.find((x) => x.name === elem[0]);
+                    datval.value = elem[2];
+                });
+            });
         });
     }
 
-    objBase(devs: any[], dats: any[]): any[]{
+    objBase(devs: any[], dats: any[]): any[] {
         let objbase = [];
-        devs.forEach(elem => {
+        devs.forEach((elem) => {
             let serie = [];
-            dats.forEach(dt => {
+            dats.forEach((dt) => {
                 const ser = {
                     name: dt[0],
-                    value: 0
-                }
+                    value: 0,
+                };
                 serie.push(ser);
             });
             const ele = {
                 name: elem[0],
-                series: serie
-            }
+                series: serie,
+            };
             objbase.push(ele);
         });
-        return objbase
+        return objbase;
     }
 
-    get multi (){
+    get thisYear(): string{
+        const dt = new Date().getFullYear();
+        return dt.toString();
+    }
+
+    get multi() {
         if (this.datefilter === 'YEAR') {
             return this.datosY;
         } else {
             return this.datosM;
         }
     }
-
 }

@@ -16,16 +16,13 @@ import {
 })
 export class DeviceRowComponent implements OnInit, OnChanges {
 
-    @Input()
-    item: any;
-    @Input()
-    action: string;
-    @Input()
-    newItem: any;
+    @Input() item: any;
+    @Input() action: string;
+    @Input() newItem: any;
 
     constructor( private cd: ChangeDetectorRef) { }
 
-  ngOnInit(): void {
+    ngOnInit(): void {
         this.cd.detectChanges();
         console.log(this.item);
     }
