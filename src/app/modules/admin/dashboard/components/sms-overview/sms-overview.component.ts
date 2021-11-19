@@ -3,13 +3,13 @@ import {
     Component,
     Input,
     OnChanges,
+    OnDestroy,
     OnInit,
     SimpleChanges,
 } from '@angular/core';
-import { AnalyticsService } from './../../analytics.service';
 import { AthenaService } from '../../athena.service';
 import { curveBumpX } from 'd3-shape';
-import { forkJoin, Subject } from 'rxjs';
+import { timer, Subject, Subscription } from 'rxjs';
 import { Hub } from 'aws-amplify';
 import { takeUntil } from 'rxjs/operators';
 
@@ -18,9 +18,10 @@ import { takeUntil } from 'rxjs/operators';
     templateUrl: './sms-overview.component.html',
     styleUrls: ['./sms-overview.component.scss'],
 })
-export class SmsOverviewComponent implements OnInit, OnChanges {
+export class SmsOverviewComponent implements OnInit, OnChanges, OnDestroy {
     @Input() datefilter: string;
     @Input() clientId: string;
+    firstLoad = true;
     isLoading: boolean;
     // options
     legend: boolean = false;
@@ -30,7 +31,6 @@ export class SmsOverviewComponent implements OnInit, OnChanges {
     yAxis: boolean = true;
     showYAxisLabel: boolean = true;
     showXAxisLabel: boolean = true;
-    xAxisLabel: string = 'Day';
     yAxisLabel: string = 'Total sent daily';
     timeline: boolean = true;
 
@@ -43,30 +43,24 @@ export class SmsOverviewComponent implements OnInit, OnChanges {
     datosM = [];
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+    private timerObserver: Subscription;
 
     constructor(
         private _athena: AthenaService,
-        private _analyticsService: AnalyticsService,
         private _changeDetectorRef: ChangeDetectorRef
     ) {
         Hub.listen('processing', (data) => {
             if (data.payload.event === 'progressbar') {
                 this.isLoading = data.payload.data.activate === 'on';
-                console.log(
-                    'data.activate',
-                    data.payload.data.activate,
-                    'isLoading',
-                    this.isLoading
-                );
                 this._changeDetectorRef.markForCheck();
             }
         });
     }
 
     ngOnInit(): void {
-        setTimeout(() => {
-            this._changeDetectorRef.markForCheck();
-        }, 2000);
+        let timer$ = timer(2000, 5000);
+        this.timerObserver = timer$.subscribe(() => this._changeDetectorRef.markForCheck());
+        this.activateProgressBar()
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -74,18 +68,39 @@ export class SmsOverviewComponent implements OnInit, OnChanges {
         if (clientId && clientId.currentValue){
             this.getDataYear();
         }
+        if (datefilter && datefilter.currentValue && this.clientId){
+            if (this.firstLoad) {
+                this.getDataMonth();
+                this.firstLoad = false;
+            }
+        }
+    }
 
-
+    ngOnDestroy() {
+        this.timerObserver.unsubscribe();
     }
 
     getDataYear() {
+        this.activateProgressBar()
         this._athena.dbSmsOverview(this.clientId, this.thisYear)
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe((response) => {
                     const dateArray = this.distinctArray(response['result'], 0);
                     const devArray = this.distinctArray(response['result'], 1);
                     this.datosY = this.objSeries(devArray, response['result'], dateArray);
-                    this._changeDetectorRef.markForCheck();
+                    this.activateProgressBar('off');
+            });
+    }
+
+    getDataMonth() {
+        this.activateProgressBar()
+        this._athena.dbSmsOverviewMonth(this.clientId)
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((response) => {
+                    const dateArray = this.distinctArray(response['result'], 0);
+                    const devArray = this.distinctArray(response['result'], 1);
+                    this.datosM = this.objSeries(devArray, response['result'], dateArray);
+                    this.activateProgressBar('off');
             });
     }
 
@@ -128,24 +143,6 @@ export class SmsOverviewComponent implements OnInit, OnChanges {
         return uniques
     }
 
-    getDataMonth(clientid: string) {
-        forkJoin({
-            devices: this._athena.distinctDevicesMonth(clientid),
-            datesstr: this._athena.distinctDatesMonth(clientid),
-        }).subscribe(({ devices, datesstr }) => {
-            const devs = devices['result'];
-            const datstr = datesstr['result'];
-            this.datosM = this.objBase(devs, datstr);
-            this._athena.monthmsgdevices(clientid).subscribe((res) => {
-                res['result'].forEach((elem) => {
-                    let serie = this.datosM.find((x) => x.name === elem[1]);
-                    let datval = serie.series.find((x) => x.name === elem[0]);
-                    datval.value = elem[2];
-                });
-            });
-        });
-    }
-
     objBase(devs: any[], dats: any[]): any[] {
         let objbase = [];
         devs.forEach((elem) => {
@@ -164,6 +161,15 @@ export class SmsOverviewComponent implements OnInit, OnChanges {
             objbase.push(ele);
         });
         return objbase;
+    }
+
+    activateProgressBar(active = 'on') {
+        Hub.dispatch('processing', {
+            event: 'progressbar',
+            data: {
+                activate: active,
+            },
+        });
     }
 
     get thisYear(): string{

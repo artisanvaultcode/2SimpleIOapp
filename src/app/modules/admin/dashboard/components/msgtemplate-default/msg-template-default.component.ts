@@ -1,10 +1,8 @@
-import { TemplateUsage } from './../../../../../API.service';
-import { AnalyticsService } from './../../analytics.service';
 import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MsgTemplateService } from 'app/core/services/msg-template.service';
-import { CreateMsgTemplateInput,MsgTemplate } from '../../../../../API.service';
+import { CreateMsgTemplateInput, MsgTemplate, TemplateUsage } from '../../../../../API.service';
 import { Hub } from 'aws-amplify';
 
 @Component({
@@ -16,7 +14,7 @@ export class MsgTemplateDefaultComponent implements OnInit {
 
     id: string;
     version: number;
-    isLoading: boolean;
+    isLoadingMsg: boolean;
     msgDefault: CreateMsgTemplateInput;
     composeForm: FormGroup;
     showAlert: boolean = false;
@@ -29,12 +27,11 @@ export class MsgTemplateDefaultComponent implements OnInit {
         public matDialogRef: MatDialogRef<MsgTemplateDefaultComponent>,
         private _formBuilder: FormBuilder,
         private _msgTemplateService: MsgTemplateService,
-        private _analyticsService: AnalyticsService,
         private _changeDetectorRef: ChangeDetectorRef,
     ) {
         Hub.listen('processing', (data) => {
-            if (data.payload.event === 'progressbar') {
-                this.isLoading = data.payload.data.activate === 'on';
+            if (data.payload.event === 'progressbarmsg') {
+                this.isLoadingMsg = data.payload.data.activate === 'on';
                 this._changeDetectorRef.markForCheck();
             }
         });
@@ -53,8 +50,8 @@ export class MsgTemplateDefaultComponent implements OnInit {
             name: ['', [Validators.required, Validators.minLength(4)]],
             message: ['', [Validators.required, Validators.minLength(4)]],
         });
-        this._analyticsService.activateProgressBar();
-        this._analyticsService.getDefaultMsg()
+        this._msgTemplateService.activateProgressBar();
+        this._msgTemplateService.getDefaultMsg()
                 .then(respt => {
                     this.id = respt.id;
                     this.version = respt._version;
@@ -62,11 +59,11 @@ export class MsgTemplateDefaultComponent implements OnInit {
                         name: [respt.name, [Validators.required, Validators.minLength(4)]],
                         message: [respt.message, [Validators.required, Validators.minLength(4)]],
                     });
-                    this._analyticsService.activateProgressBar('off');
+                    this._msgTemplateService.activateProgressBar('off');
                 })
                 .catch(err => {
                     console.log("[getDefaultMsg:]",err);
-                    this._analyticsService.activateProgressBar('off');
+                    this._msgTemplateService.activateProgressBar('off');
                 });
     }
 

@@ -23,8 +23,7 @@ export class GroupsMessagesComponent implements OnInit, OnDestroy
     labels$: Observable<Label[]>;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-    @Output()
-    closeOrCancelEvent: EventEmitter<any> = new EventEmitter<any>();
+    @Output() closeOrCancelEvent: EventEmitter<any> = new EventEmitter<any>();
     /**
      * Constructor
      */

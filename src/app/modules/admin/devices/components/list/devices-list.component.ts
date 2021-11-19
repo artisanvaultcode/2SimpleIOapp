@@ -165,13 +165,7 @@ export class DevicesListComponent implements OnInit, OnDestroy, AfterViewInit {
         this._deviceServices.setDevices = sendDevices;
 
         this.toggleDrawerOpen('device-gauge');
-        // const {sub} = await this._auth.checkClientId();
-        // this._apiDevicesService.sendAwakeTests(sendDevices, sub)
-        //     .pipe(takeUntil(this._unsubscribeAll))
-        //     .subscribe((data) => {
-        //         console.log(data);
-        //     });
-        // return Promise.resolve();
+
     }
     /**
      * Refresh

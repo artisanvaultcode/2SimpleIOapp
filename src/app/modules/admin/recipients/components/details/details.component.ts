@@ -199,15 +199,6 @@ export class ContactsDetailsComponent implements OnInit, OnDestroy, AfterViewIni
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
     ngOnViewInit() {
-        /* if (!this._detailPanel){
-            // Create the overlay if it doesn't exist
-            if ( !this._overlayRef ){
-                    this._createOverlay();
-            }
-
-            // Attach the portal to the overlay
-            this._overlayRef.attach(new TemplatePortal(this._detailPanel, this._viewContainerRef));
-        } */
     }
     /**
      * On destroy
@@ -344,60 +335,11 @@ export class ContactsDetailsComponent implements OnInit, OnDestroy, AfterViewIni
         if (!this._detailPanel) {
             return;
         }
-
-        /*         // Create the overlay if it doesn't exist
-        if ( !this._overlayRef )
-        {
-            this._createOverlay();
-        }
-
-        // Attach the portal to the overlay
-        this._overlayRef.attach(new TemplatePortal(this._messagesPanel, this._viewContainerRef));
-     */
     }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
     closePanel(): void {
         this._overlayRef.detach();
-    }
-
-    _createOverlay(): void {
-        this._overlayRef = this._overlay.create({
-            hasBackdrop: true,
-            backdropClass: 'cdk-overlay-transparent-backdrop',
-            scrollStrategy: this._overlay.scrollStrategies.noop(),
-
-            /* positionStrategy: this._overlay.position()
-                .flexibleConnectedTo(origin)
-                .withLockedPosition(true)
-                .withPush(true)
-                .withPositions([
-                    {
-                        originX : 'start',
-                        originY : 'bottom',
-                        overlayX: 'start',
-                        overlayY: 'top'
-                    },
-                    {
-                        originX : 'start',
-                        originY : 'top',
-                        overlayX: 'start',
-                        overlayY: 'bottom'
-                    },
-                    {
-                        originX : 'end',
-                        originY : 'bottom',
-                        overlayX: 'end',
-                        overlayY: 'top'
-                    },
-                    {
-                        originX : 'end',
-                        originY : 'top',
-                        overlayX: 'end',
-                        overlayY: 'bottom'
-                    }
-                ]) */
-        });
     }
 
     trackByFn(index: number, item: any): any {

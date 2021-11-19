@@ -38,7 +38,7 @@
                             <div class="flex sm:items-center">
                                 <mat-icon [svgIcon]="'heroicons_solid:device-mobile'"></mat-icon>
                                 <div class="ml-6 leading-6">{{contact?.phone}}</div>
-                            </div>  
+                            </div>
                         </ng-container>
                         <!-- Group -->
                         <ng-container *ngIf="contact?.Group">
@@ -85,6 +85,7 @@
                                     [svgIcon]="'heroicons_solid:device-mobile'"></mat-icon>
                                 <input
                                     matInput
+                                    [readonly]="true"
                                     [formControlName]="'phone'"
                                     [placeholder]="'Phone'">
                             </mat-form-field>

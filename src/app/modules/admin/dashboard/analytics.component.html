@@ -1,20 +1,23 @@
 <div class="flex flex-col flex-auto w-full">
-
+    <ng-container *ngIf="isLoading" >
+        <mat-progress-bar mode="query" ></mat-progress-bar>
+    </ng-container>
     <div class="flex flex-wrap w-full max-w-screen-xl mx-auto p-6 md:p-8">
-        <div class="flex flex-row w-full">
-            <div class="flex flex-col flex-auto"></div>
-            <div class="flex flex-col">
-                <fuse-alert
-                    *ngIf="showAlert"
-                    [appearance]="'soft'"
-                    [dismissible]="true"
-                    [dismissed]="false"
-                    [name]="'alertBox'"
-                    [type]="'success'">
-                    {{alertMsg}}
-                </fuse-alert>
-            </div>
+        <div class="flex flex-col fillall">
+            <fuse-alert
+                class="flex w-full"
+                *ngIf="showAlert"
+                [appearance]="'soft'"
+                [dismissible]="true"
+                [dismissed]="false"
+                [name]="'alertBox'"
+                [type]="'success'">
+                {{alertMsg}}
+            </fuse-alert>
         </div>
+        <!-- <div class="flex flex-row w-full">
+            <div class="flex flex-col flex-auto"></div>
+        </div> -->
         <!-- Title and action buttons -->
         <div class="flex items-center justify-between w-full">
             <div>
@@ -65,9 +68,6 @@
                             <span class="ml-2">Activate</span>
                         </button>
                     </div>
-                    <ng-container *ngIf="isLoadingActive" >
-                        <mat-progress-bar mode="query" ></mat-progress-bar>
-                    </ng-container>
                 </div>
 
 
@@ -84,9 +84,6 @@
                         <button mat-menu-item (click)="launchMsg(false)">Pause</button>
                         <button mat-menu-item (click)="activateRecipients()">Activate</button>
                     </mat-menu>
-                    <ng-container *ngIf="isLoadingActive" >
-                        <mat-progress-bar mode="query" ></mat-progress-bar>
-                    </ng-container>
                 </div>
             </div>
         </div>
@@ -138,7 +135,7 @@
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Messages Sent</div>
                 </div>
                 <div class="flex flex-col flex-auto m-0 p-0" >
-                    <!-- <app-cardnumber></app-cardnumber> -->
+                    <app-cardnumber [clientId]="clientId"></app-cardnumber>
                 </div>
             </div>
             <!-- Visits -->
@@ -147,7 +144,7 @@
                     <div class="text-lg font-medium tracking-tight leading-6 truncate">Devices</div>
                 </div>
                 <div class="flex flex-col flex-auto h-20 mt-0">
-                    <!-- <app-devday-advpie></app-devday-advpie> -->
+                    <app-devday-advpie [clientId]="clientId"></app-devday-advpie>
                 </div>
             </div>
         </div>

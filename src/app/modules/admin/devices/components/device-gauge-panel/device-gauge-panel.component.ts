@@ -45,11 +45,9 @@ export type ChartOptions = {
 export class DeviceGaugePanelComponent implements OnInit, OnDestroy, OnChanges
 {
 
-    @Input()
-    clientId: string;
+    @Input() clientId: string;
 
-    @Output()
-    closeOrCancelEvent: EventEmitter<any> = new EventEmitter<any>();
+    @Output() closeOrCancelEvent: EventEmitter<any> = new EventEmitter<any>();
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     // eslint-disable-next-line @typescript-eslint/member-ordering
     saveOrCreate: boolean;

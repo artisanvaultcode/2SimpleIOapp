@@ -30,13 +30,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
         icon : 'heroicons_outline:chat',
         link : '/client/messages'
     },
-    {
+    /* {
         id   : 'enterprisebi',
         title: 'Enterprise BI',
         type : 'basic',
         icon : 'heroicons_outline:chart-square-bar',
         link : '/client/enterprisebi'
-    }
+    } */
 ];
 export const compactNavigation: FuseNavigationItem[] = [
     {
@@ -67,13 +67,13 @@ export const compactNavigation: FuseNavigationItem[] = [
         icon : 'heroicons_outline:chat',
         link : '/client/messages'
     },
-    {
+    /* {
         id   : 'enterprisebi',
         title: 'Enterprise BI',
         type : 'basic',
         icon : 'heroicons_outline:chart-square-bar',
         link : '/client/enterprisebi'
-    }
+    } */
 ];
 export const futuristicNavigation: FuseNavigationItem[] = [
     {
@@ -104,13 +104,13 @@ export const futuristicNavigation: FuseNavigationItem[] = [
         icon : 'heroicons_outline:chat',
         link : '/client/messages'
     },
-    {
+    /* {
         id   : 'enterprisebi',
         title: 'Enterprise BI',
         type : 'basic',
         icon : 'heroicons_outline:chart-square-bar',
         link : '/client/enterprisebi'
-    }
+    } */
 ];
 export const horizontalNavigation: FuseNavigationItem[] = [
     {
@@ -141,11 +141,11 @@ export const horizontalNavigation: FuseNavigationItem[] = [
         icon : 'heroicons_outline:chat',
         link : '/client/messages'
     },
-    {
+    /* {
         id   : 'enterprisebi',
         title: 'Enterprise BI',
         type : 'basic',
         icon : 'heroicons_outline:chart-square-bar',
         link : '/client/enterprisebi'
-    }
+    } */
 ];

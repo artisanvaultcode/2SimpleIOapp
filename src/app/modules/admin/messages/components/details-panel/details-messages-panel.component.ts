@@ -17,7 +17,6 @@ import {
 } from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {MsgsService} from '../../messages.service';
-import {AuthService} from 'app/core/auth/auth.service';
 import {MessageModel} from '../../models/MessageModel';
 import {takeUntil} from 'rxjs/operators';
 import _lodash from 'lodash';
@@ -58,7 +57,6 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _messagesService: MsgsService,
-        private _auth: AuthService,
         private _overlay: Overlay,
         private _viewContainerRef: ViewContainerRef,
         private _fuseConfirmationService: FuseConfirmationService,
@@ -188,20 +186,6 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
             return;
         }
 
-        // If there is a tag...
-        const item = this.filteredLabels[0];
-        const isLabelApplied = this.listOfLabelsById.find(id => id === item.id);
-        // If the found tag is already applied to the task...
-        if ( isLabelApplied )
-        {
-            // Remove the tag from the task
-            // this.deleteTagFromTask(tag);
-        }
-        else
-        {
-            // Otherwise add the tag to the task
-            // this.addTagToTask(tag);
-        }
     }
     /**
      * Update the note details
@@ -339,19 +323,6 @@ export class DetailsMessagesPanelComponent implements OnInit, OnDestroy, OnChang
         });
 
     }
-
-    /**
-     * Toggle archived status on the given note
-     *
-     * @param note
-     */
-    // toggleArchiveMessage(msg: any): void
-    // {
-    //     this._msgsService.archiveMessage(msg.id)
-    //         .then(() => this._matDialogRef.close())
-    //         .catch(error => console.log(error));
-    // }
-    //
 
     closePanel($event: any): void {
         this.closeOrCancelEvent.emit('msgDetails');

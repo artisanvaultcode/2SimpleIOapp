@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from 'app/core/auth/auth.service';
+import { Component, Input, OnInit, SimpleChanges, OnChanges, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Hub } from 'aws-amplify';
+import { Subject, Subscription, timer } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AthenaService } from './../../athena.service';
 
 export interface DevSend {
@@ -13,7 +15,9 @@ export interface DevSend {
     templateUrl: './devday-advpie.component.html',
     styleUrls: ['./devday-advpie.component.scss'],
 })
-export class DevdayAdvpieComponent implements OnInit {
+export class DevdayAdvpieComponent implements OnInit, OnChanges, OnDestroy {
+    @Input() clientId: string;
+
     devData: DevSend[];
 
     // options
@@ -27,31 +31,53 @@ export class DevdayAdvpieComponent implements OnInit {
 
     datos = [];
 
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
+    private timerObserver: Subscription;
+
     constructor(
-        private auth: AuthService,
-        private _athena: AthenaService
+        private _athenaService: AthenaService,
+        private _changeDetectorRef: ChangeDetectorRef
     ) {}
 
     ngOnInit(): void {
-        this.auth.checkClientId().then((resp) => {
-            const {sub} = resp;
-            this._athena.distinctDatesMonth("'"+sub+"'")
-                .subscribe(resp => {
-                    this._athena.dateMsgDevices("'"+sub+"'",
-                                resp['result'][resp['result'].length-1][0])
-                        .subscribe(res => {
-                            let datatmp = [];
-                            res['result'].forEach(ele => {
-                                const element = {
-                                    name: ele[0],
-                                    value: ele[1]
-                                }
-                                datatmp.push(element);
-                            });
-                            this.datos = datatmp;
-                        })
-                });
+        let timer$ = timer(2000, 5000);
+        this.timerObserver = timer$.subscribe(() => this._changeDetectorRef.markForCheck());
+    }
 
+    ngOnChanges(changes: SimpleChanges): void {
+        const {clientId} = changes;
+        if (clientId && clientId.currentValue){
+            this.getSmsDevice();
+        }
+    }
+
+    ngOnDestroy() {
+        this.timerObserver.unsubscribe();
+    }
+
+    getSmsDevice() {
+        this._athenaService.dbSmsDevice(this.clientId)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe(response => {
+                let datatmp = [];
+                response['result'].forEach(ele => {
+                    const element = {
+                        name: ele[0],
+                        value: ele[1]
+                    }
+                    datatmp.push(element);
+                });
+                this.datos = datatmp;
+            });
+        this._changeDetectorRef.detectChanges();
+    }
+
+    activateProgressBar(active = 'on') {
+        Hub.dispatch('processing', {
+            event: 'progressbar',
+            data: {
+                activate: active,
+            },
         });
     }
 

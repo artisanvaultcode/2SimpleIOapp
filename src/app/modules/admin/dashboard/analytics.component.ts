@@ -13,7 +13,6 @@ import { MsgTemplate } from 'app/API.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MsgTemplateDefaultComponent } from './components/msgtemplate-default/msg-template-default.component';
 import { AuthService } from 'app/core/auth/auth.service';
-import { AnalyticsService } from './analytics.service';
 import { Hub } from 'aws-amplify';
 import { FuseAlertService } from '@fuse/components/alert';
 
@@ -27,7 +26,7 @@ import { FuseAlertService } from '@fuse/components/alert';
 export class AnalyticsComponent implements OnInit, OnDestroy {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     clientId;
-    isLoadingActive: boolean = false;
+    isLoading: boolean = false;
     showAlert: boolean = false;
     alertMsg: string = '';
     msgdefault: string;
@@ -54,12 +53,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         private _authService: AuthService,
         public dialog: MatDialog,
         private _changeDetectorRef: ChangeDetectorRef,
-        private _analyticsService: AnalyticsService,
         private _fuseAlertService: FuseAlertService
     ) {
         Hub.listen('processing', (data) => {
-            if (data.payload.event === 'progressbaractive') {
-                this.isLoadingActive = data.payload.data.activate === 'on';
+            if (data.payload.event === 'progressbar') {
+                this.isLoading = data.payload.data.activate === 'on';
                 this._changeDetectorRef.markForCheck();
             }
         });
@@ -73,7 +71,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        console.log("isLoadingActive...",this.isLoadingActive);
         // Determinar el usuario
         this._authService.checkClientId()
             .then(resp => {
@@ -105,11 +102,10 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
      * @param sendbool
      */
     launchMsg(sendbool) {
-        this._analyticsService.activateProgressBar('on','progressbaractive');
+        this.activateProgressBar('on');
         this._wsService.cronMsg(sendbool, this.clientId)
         .subscribe(resp => {
-            console.log("Activate recipients", resp);
-            this._analyticsService.activateProgressBar('off','progressbaractive');
+            this.activateProgressBar('off');
             this.showAlert = true;
             /* this.disAlert = false; */
             if (sendbool){
@@ -125,11 +121,10 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
      * Activate all Recipients for receive sms'
      */
     activateRecipients() {
-        this._analyticsService.activateProgressBar('on','progressbaractive');
+        this.activateProgressBar('on');
         this._wsService.activateRecip('ACTIVE', this.clientId)
             .subscribe(resp => {
-                console.log("Activate recipients", resp['body']);
-                this._analyticsService.activateProgressBar('off','progressbaractive');
+                this.activateProgressBar('off');
                 this.showAlert = true;
                 this.alertMsg = "Recipients activated successfully, total: " + resp['body']['items'];
                 this._fuseAlertService.show('alertBox');
@@ -154,6 +149,15 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             .subscribe((result) => {
                 console.log('Compose dialog was closed!');
             });
+    }
+
+    activateProgressBar(active = 'on') {
+        Hub.dispatch('processing', {
+            event: 'progressbar',
+            data: {
+                activate: active,
+            },
+        });
     }
 
     get yearStr(): string{
