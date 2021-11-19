@@ -66,7 +66,7 @@ export class GroupsRecipientsService
             filterTxt['name'] = { contains: searchTxt};
         }
         return new Promise((resolve, reject) => {
-           this.api.ListGroups(filterTxt, 5)
+           this.api.ListGroups(filterTxt)
                 .then((result) => {
                     const notDeleted = result.items.filter(item => item._deleted !== true);
                     this._groups.next(notDeleted);

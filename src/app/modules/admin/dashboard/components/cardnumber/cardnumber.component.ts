@@ -1,9 +1,9 @@
-import { 
-    ChangeDetectorRef, 
-    Component, Input, 
-    OnChanges, OnInit, 
-    SimpleChanges, 
-    OnDestroy } 
+import {
+    ChangeDetectorRef,
+    Component, Input,
+    OnChanges, OnInit,
+    SimpleChanges,
+    OnDestroy }
 from '@angular/core';
 import { AthenaService } from '../../athena.service';
 import * as shape from 'd3-shape';

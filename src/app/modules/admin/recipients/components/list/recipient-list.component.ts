@@ -69,7 +69,11 @@ export class RecipientListComponent implements OnInit, OnDestroy {
             .subscribe((contacts: any[]) => {
                 // Update the counts
                 this.recipientsCount = contacts.length;
-
+                if (contacts.length > 0){
+                    document.getElementById("nPage").hidden = false;
+                } else {
+                    document.getElementById("nPage").hidden = true;
+                }
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });

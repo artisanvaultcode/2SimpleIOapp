@@ -10,17 +10,17 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
-import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { OverlayRef } from '@angular/cdk/overlay';
 import { MatDrawerToggleResult } from '@angular/material/sidenav';
-import {ReplaySubject, Subject} from 'rxjs';
+import { ReplaySubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { RecipientListComponent } from '../list/recipient-list.component';
 import { RecipientsService } from '../../recipients.service';
-import {EntityStatus} from '../../../../../API.service';
-import {FuseUtils} from '../../../../../../@fuse/utils';
-import {GroupsRecipientsService} from '../../groups-recipients.service';
+import { EntityStatus } from '../../../../../API.service';
+import { FuseUtils } from '../../../../../../@fuse/utils';
+import { GroupsRecipientsService } from '../../groups-recipients.service';
 
 interface IStatus {
     value: string;
@@ -33,7 +33,9 @@ interface IStatus {
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ContactsDetailsComponent implements OnInit, OnDestroy, AfterViewInit  {
+export class ContactsDetailsComponent
+    implements OnInit, OnDestroy, AfterViewInit
+{
     @ViewChild('detailPanel') private _detailPanel: TemplateRef<any>;
 
     statusOptions: IStatus[] = [];
@@ -66,7 +68,6 @@ export class ContactsDetailsComponent implements OnInit, OnDestroy, AfterViewIni
         private _formBuilder: FormBuilder,
         private _fuseConfirmationService: FuseConfirmationService,
         private _router: Router,
-        private _overlay: Overlay
     ) {
         this._groupsService.getGroups();
         this.statusOptions = FuseUtils.convertEnumToArray(EntityStatus);
@@ -81,7 +82,6 @@ export class ContactsDetailsComponent implements OnInit, OnDestroy, AfterViewIni
      * On init
      */
     ngOnInit(): void {
-
         this._groupsService.groups$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((groups: any[]) => {
@@ -126,8 +126,11 @@ export class ContactsDetailsComponent implements OnInit, OnDestroy, AfterViewIni
 
                 // Get the contact
                 this.contact = contact;
-                if ('Group' in contact){
-                    if (contact.Group !== 'null' || contact.Group !== 'undefined'){
+                if ('Group' in contact) {
+                    if (
+                        contact.Group !== 'null' ||
+                        contact.Group !== 'undefined'
+                    ) {
                         // Patch values to the form
                         this.contactForm = this._formBuilder.group({
                             id: [contact.id],
@@ -175,7 +178,9 @@ export class ContactsDetailsComponent implements OnInit, OnDestroy, AfterViewIni
         }
         // filter the banks
         this.filteredStatus.next(
-            this.statusOptions.filter(lang => lang.name.toLowerCase().indexOf(search) > -1)
+            this.statusOptions.filter(
+                (lang) => lang.name.toLowerCase().indexOf(search) > -1
+            )
         );
     }
 
@@ -193,13 +198,14 @@ export class ContactsDetailsComponent implements OnInit, OnDestroy, AfterViewIni
         }
         // filter the banks
         this.filteredGroups.next(
-            this.groupsOptions.filter(lang => lang.name.toLowerCase().indexOf(search) > -1)
+            this.groupsOptions.filter(
+                (lang) => lang.name.toLowerCase().indexOf(search) > -1
+            )
         );
     }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    ngOnViewInit() {
-    }
+    ngOnViewInit() {}
     /**
      * On destroy
      */
@@ -251,11 +257,12 @@ export class ContactsDetailsComponent implements OnInit, OnDestroy, AfterViewIni
     updateContact(): void {
         // Get the contact object
         const contact = this.contactForm.getRawValue();
-        this._recipientService.updateRecipientDetail(contact)
-            .then((resp) => {
-                console.log('Recipient updated');
-                // Toggle the edit mode off
-                this.toggleEditMode(false);
+        this._recipientService.updateRecipientDetail(contact).then((resp) => {
+            console.log('[updateContact] resp update', resp);
+            console.log('Recipient updated');
+            // Toggle the edit mode off
+            this.toggleEditMode(false);
+            this._changeDetectorRef.markForCheck();
         });
     }
 
@@ -285,7 +292,7 @@ export class ContactsDetailsComponent implements OnInit, OnDestroy, AfterViewIni
 
                 // Get the next/previous contact's id
                 const currentContactIndex = this.contacts.findIndex(
-                    item => item.id === id
+                    (item) => item.id === id
                 );
                 const nextContactIndex =
                     currentContactIndex +
