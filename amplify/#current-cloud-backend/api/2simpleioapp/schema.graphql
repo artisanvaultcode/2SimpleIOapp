@@ -105,3 +105,31 @@ type Subscriber @model @auth(rules: [{allow: public}])
     metadata: String
     status: SubsStatus
 }
+
+enum CampaignTargetOptions {
+    ALL
+    GROUP
+    SELECTION
+}
+
+
+type Campaign @model @auth(rules: [{allow: public}]) {
+    id: ID!
+    clientId: ID!
+    name: String
+    target: CampaignTargetOptions
+    groupId: String
+    message: String
+    lastProcessDt: AWSDateTime
+    metadata: String
+    status: SubsStatus
+}
+
+type CampaignTarget @model @auth(rules: [{allow: public}]) {
+    id: ID!
+    campaignId: ID!
+    recipientId: String
+    recipient: Recipient @connection
+    lastProcessDt: AWSDateTime
+    status: SubsStatus
+}
