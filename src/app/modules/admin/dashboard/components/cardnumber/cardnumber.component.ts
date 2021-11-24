@@ -65,7 +65,6 @@ export class CardnumberComponent implements OnInit, OnChanges, OnDestroy {
         this._dataService.dbMonthCard(this.clientId)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(response => {
-                console.log("Datos recibidos", response['result'], response['lastday'])
                 this.dato = [];
                 const st = response['lastday']['datestr'];
                 let datestr = this.getMonth(st.substring(5, 7));
