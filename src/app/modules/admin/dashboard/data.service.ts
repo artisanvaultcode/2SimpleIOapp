@@ -8,7 +8,7 @@ import { Observable, throwError } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
-export class AthenaService {
+export class DataService {
 
     private logger = new Logger('Devices List');
     baseURL = environment.backendurl;
@@ -73,20 +73,6 @@ export class AthenaService {
             );
     }
 
-    dbSmsOverviewMonth(clientId): Observable<any> {
-
-        const endPoint = `${this.baseURL}/db/sqmot`;
-        const headers = this.httpHeaders;
-        const payload = {
-            clientId: clientId
-        }
-        return this._http
-            .post<any>(endPoint, JSON.stringify(payload), { headers })
-            .pipe(
-                retry(1),
-                catchError(this.catchError)
-            );
-    }
 
     catchError(error): any {
         let errorMessage = '';

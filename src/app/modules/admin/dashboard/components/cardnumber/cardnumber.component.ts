@@ -5,7 +5,7 @@ import {
     SimpleChanges,
     OnDestroy }
 from '@angular/core';
-import { AthenaService } from '../../athena.service';
+import { DataService } from '../../data.service';
 import * as shape from 'd3-shape';
 import { takeUntil } from 'rxjs/operators';
 import { Subject, Subscription, timer } from 'rxjs';
@@ -41,7 +41,7 @@ export class CardnumberComponent implements OnInit, OnChanges, OnDestroy {
     private timerObserver: Subscription;
 
     constructor(
-        private _athenaService: AthenaService,
+        private _dataService: DataService,
         private _changeDetectorRef: ChangeDetectorRef,
     ) {}
 
@@ -62,44 +62,25 @@ export class CardnumberComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     getMonthCard() {
-        this._athenaService.dbMonthCard(this.clientId)
+        this._dataService.dbMonthCard(this.clientId)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(response => {
-                this.datos = this.convertObj(response['result']);
-                this.lastDay(response['result']);
+                console.log("Datos recibidos", response['result'], response['lastday'])
+                this.dato = [];
+                const st = response['lastday']['datestr'];
+                let datestr = this.getMonth(st.substring(5, 7));
+                datestr = datestr + ' ' + st.substring(8, 10) + ', ' + st.substring(0, 4);
+                this.dato.push(datestr);
+                let nt = response['lastday']['value'];
+                if (nt > 1000){
+                    nt = (nt / 1000).toFixed(2);
+                    this.unidad = 'k'
+                } else {
+                    this.unidad = ''
+                }
+                this.dato.push(nt);
+                this.datos = response['result'];
             });
-    }
-
-    convertObj(result: any[]): object[] {
-        let datosTmp = []
-        result.forEach(elem => {
-            var dict = {};
-            dict['name'] = elem[0]
-            dict['value'] = elem[1]
-            datosTmp.push(dict);
-        });
-        return datosTmp
-    }
-
-    lastDay(result: any[]){
-        let st: any;
-        if (result.length > 0){
-            this.dato = result[result.length-1];
-            st = this.dato[0];
-            let nt = this.dato[1];
-            if (nt > 1000){
-                nt = (nt / 1000).toFixed(2);
-                this.unidad = 'k'
-            } else {
-                this.unidad = ''
-            }
-            this.dato[1] = nt;
-            let datestr = this.getMonth(st.substring(5, 7));
-            datestr = datestr + ' ' + st.substring(8, 10) + ', ' + st.substring(0, 4);
-            this.dato[0] = datestr
-        } else {
-            this.dato = ['', 0];
-        }
     }
 
     get multi() {

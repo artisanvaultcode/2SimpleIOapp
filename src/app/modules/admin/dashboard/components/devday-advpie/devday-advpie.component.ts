@@ -2,7 +2,7 @@ import { Component, Input, OnInit, SimpleChanges, OnChanges, ChangeDetectorRef, 
 import { Hub } from 'aws-amplify';
 import { Subject, Subscription, timer } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AthenaService } from './../../athena.service';
+import { DataService } from '../../data.service';
 
 export interface DevSend {
     uniqueid: string;
@@ -35,7 +35,7 @@ export class DevdayAdvpieComponent implements OnInit, OnChanges, OnDestroy {
     private timerObserver: Subscription;
 
     constructor(
-        private _athenaService: AthenaService,
+        private _dataService: DataService,
         private _changeDetectorRef: ChangeDetectorRef
     ) {}
 
@@ -56,18 +56,10 @@ export class DevdayAdvpieComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     getSmsDevice() {
-        this._athenaService.dbSmsDevice(this.clientId)
+        this._dataService.dbSmsDevice(this.clientId)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(response => {
-                let datatmp = [];
-                response['result'].forEach(ele => {
-                    const element = {
-                        name: ele[0],
-                        value: ele[1]
-                    }
-                    datatmp.push(element);
-                });
-                this.datos = datatmp;
+                this.datos = response['result'];
             });
         this._changeDetectorRef.detectChanges();
     }
