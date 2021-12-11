@@ -16,7 +16,8 @@ export interface DevSend {
     styleUrls: ['./devday-advpie.component.scss'],
 })
 export class DevdayAdvpieComponent implements OnInit, OnChanges, OnDestroy {
-    @Input() clientId: string;
+    /* @Input() clientId: string; */
+    @Input() jwtToken: string;
 
     devData: DevSend[];
 
@@ -45,8 +46,8 @@ export class DevdayAdvpieComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        const {clientId} = changes;
-        if (clientId && clientId.currentValue){
+        const {jwtToken} = changes;
+        if (jwtToken && jwtToken.currentValue){
             this.getSmsDevice();
         }
     }
@@ -56,7 +57,7 @@ export class DevdayAdvpieComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     getSmsDevice() {
-        this._dataService.dbSmsDevice(this.clientId)
+        this._dataService.dbSmsDevice(this.jwtToken)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(response => {
                 this.datos = response['result'];

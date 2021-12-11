@@ -13,7 +13,7 @@ import { MsgTemplate } from 'app/API.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MsgTemplateDefaultComponent } from './components/msgtemplate-default/msg-template-default.component';
 import { AuthService } from 'app/core/auth/auth.service';
-import { Hub } from 'aws-amplify';
+import { Auth, Hub } from 'aws-amplify';
 import { FuseAlertService } from '@fuse/components/alert';
 
 @Component({
@@ -26,6 +26,7 @@ import { FuseAlertService } from '@fuse/components/alert';
 export class AnalyticsComponent implements OnInit, OnDestroy {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     clientId;
+    jwtToken;
     isLoading: boolean = false;
     showAlert: boolean = false;
     alertMsg: string = '';
@@ -76,6 +77,10 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             .then(resp => {
                 this.clientId = resp['sub'];
             });
+        Auth.currentSession().then(resp => {
+            console.log("auth.session", resp);
+            this.jwtToken = resp.getAccessToken().getJwtToken();
+        })
     }
 
     /**

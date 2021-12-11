@@ -42,13 +42,14 @@ export class DataService {
             );
     }
 
-    dbSmsDevice(clientId): Observable<any> {
+    dbSmsDevice(jwtToken): Observable<any> {
 
         const endPoint = `${this.baseURL}/db/sqsmsdev`;
-        const headers = this.httpHeaders;
+        const headers = this.httpHeaders.append('Authorization', jwtToken);
         const payload = {
-            clientId: clientId
+            jwtToken: " "
         }
+
         return this._http
             .post<any>(endPoint, JSON.stringify(payload), { headers })
             .pipe(
