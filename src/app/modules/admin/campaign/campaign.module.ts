@@ -4,6 +4,8 @@ import { RouterModule } from '@angular/router';
 import { campaignRoute } from './campaign.routing';
 import { CampaignComponent } from './campaign.component';
 import { CampaingListComponent } from './components/list/campaing-list.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { SharedModule } from 'app/shared/shared.module';
 
 
 @NgModule({
@@ -12,7 +14,9 @@ import { CampaingListComponent } from './components/list/campaing-list.component
     CampaingListComponent
   ],
   imports: [
-    RouterModule.forChild(campaignRoute)
+    RouterModule.forChild(campaignRoute),
+    SharedModule,
+    MatSidenavModule,
   ]
 })
 export class CampaignModule { }
