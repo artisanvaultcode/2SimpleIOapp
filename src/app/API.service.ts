@@ -31,6 +31,12 @@ export type __SubscriptionContainer = {
   onCreateSubscriber: OnCreateSubscriberSubscription;
   onUpdateSubscriber: OnUpdateSubscriberSubscription;
   onDeleteSubscriber: OnDeleteSubscriberSubscription;
+  onCreateCampaign: OnCreateCampaignSubscription;
+  onUpdateCampaign: OnUpdateCampaignSubscription;
+  onDeleteCampaign: OnDeleteCampaignSubscription;
+  onCreateCampaignTarget: OnCreateCampaignTargetSubscription;
+  onUpdateCampaignTarget: OnUpdateCampaignTargetSubscription;
+  onDeleteCampaignTarget: OnDeleteCampaignTargetSubscription;
 };
 
 export type CreateGroupInput = {
@@ -241,7 +247,6 @@ export type UpdateRecipientInput = {
   status?: EntityStatus | null;
   clientId?: string | null;
   _version?: number | null;
-  _deleted?: boolean | null;
   recipientGroupId?: string | null;
 };
 
@@ -542,6 +547,130 @@ export type DeleteSubscriberInput = {
   _version?: number | null;
 };
 
+export type CreateCampaignInput = {
+  id?: string | null;
+  clientId: string;
+  name?: string | null;
+  target?: CampaignTargetOptions | null;
+  groupId?: string | null;
+  message?: string | null;
+  lastProcessDt?: string | null;
+  metadata?: string | null;
+  status?: SubsStatus | null;
+  _version?: number | null;
+};
+
+export enum CampaignTargetOptions {
+  ALL = "ALL",
+  GROUP = "GROUP",
+  SELECTION = "SELECTION"
+}
+
+export type ModelCampaignConditionInput = {
+  clientId?: ModelIDInput | null;
+  name?: ModelStringInput | null;
+  target?: ModelCampaignTargetOptionsInput | null;
+  groupId?: ModelStringInput | null;
+  message?: ModelStringInput | null;
+  lastProcessDt?: ModelStringInput | null;
+  metadata?: ModelStringInput | null;
+  status?: ModelSubsStatusInput | null;
+  and?: Array<ModelCampaignConditionInput | null> | null;
+  or?: Array<ModelCampaignConditionInput | null> | null;
+  not?: ModelCampaignConditionInput | null;
+};
+
+export type ModelCampaignTargetOptionsInput = {
+  eq?: CampaignTargetOptions | null;
+  ne?: CampaignTargetOptions | null;
+};
+
+export type Campaign = {
+  __typename: "Campaign";
+  id: string;
+  clientId: string;
+  name?: string | null;
+  target?: CampaignTargetOptions | null;
+  groupId?: string | null;
+  message?: string | null;
+  lastProcessDt?: string | null;
+  metadata?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UpdateCampaignInput = {
+  id: string;
+  clientId?: string | null;
+  name?: string | null;
+  target?: CampaignTargetOptions | null;
+  groupId?: string | null;
+  message?: string | null;
+  lastProcessDt?: string | null;
+  metadata?: string | null;
+  status?: SubsStatus | null;
+  _version?: number | null;
+};
+
+export type DeleteCampaignInput = {
+  id: string;
+  _version?: number | null;
+};
+
+export type CreateCampaignTargetInput = {
+  id?: string | null;
+  campaignId: string;
+  recipientId?: string | null;
+  lastProcessDt?: string | null;
+  status?: SubsStatus | null;
+  _version?: number | null;
+  campaignTargetRecipientId?: string | null;
+};
+
+export type ModelCampaignTargetConditionInput = {
+  campaignId?: ModelIDInput | null;
+  recipientId?: ModelStringInput | null;
+  lastProcessDt?: ModelStringInput | null;
+  status?: ModelSubsStatusInput | null;
+  and?: Array<ModelCampaignTargetConditionInput | null> | null;
+  or?: Array<ModelCampaignTargetConditionInput | null> | null;
+  not?: ModelCampaignTargetConditionInput | null;
+};
+
+export type CampaignTarget = {
+  __typename: "CampaignTarget";
+  id: string;
+  campaignId: string;
+  recipientId?: string | null;
+  lastProcessDt?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+  recipient?: Recipient | null;
+};
+
+export type UpdateCampaignTargetInput = {
+  id: string;
+  campaignId?: string | null;
+  recipientId?: string | null;
+  lastProcessDt?: string | null;
+  status?: SubsStatus | null;
+  _version?: number | null;
+  campaignTargetRecipientId?: string | null;
+};
+
+export type DeleteCampaignTargetInput = {
+  id: string;
+  _version?: number | null;
+};
+
 export type ModelGroupFilterInput = {
   id?: ModelIDInput | null;
   name?: ModelStringInput | null;
@@ -788,6 +917,46 @@ export type ModelSubscriberFilterInput = {
 export type ModelSubscriberConnection = {
   __typename: "ModelSubscriberConnection";
   items?: Array<Subscriber | null> | null;
+  nextToken?: string | null;
+  startedAt?: number | null;
+};
+
+export type ModelCampaignFilterInput = {
+  id?: ModelIDInput | null;
+  clientId?: ModelIDInput | null;
+  name?: ModelStringInput | null;
+  target?: ModelCampaignTargetOptionsInput | null;
+  groupId?: ModelStringInput | null;
+  message?: ModelStringInput | null;
+  lastProcessDt?: ModelStringInput | null;
+  metadata?: ModelStringInput | null;
+  status?: ModelSubsStatusInput | null;
+  and?: Array<ModelCampaignFilterInput | null> | null;
+  or?: Array<ModelCampaignFilterInput | null> | null;
+  not?: ModelCampaignFilterInput | null;
+};
+
+export type ModelCampaignConnection = {
+  __typename: "ModelCampaignConnection";
+  items?: Array<Campaign | null> | null;
+  nextToken?: string | null;
+  startedAt?: number | null;
+};
+
+export type ModelCampaignTargetFilterInput = {
+  id?: ModelIDInput | null;
+  campaignId?: ModelIDInput | null;
+  recipientId?: ModelStringInput | null;
+  lastProcessDt?: ModelStringInput | null;
+  status?: ModelSubsStatusInput | null;
+  and?: Array<ModelCampaignTargetFilterInput | null> | null;
+  or?: Array<ModelCampaignTargetFilterInput | null> | null;
+  not?: ModelCampaignTargetFilterInput | null;
+};
+
+export type ModelCampaignTargetConnection = {
+  __typename: "ModelCampaignTargetConnection";
+  items?: Array<CampaignTarget | null> | null;
   nextToken?: string | null;
   startedAt?: number | null;
 };
@@ -1255,6 +1424,192 @@ export type DeleteSubscriberMutation = {
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+};
+
+export type CreateCampaignMutation = {
+  __typename: "Campaign";
+  id: string;
+  clientId: string;
+  name?: string | null;
+  target?: CampaignTargetOptions | null;
+  groupId?: string | null;
+  message?: string | null;
+  lastProcessDt?: string | null;
+  metadata?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UpdateCampaignMutation = {
+  __typename: "Campaign";
+  id: string;
+  clientId: string;
+  name?: string | null;
+  target?: CampaignTargetOptions | null;
+  groupId?: string | null;
+  message?: string | null;
+  lastProcessDt?: string | null;
+  metadata?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DeleteCampaignMutation = {
+  __typename: "Campaign";
+  id: string;
+  clientId: string;
+  name?: string | null;
+  target?: CampaignTargetOptions | null;
+  groupId?: string | null;
+  message?: string | null;
+  lastProcessDt?: string | null;
+  metadata?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreateCampaignTargetMutation = {
+  __typename: "CampaignTarget";
+  id: string;
+  campaignId: string;
+  recipientId?: string | null;
+  lastProcessDt?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+  recipient?: {
+    __typename: "Recipient";
+    id: string;
+    phone?: string | null;
+    carrierStatus?: string | null;
+    lastProcessDt?: string | null;
+    groupId?: string | null;
+    phoneTxt?: string | null;
+    status?: EntityStatus | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    Group?: {
+      __typename: "Group";
+      id: string;
+      name?: string | null;
+      carrier?: Carriers | null;
+      status?: EntityStatus | null;
+      msgTemplateId?: string | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
+};
+
+export type UpdateCampaignTargetMutation = {
+  __typename: "CampaignTarget";
+  id: string;
+  campaignId: string;
+  recipientId?: string | null;
+  lastProcessDt?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+  recipient?: {
+    __typename: "Recipient";
+    id: string;
+    phone?: string | null;
+    carrierStatus?: string | null;
+    lastProcessDt?: string | null;
+    groupId?: string | null;
+    phoneTxt?: string | null;
+    status?: EntityStatus | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    Group?: {
+      __typename: "Group";
+      id: string;
+      name?: string | null;
+      carrier?: Carriers | null;
+      status?: EntityStatus | null;
+      msgTemplateId?: string | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
+};
+
+export type DeleteCampaignTargetMutation = {
+  __typename: "CampaignTarget";
+  id: string;
+  campaignId: string;
+  recipientId?: string | null;
+  lastProcessDt?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+  recipient?: {
+    __typename: "Recipient";
+    id: string;
+    phone?: string | null;
+    carrierStatus?: string | null;
+    lastProcessDt?: string | null;
+    groupId?: string | null;
+    phoneTxt?: string | null;
+    status?: EntityStatus | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    Group?: {
+      __typename: "Group";
+      id: string;
+      name?: string | null;
+      carrier?: Carriers | null;
+      status?: EntityStatus | null;
+      msgTemplateId?: string | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
 };
 
 export type GetGroupQuery = {
@@ -1822,6 +2177,184 @@ export type SyncSubscribersQuery = {
   startedAt?: number | null;
 };
 
+export type GetCampaignQuery = {
+  __typename: "Campaign";
+  id: string;
+  clientId: string;
+  name?: string | null;
+  target?: CampaignTargetOptions | null;
+  groupId?: string | null;
+  message?: string | null;
+  lastProcessDt?: string | null;
+  metadata?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ListCampaignsQuery = {
+  __typename: "ModelCampaignConnection";
+  items?: Array<{
+    __typename: "Campaign";
+    id: string;
+    clientId: string;
+    name?: string | null;
+    target?: CampaignTargetOptions | null;
+    groupId?: string | null;
+    message?: string | null;
+    lastProcessDt?: string | null;
+    metadata?: string | null;
+    status?: SubsStatus | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+  } | null> | null;
+  nextToken?: string | null;
+  startedAt?: number | null;
+};
+
+export type SyncCampaignsQuery = {
+  __typename: "ModelCampaignConnection";
+  items?: Array<{
+    __typename: "Campaign";
+    id: string;
+    clientId: string;
+    name?: string | null;
+    target?: CampaignTargetOptions | null;
+    groupId?: string | null;
+    message?: string | null;
+    lastProcessDt?: string | null;
+    metadata?: string | null;
+    status?: SubsStatus | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+  } | null> | null;
+  nextToken?: string | null;
+  startedAt?: number | null;
+};
+
+export type GetCampaignTargetQuery = {
+  __typename: "CampaignTarget";
+  id: string;
+  campaignId: string;
+  recipientId?: string | null;
+  lastProcessDt?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+  recipient?: {
+    __typename: "Recipient";
+    id: string;
+    phone?: string | null;
+    carrierStatus?: string | null;
+    lastProcessDt?: string | null;
+    groupId?: string | null;
+    phoneTxt?: string | null;
+    status?: EntityStatus | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    Group?: {
+      __typename: "Group";
+      id: string;
+      name?: string | null;
+      carrier?: Carriers | null;
+      status?: EntityStatus | null;
+      msgTemplateId?: string | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
+};
+
+export type ListCampaignTargetsQuery = {
+  __typename: "ModelCampaignTargetConnection";
+  items?: Array<{
+    __typename: "CampaignTarget";
+    id: string;
+    campaignId: string;
+    recipientId?: string | null;
+    lastProcessDt?: string | null;
+    status?: SubsStatus | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    recipient?: {
+      __typename: "Recipient";
+      id: string;
+      phone?: string | null;
+      carrierStatus?: string | null;
+      lastProcessDt?: string | null;
+      groupId?: string | null;
+      phoneTxt?: string | null;
+      status?: EntityStatus | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null> | null;
+  nextToken?: string | null;
+  startedAt?: number | null;
+};
+
+export type SyncCampaignTargetsQuery = {
+  __typename: "ModelCampaignTargetConnection";
+  items?: Array<{
+    __typename: "CampaignTarget";
+    id: string;
+    campaignId: string;
+    recipientId?: string | null;
+    lastProcessDt?: string | null;
+    status?: SubsStatus | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    recipient?: {
+      __typename: "Recipient";
+      id: string;
+      phone?: string | null;
+      carrierStatus?: string | null;
+      lastProcessDt?: string | null;
+      groupId?: string | null;
+      phoneTxt?: string | null;
+      status?: EntityStatus | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null> | null;
+  nextToken?: string | null;
+  startedAt?: number | null;
+};
+
 export type OnCreateGroupSubscription = {
   __typename: "Group";
   id: string;
@@ -2285,6 +2818,192 @@ export type OnDeleteSubscriberSubscription = {
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+};
+
+export type OnCreateCampaignSubscription = {
+  __typename: "Campaign";
+  id: string;
+  clientId: string;
+  name?: string | null;
+  target?: CampaignTargetOptions | null;
+  groupId?: string | null;
+  message?: string | null;
+  lastProcessDt?: string | null;
+  metadata?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnUpdateCampaignSubscription = {
+  __typename: "Campaign";
+  id: string;
+  clientId: string;
+  name?: string | null;
+  target?: CampaignTargetOptions | null;
+  groupId?: string | null;
+  message?: string | null;
+  lastProcessDt?: string | null;
+  metadata?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnDeleteCampaignSubscription = {
+  __typename: "Campaign";
+  id: string;
+  clientId: string;
+  name?: string | null;
+  target?: CampaignTargetOptions | null;
+  groupId?: string | null;
+  message?: string | null;
+  lastProcessDt?: string | null;
+  metadata?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type OnCreateCampaignTargetSubscription = {
+  __typename: "CampaignTarget";
+  id: string;
+  campaignId: string;
+  recipientId?: string | null;
+  lastProcessDt?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+  recipient?: {
+    __typename: "Recipient";
+    id: string;
+    phone?: string | null;
+    carrierStatus?: string | null;
+    lastProcessDt?: string | null;
+    groupId?: string | null;
+    phoneTxt?: string | null;
+    status?: EntityStatus | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    Group?: {
+      __typename: "Group";
+      id: string;
+      name?: string | null;
+      carrier?: Carriers | null;
+      status?: EntityStatus | null;
+      msgTemplateId?: string | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
+};
+
+export type OnUpdateCampaignTargetSubscription = {
+  __typename: "CampaignTarget";
+  id: string;
+  campaignId: string;
+  recipientId?: string | null;
+  lastProcessDt?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+  recipient?: {
+    __typename: "Recipient";
+    id: string;
+    phone?: string | null;
+    carrierStatus?: string | null;
+    lastProcessDt?: string | null;
+    groupId?: string | null;
+    phoneTxt?: string | null;
+    status?: EntityStatus | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    Group?: {
+      __typename: "Group";
+      id: string;
+      name?: string | null;
+      carrier?: Carriers | null;
+      status?: EntityStatus | null;
+      msgTemplateId?: string | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
+};
+
+export type OnDeleteCampaignTargetSubscription = {
+  __typename: "CampaignTarget";
+  id: string;
+  campaignId: string;
+  recipientId?: string | null;
+  lastProcessDt?: string | null;
+  status?: SubsStatus | null;
+  _version: number;
+  _deleted?: boolean | null;
+  _lastChangedAt: number;
+  createdAt: string;
+  updatedAt: string;
+  recipient?: {
+    __typename: "Recipient";
+    id: string;
+    phone?: string | null;
+    carrierStatus?: string | null;
+    lastProcessDt?: string | null;
+    groupId?: string | null;
+    phoneTxt?: string | null;
+    status?: EntityStatus | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    Group?: {
+      __typename: "Group";
+      id: string;
+      name?: string | null;
+      carrier?: Carriers | null;
+      status?: EntityStatus | null;
+      msgTemplateId?: string | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
 };
 
 @Injectable({
@@ -3091,6 +3810,288 @@ export class APIService {
       graphqlOperation(statement, gqlAPIServiceArguments)
     )) as any;
     return <DeleteSubscriberMutation>response.data.deleteSubscriber;
+  }
+  async CreateCampaign(
+    input: CreateCampaignInput,
+    condition?: ModelCampaignConditionInput
+  ): Promise<CreateCampaignMutation> {
+    const statement = `mutation CreateCampaign($input: CreateCampaignInput!, $condition: ModelCampaignConditionInput) {
+        createCampaign(input: $input, condition: $condition) {
+          __typename
+          id
+          clientId
+          name
+          target
+          groupId
+          message
+          lastProcessDt
+          metadata
+          status
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <CreateCampaignMutation>response.data.createCampaign;
+  }
+  async UpdateCampaign(
+    input: UpdateCampaignInput,
+    condition?: ModelCampaignConditionInput
+  ): Promise<UpdateCampaignMutation> {
+    const statement = `mutation UpdateCampaign($input: UpdateCampaignInput!, $condition: ModelCampaignConditionInput) {
+        updateCampaign(input: $input, condition: $condition) {
+          __typename
+          id
+          clientId
+          name
+          target
+          groupId
+          message
+          lastProcessDt
+          metadata
+          status
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <UpdateCampaignMutation>response.data.updateCampaign;
+  }
+  async DeleteCampaign(
+    input: DeleteCampaignInput,
+    condition?: ModelCampaignConditionInput
+  ): Promise<DeleteCampaignMutation> {
+    const statement = `mutation DeleteCampaign($input: DeleteCampaignInput!, $condition: ModelCampaignConditionInput) {
+        deleteCampaign(input: $input, condition: $condition) {
+          __typename
+          id
+          clientId
+          name
+          target
+          groupId
+          message
+          lastProcessDt
+          metadata
+          status
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <DeleteCampaignMutation>response.data.deleteCampaign;
+  }
+  async CreateCampaignTarget(
+    input: CreateCampaignTargetInput,
+    condition?: ModelCampaignTargetConditionInput
+  ): Promise<CreateCampaignTargetMutation> {
+    const statement = `mutation CreateCampaignTarget($input: CreateCampaignTargetInput!, $condition: ModelCampaignTargetConditionInput) {
+        createCampaignTarget(input: $input, condition: $condition) {
+          __typename
+          id
+          campaignId
+          recipientId
+          lastProcessDt
+          status
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+          recipient {
+            __typename
+            id
+            phone
+            carrierStatus
+            lastProcessDt
+            groupId
+            phoneTxt
+            status
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            Group {
+              __typename
+              id
+              name
+              carrier
+              status
+              msgTemplateId
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <CreateCampaignTargetMutation>response.data.createCampaignTarget;
+  }
+  async UpdateCampaignTarget(
+    input: UpdateCampaignTargetInput,
+    condition?: ModelCampaignTargetConditionInput
+  ): Promise<UpdateCampaignTargetMutation> {
+    const statement = `mutation UpdateCampaignTarget($input: UpdateCampaignTargetInput!, $condition: ModelCampaignTargetConditionInput) {
+        updateCampaignTarget(input: $input, condition: $condition) {
+          __typename
+          id
+          campaignId
+          recipientId
+          lastProcessDt
+          status
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+          recipient {
+            __typename
+            id
+            phone
+            carrierStatus
+            lastProcessDt
+            groupId
+            phoneTxt
+            status
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            Group {
+              __typename
+              id
+              name
+              carrier
+              status
+              msgTemplateId
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <UpdateCampaignTargetMutation>response.data.updateCampaignTarget;
+  }
+  async DeleteCampaignTarget(
+    input: DeleteCampaignTargetInput,
+    condition?: ModelCampaignTargetConditionInput
+  ): Promise<DeleteCampaignTargetMutation> {
+    const statement = `mutation DeleteCampaignTarget($input: DeleteCampaignTargetInput!, $condition: ModelCampaignTargetConditionInput) {
+        deleteCampaignTarget(input: $input, condition: $condition) {
+          __typename
+          id
+          campaignId
+          recipientId
+          lastProcessDt
+          status
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+          recipient {
+            __typename
+            id
+            phone
+            carrierStatus
+            lastProcessDt
+            groupId
+            phoneTxt
+            status
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            Group {
+              __typename
+              id
+              name
+              carrier
+              status
+              msgTemplateId
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      input
+    };
+    if (condition) {
+      gqlAPIServiceArguments.condition = condition;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <DeleteCampaignTargetMutation>response.data.deleteCampaignTarget;
   }
   async GetGroup(id: string): Promise<GetGroupQuery> {
     const statement = `query GetGroup($id: ID!) {
@@ -4107,6 +5108,296 @@ export class APIService {
     )) as any;
     return <SyncSubscribersQuery>response.data.syncSubscribers;
   }
+  async GetCampaign(id: string): Promise<GetCampaignQuery> {
+    const statement = `query GetCampaign($id: ID!) {
+        getCampaign(id: $id) {
+          __typename
+          id
+          clientId
+          name
+          target
+          groupId
+          message
+          lastProcessDt
+          metadata
+          status
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      id
+    };
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <GetCampaignQuery>response.data.getCampaign;
+  }
+  async ListCampaigns(
+    filter?: ModelCampaignFilterInput,
+    limit?: number,
+    nextToken?: string
+  ): Promise<ListCampaignsQuery> {
+    const statement = `query ListCampaigns($filter: ModelCampaignFilterInput, $limit: Int, $nextToken: String) {
+        listCampaigns(filter: $filter, limit: $limit, nextToken: $nextToken) {
+          __typename
+          items {
+            __typename
+            id
+            clientId
+            name
+            target
+            groupId
+            message
+            lastProcessDt
+            metadata
+            status
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+          }
+          nextToken
+          startedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <ListCampaignsQuery>response.data.listCampaigns;
+  }
+  async SyncCampaigns(
+    filter?: ModelCampaignFilterInput,
+    limit?: number,
+    nextToken?: string,
+    lastSync?: number
+  ): Promise<SyncCampaignsQuery> {
+    const statement = `query SyncCampaigns($filter: ModelCampaignFilterInput, $limit: Int, $nextToken: String, $lastSync: AWSTimestamp) {
+        syncCampaigns(filter: $filter, limit: $limit, nextToken: $nextToken, lastSync: $lastSync) {
+          __typename
+          items {
+            __typename
+            id
+            clientId
+            name
+            target
+            groupId
+            message
+            lastProcessDt
+            metadata
+            status
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+          }
+          nextToken
+          startedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    if (lastSync) {
+      gqlAPIServiceArguments.lastSync = lastSync;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <SyncCampaignsQuery>response.data.syncCampaigns;
+  }
+  async GetCampaignTarget(id: string): Promise<GetCampaignTargetQuery> {
+    const statement = `query GetCampaignTarget($id: ID!) {
+        getCampaignTarget(id: $id) {
+          __typename
+          id
+          campaignId
+          recipientId
+          lastProcessDt
+          status
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+          recipient {
+            __typename
+            id
+            phone
+            carrierStatus
+            lastProcessDt
+            groupId
+            phoneTxt
+            status
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            Group {
+              __typename
+              id
+              name
+              carrier
+              status
+              msgTemplateId
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {
+      id
+    };
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <GetCampaignTargetQuery>response.data.getCampaignTarget;
+  }
+  async ListCampaignTargets(
+    filter?: ModelCampaignTargetFilterInput,
+    limit?: number,
+    nextToken?: string
+  ): Promise<ListCampaignTargetsQuery> {
+    const statement = `query ListCampaignTargets($filter: ModelCampaignTargetFilterInput, $limit: Int, $nextToken: String) {
+        listCampaignTargets(filter: $filter, limit: $limit, nextToken: $nextToken) {
+          __typename
+          items {
+            __typename
+            id
+            campaignId
+            recipientId
+            lastProcessDt
+            status
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            recipient {
+              __typename
+              id
+              phone
+              carrierStatus
+              lastProcessDt
+              groupId
+              phoneTxt
+              status
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
+          nextToken
+          startedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <ListCampaignTargetsQuery>response.data.listCampaignTargets;
+  }
+  async SyncCampaignTargets(
+    filter?: ModelCampaignTargetFilterInput,
+    limit?: number,
+    nextToken?: string,
+    lastSync?: number
+  ): Promise<SyncCampaignTargetsQuery> {
+    const statement = `query SyncCampaignTargets($filter: ModelCampaignTargetFilterInput, $limit: Int, $nextToken: String, $lastSync: AWSTimestamp) {
+        syncCampaignTargets(filter: $filter, limit: $limit, nextToken: $nextToken, lastSync: $lastSync) {
+          __typename
+          items {
+            __typename
+            id
+            campaignId
+            recipientId
+            lastProcessDt
+            status
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            recipient {
+              __typename
+              id
+              phone
+              carrierStatus
+              lastProcessDt
+              groupId
+              phoneTxt
+              status
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
+          nextToken
+          startedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    if (lastSync) {
+      gqlAPIServiceArguments.lastSync = lastSync;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <SyncCampaignTargetsQuery>response.data.syncCampaignTargets;
+  }
   OnCreateGroupListener: Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateGroup">>
   > = API.graphql(
@@ -4780,5 +6071,263 @@ export class APIService {
     )
   ) as Observable<
     SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteSubscriber">>
+  >;
+
+  OnCreateCampaignListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateCampaign">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnCreateCampaign {
+        onCreateCampaign {
+          __typename
+          id
+          clientId
+          name
+          target
+          groupId
+          message
+          lastProcessDt
+          metadata
+          status
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onCreateCampaign">>
+  >;
+
+  OnUpdateCampaignListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateCampaign">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnUpdateCampaign {
+        onUpdateCampaign {
+          __typename
+          id
+          clientId
+          name
+          target
+          groupId
+          message
+          lastProcessDt
+          metadata
+          status
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onUpdateCampaign">>
+  >;
+
+  OnDeleteCampaignListener: Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteCampaign">>
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnDeleteCampaign {
+        onDeleteCampaign {
+          __typename
+          id
+          clientId
+          name
+          target
+          groupId
+          message
+          lastProcessDt
+          metadata
+          status
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<Pick<__SubscriptionContainer, "onDeleteCampaign">>
+  >;
+
+  OnCreateCampaignTargetListener: Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onCreateCampaignTarget">
+    >
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnCreateCampaignTarget {
+        onCreateCampaignTarget {
+          __typename
+          id
+          campaignId
+          recipientId
+          lastProcessDt
+          status
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+          recipient {
+            __typename
+            id
+            phone
+            carrierStatus
+            lastProcessDt
+            groupId
+            phoneTxt
+            status
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            Group {
+              __typename
+              id
+              name
+              carrier
+              status
+              msgTemplateId
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onCreateCampaignTarget">
+    >
+  >;
+
+  OnUpdateCampaignTargetListener: Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onUpdateCampaignTarget">
+    >
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnUpdateCampaignTarget {
+        onUpdateCampaignTarget {
+          __typename
+          id
+          campaignId
+          recipientId
+          lastProcessDt
+          status
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+          recipient {
+            __typename
+            id
+            phone
+            carrierStatus
+            lastProcessDt
+            groupId
+            phoneTxt
+            status
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            Group {
+              __typename
+              id
+              name
+              carrier
+              status
+              msgTemplateId
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onUpdateCampaignTarget">
+    >
+  >;
+
+  OnDeleteCampaignTargetListener: Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onDeleteCampaignTarget">
+    >
+  > = API.graphql(
+    graphqlOperation(
+      `subscription OnDeleteCampaignTarget {
+        onDeleteCampaignTarget {
+          __typename
+          id
+          campaignId
+          recipientId
+          lastProcessDt
+          status
+          _version
+          _deleted
+          _lastChangedAt
+          createdAt
+          updatedAt
+          recipient {
+            __typename
+            id
+            phone
+            carrierStatus
+            lastProcessDt
+            groupId
+            phoneTxt
+            status
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            Group {
+              __typename
+              id
+              name
+              carrier
+              status
+              msgTemplateId
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
+        }
+      }`
+    )
+  ) as Observable<
+    SubscriptionResponse<
+      Pick<__SubscriptionContainer, "onDeleteCampaignTarget">
+    >
   >;
 }

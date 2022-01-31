@@ -518,3 +518,201 @@ mutation DeleteSubscriber(
     updatedAt
   }
 }
+mutation CreateCampaign(
+  $input: CreateCampaignInput!
+  $condition: ModelCampaignConditionInput
+) {
+  createCampaign(input: $input, condition: $condition) {
+    id
+    clientId
+    name
+    target
+    groupId
+    message
+    lastProcessDt
+    metadata
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation UpdateCampaign(
+  $input: UpdateCampaignInput!
+  $condition: ModelCampaignConditionInput
+) {
+  updateCampaign(input: $input, condition: $condition) {
+    id
+    clientId
+    name
+    target
+    groupId
+    message
+    lastProcessDt
+    metadata
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation DeleteCampaign(
+  $input: DeleteCampaignInput!
+  $condition: ModelCampaignConditionInput
+) {
+  deleteCampaign(input: $input, condition: $condition) {
+    id
+    clientId
+    name
+    target
+    groupId
+    message
+    lastProcessDt
+    metadata
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation CreateCampaignTarget(
+  $input: CreateCampaignTargetInput!
+  $condition: ModelCampaignTargetConditionInput
+) {
+  createCampaignTarget(input: $input, condition: $condition) {
+    id
+    campaignId
+    recipientId
+    lastProcessDt
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+    recipient {
+      id
+      phone
+      carrierStatus
+      lastProcessDt
+      groupId
+      phoneTxt
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+      Group {
+        id
+        name
+        carrier
+        status
+        msgTemplateId
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}
+mutation UpdateCampaignTarget(
+  $input: UpdateCampaignTargetInput!
+  $condition: ModelCampaignTargetConditionInput
+) {
+  updateCampaignTarget(input: $input, condition: $condition) {
+    id
+    campaignId
+    recipientId
+    lastProcessDt
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+    recipient {
+      id
+      phone
+      carrierStatus
+      lastProcessDt
+      groupId
+      phoneTxt
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+      Group {
+        id
+        name
+        carrier
+        status
+        msgTemplateId
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}
+mutation DeleteCampaignTarget(
+  $input: DeleteCampaignTargetInput!
+  $condition: ModelCampaignTargetConditionInput
+) {
+  deleteCampaignTarget(input: $input, condition: $condition) {
+    id
+    campaignId
+    recipientId
+    lastProcessDt
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+    recipient {
+      id
+      phone
+      carrierStatus
+      lastProcessDt
+      groupId
+      phoneTxt
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+      Group {
+        id
+        name
+        carrier
+        status
+        msgTemplateId
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}

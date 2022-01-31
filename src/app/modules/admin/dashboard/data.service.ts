@@ -20,7 +20,7 @@ export class DataService {
         headers: new HttpHeaders({
             'Access-Control-Allow-Origin': '*'
         })
-      }
+      };
 
     constructor(
         private _http: HttpClient,
@@ -33,7 +33,7 @@ export class DataService {
         const payload = {
             clientId: clientId,
             yearStr: yearStr
-        }
+        };
         return this._http
             .post<any>(endPoint, JSON.stringify(payload), { headers })
             .pipe(
@@ -47,8 +47,8 @@ export class DataService {
         const endPoint = `${this.baseURL}/db/sqsmsdev`;
         const headers = this.httpHeaders.append('Authorization', jwtToken);
         const payload = {
-            jwtToken: " "
-        }
+            jwtToken: ' '
+        };
 
         return this._http
             .post<any>(endPoint, JSON.stringify(payload), { headers })
@@ -65,7 +65,7 @@ export class DataService {
         const headers = this.httpHeaders;
         const payload = {
             clientId: clientId
-        }
+        };
         return this._http
             .post<any>(endPoint, JSON.stringify(payload), { headers })
             .pipe(

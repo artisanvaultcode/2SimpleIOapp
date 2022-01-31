@@ -455,3 +455,183 @@ subscription OnDeleteSubscriber {
     updatedAt
   }
 }
+subscription OnCreateCampaign {
+  onCreateCampaign {
+    id
+    clientId
+    name
+    target
+    groupId
+    message
+    lastProcessDt
+    metadata
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateCampaign {
+  onUpdateCampaign {
+    id
+    clientId
+    name
+    target
+    groupId
+    message
+    lastProcessDt
+    metadata
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteCampaign {
+  onDeleteCampaign {
+    id
+    clientId
+    name
+    target
+    groupId
+    message
+    lastProcessDt
+    metadata
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnCreateCampaignTarget {
+  onCreateCampaignTarget {
+    id
+    campaignId
+    recipientId
+    lastProcessDt
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+    recipient {
+      id
+      phone
+      carrierStatus
+      lastProcessDt
+      groupId
+      phoneTxt
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+      Group {
+        id
+        name
+        carrier
+        status
+        msgTemplateId
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}
+subscription OnUpdateCampaignTarget {
+  onUpdateCampaignTarget {
+    id
+    campaignId
+    recipientId
+    lastProcessDt
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+    recipient {
+      id
+      phone
+      carrierStatus
+      lastProcessDt
+      groupId
+      phoneTxt
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+      Group {
+        id
+        name
+        carrier
+        status
+        msgTemplateId
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}
+subscription OnDeleteCampaignTarget {
+  onDeleteCampaignTarget {
+    id
+    campaignId
+    recipientId
+    lastProcessDt
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+    recipient {
+      id
+      phone
+      carrierStatus
+      lastProcessDt
+      groupId
+      phoneTxt
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+      Group {
+        id
+        name
+        carrier
+        status
+        msgTemplateId
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}
