@@ -662,3 +662,201 @@ query SyncSubscribers(
     startedAt
   }
 }
+query GetCampaign($id: ID!) {
+  getCampaign(id: $id) {
+    id
+    clientId
+    name
+    target
+    groupId
+    message
+    lastProcessDt
+    metadata
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+query ListCampaigns(
+  $filter: ModelCampaignFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listCampaigns(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      clientId
+      name
+      target
+      groupId
+      message
+      lastProcessDt
+      metadata
+      status
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query SyncCampaigns(
+  $filter: ModelCampaignFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncCampaigns(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      clientId
+      name
+      target
+      groupId
+      message
+      lastProcessDt
+      metadata
+      status
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query GetCampaignTarget($id: ID!) {
+  getCampaignTarget(id: $id) {
+    id
+    campaignId
+    recipientId
+    lastProcessDt
+    status
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+    recipient {
+      id
+      phone
+      carrierStatus
+      lastProcessDt
+      groupId
+      phoneTxt
+      status
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+      Group {
+        id
+        name
+        carrier
+        status
+        msgTemplateId
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}
+query ListCampaignTargets(
+  $filter: ModelCampaignTargetFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listCampaignTargets(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      campaignId
+      recipientId
+      lastProcessDt
+      status
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+      recipient {
+        id
+        phone
+        carrierStatus
+        lastProcessDt
+        groupId
+        phoneTxt
+        status
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+    }
+    nextToken
+    startedAt
+  }
+}
+query SyncCampaignTargets(
+  $filter: ModelCampaignTargetFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncCampaignTargets(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      campaignId
+      recipientId
+      lastProcessDt
+      status
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+      recipient {
+        id
+        phone
+        carrierStatus
+        lastProcessDt
+        groupId
+        phoneTxt
+        status
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+    }
+    nextToken
+    startedAt
+  }
+}
