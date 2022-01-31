@@ -10,8 +10,8 @@ import {
     ModelDeviceFilterInput,
     SearchableDeviceFilterInput, SearchableDeviceSortableFields, SearchableDeviceSortInput,
     SearchableSortDirection, UpdateDeviceInput
-} from '../../../API.service';
-import {AuthService} from '../../../core/auth/auth.service';
+} from 'app/API.service';
+import {AuthService} from 'app/core/auth/auth.service';
 
 @Injectable({
     providedIn: 'root'

@@ -30,13 +30,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
         icon : 'heroicons_outline:chat',
         link : '/client/messages'
     },
-    /* {
-        id   : 'enterprisebi',
-        title: 'Enterprise BI',
+    {
+        id   : 'campaign',
+        title: 'Campaign',
         type : 'basic',
-        icon : 'heroicons_outline:chart-square-bar',
-        link : '/client/enterprisebi'
-    } */
+        icon : 'heroicons_outline:speakerphone',
+        link : '/client/campaign'
+    },
 ];
 export const compactNavigation: FuseNavigationItem[] = [
     {
@@ -67,13 +67,13 @@ export const compactNavigation: FuseNavigationItem[] = [
         icon : 'heroicons_outline:chat',
         link : '/client/messages'
     },
-    /* {
-        id   : 'enterprisebi',
-        title: 'Enterprise BI',
+    {
+        id   : 'campaign',
+        title: 'Campaign',
         type : 'basic',
-        icon : 'heroicons_outline:chart-square-bar',
-        link : '/client/enterprisebi'
-    } */
+        icon : 'heroicons_outline:speakerphone',
+        link : '/client/campaign'
+    },
 ];
 export const futuristicNavigation: FuseNavigationItem[] = [
     {
@@ -104,13 +104,13 @@ export const futuristicNavigation: FuseNavigationItem[] = [
         icon : 'heroicons_outline:chat',
         link : '/client/messages'
     },
-    /* {
-        id   : 'enterprisebi',
-        title: 'Enterprise BI',
+    {
+        id   : 'campaign',
+        title: 'Campaign',
         type : 'basic',
-        icon : 'heroicons_outline:chart-square-bar',
-        link : '/client/enterprisebi'
-    } */
+        icon : 'heroicons_outline:speakerphone',
+        link : '/client/campaign'
+    },
 ];
 export const horizontalNavigation: FuseNavigationItem[] = [
     {
@@ -141,11 +141,11 @@ export const horizontalNavigation: FuseNavigationItem[] = [
         icon : 'heroicons_outline:chat',
         link : '/client/messages'
     },
-    /* {
-        id   : 'enterprisebi',
-        title: 'Enterprise BI',
+    {
+        id   : 'campaign',
+        title: 'Campaign',
         type : 'basic',
-        icon : 'heroicons_outline:chart-square-bar',
-        link : '/client/enterprisebi'
-    } */
+        icon : 'heroicons_outline:speakerphone',
+        link : '/client/campaign'
+    },
 ];
