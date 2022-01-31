@@ -6,11 +6,11 @@ import { takeUntil } from 'rxjs/operators';
 import { CampaignService } from '../../campaign.service';
 
 @Component({
-    selector: 'app-campaing-list',
-    templateUrl: './campaing-list.component.html',
-    styleUrls: ['./campaing-list.component.scss'],
+    selector: 'app-campaign-list',
+    templateUrl: './campaign-list.component.html',
+    styleUrls: ['./campaign-list.component.scss'],
 })
-export class CampaingListComponent implements OnInit, OnDestroy {
+export class CampaignListComponent implements OnInit, OnDestroy {
 
     clientId$: Observable<any[]>;
     campaigns$: Observable<any[]>;

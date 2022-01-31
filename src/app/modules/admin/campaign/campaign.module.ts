@@ -3,7 +3,7 @@ import { RouterModule } from '@angular/router';
 
 import { campaignRoute } from './campaign.routing';
 import { CampaignComponent } from './campaign.component';
-import { CampaingListComponent } from './components/list/campaing-list.component';
+import { CampaignListComponent } from './components/list/campaign-list.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { SharedModule } from 'app/shared/shared.module';
 
@@ -11,7 +11,7 @@ import { SharedModule } from 'app/shared/shared.module';
 @NgModule({
   declarations: [
     CampaignComponent,
-    CampaingListComponent
+    CampaignListComponent
   ],
   imports: [
     RouterModule.forChild(campaignRoute),
