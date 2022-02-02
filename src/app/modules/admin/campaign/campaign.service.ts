@@ -1,10 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { APIService, ModelCampaignFilterInput } from 'app/API.service';
+import {
+    APIService, CreateCampaignInput,
+    ModelCampaignFilterInput,
+    Campaign, SubsStatus } from 'app/API.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { Logger } from 'aws-amplify';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import * as _ from 'lodash';
+import { CreateCampaignMutation } from '../../../API.service';
 
 @Injectable({
     providedIn: 'root',
@@ -86,6 +90,31 @@ export class CampaignService {
         });
     }
 
+    async createCampaign(camp: Campaign) {
+        console.log("Add new Campaign");
+        const dateAt = new Date().toISOString();
+        const { sub } = await this._auth.checkClientId();
+        return new Promise((resolve, reject) => {
+            const _payload: CreateCampaignInput = {
+                id: null,
+                clientId: sub,
+                name: camp.name,
+                target: camp.target,
+                groupId: camp.groupId,
+                message: camp.message,
+                lastProcessDt: dateAt,
+                metadata: camp.metadata,
+                status: SubsStatus.ACTIVE
+            };
+            this.api
+                .CreateCampaign(_payload)
+                .then((resp: CreateCampaignMutation) => resolve(resp))
+                .catch((error: any) => {
+                    this.catchError(error);
+                    reject(error.message);
+                });
+        });
+    }
 
     private catchError(error): void {
         console.log(error);

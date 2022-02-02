@@ -1,4 +1,6 @@
+import { DetailsCampaignsComponent } from './../detail/details-campaigns.component';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { APIService, Campaign } from 'app/API.service';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -34,6 +36,7 @@ export class CampaignListComponent implements OnInit, OnDestroy {
         private _campaignService: CampaignService,
         private _changeDetectorRef: ChangeDetectorRef,
         private api: APIService,
+        private _matDialog: MatDialog,
     ) {}
 
     async ngOnInit(): Promise<void> {
@@ -98,4 +101,10 @@ export class CampaignListComponent implements OnInit, OnDestroy {
                 });
             });
     }
+
+    addNewCampaign() {
+        console.log("New Campaign");
+        this._matDialog.open(DetailsCampaignsComponent);
+    }
+
 }

@@ -34,7 +34,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
       ListMessagesComponent,
       GroupsMessagesComponent,
       LabelsMessagesComponent,
-      DetailsMessagesPanelComponent
+      DetailsMessagesPanelComponent,
   ],
     imports: [
         RouterModule.forChild(msgsRoutes),
