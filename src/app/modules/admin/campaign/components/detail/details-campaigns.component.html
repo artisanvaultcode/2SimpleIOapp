@@ -61,12 +61,15 @@
                 </mat-select>
             </mat-form-field>
             <!-- Message -->
-            <mat-form-field>
+            <mat-form-field class="pb-0 mb-0">
                 <mat-label>Message</mat-label>
                 <textarea
                     matInput
                     [formControlName]="'message'"></textarea>
             </mat-form-field>
+            <mat-label class="text-warn pt-0 mt-0">
+                * Default message, you can change it.
+            </mat-label>
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mt-4 sm:mt-6">
 
             <div class="flex items-center mt-4 sm:mt-0">

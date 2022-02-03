@@ -1,14 +1,16 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
     APIService, CreateCampaignInput,
     ModelCampaignFilterInput,
-    Campaign, SubsStatus } from 'app/API.service';
+    Campaign, SubsStatus,
+    CreateCampaignMutation } from 'app/API.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { Logger } from 'aws-amplify';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import * as _ from 'lodash';
-import { CreateCampaignMutation } from '../../../API.service';
+import { environment } from 'environments/environment';
+import { catchError, retry } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
@@ -20,6 +22,11 @@ export class CampaignService {
     private _campaigns: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _pageChange: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private _clientId: BehaviorSubject<any | null> = new BehaviorSubject(null);
+    private baseURL = environment.backendurl;
+    private httpHeaders = new HttpHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+    });
 
     pageSize: number;
     nextToken: string = null;
@@ -27,7 +34,7 @@ export class CampaignService {
     constructor(
         private api: APIService,
         private _auth: AuthService,
-        private _httpClient: HttpClient
+        private _http: HttpClient
     ) {
         this.pageSize = 10;
     }
@@ -116,8 +123,40 @@ export class CampaignService {
         });
     }
 
+    sendCampaign(clientId: string, campaign: CreateCampaignMutation): Observable<any> {
+        const endPoint = `${this.baseURL}/campaign/send`;
+        const headers = this.httpHeaders;
+        const payload = {
+            id: campaign.id,
+            clientId: clientId,
+            name: campaign.name,
+            target: campaign.target,
+            groupId: campaign.groupId,
+        };
+        return this._http
+            .post<any>(endPoint, JSON.stringify(payload), { headers })
+            .pipe(
+                retry(1),
+                catchError(this.catchErrorHttp)
+            );
+    }
+
     private catchError(error): void {
         console.log(error);
         this.logger.debug('OOPS!', error);
+    }
+
+    private catchErrorHttp(error): any {
+        let errorMessage = '';
+        if(error.error instanceof ErrorEvent) {
+            // Get client-side error
+            errorMessage = error.error.message;
+        } else {
+            // Get server-side error
+            errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+        }
+        console.log(errorMessage);
+        this.logger.debug('Errors!', error);
+        return throwError(errorMessage);
     }
 }

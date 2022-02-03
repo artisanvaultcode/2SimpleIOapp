@@ -59,6 +59,8 @@ export class CardnumberComponent implements OnInit, OnChanges, OnDestroy {
 
     ngOnDestroy() {
         this.timerObserver.unsubscribe();
+        this._unsubscribeAll.next();
+        this._unsubscribeAll.complete();
     }
 
     getMonthCard() {

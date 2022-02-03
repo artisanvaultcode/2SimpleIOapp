@@ -1,17 +1,24 @@
-import { CampaignService } from './../../campaign.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Campaign, CreateCampaignInput, Group } from 'app/API.service';
+import { Campaign, CreateCampaignInput,
+    CreateCampaignMutation, Group }
+from 'app/API.service';
 import { MsgsService } from '../../../messages/messages.service';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { MsgTemplateService } from 'app/core/services/msg-template.service';
+import { AuthService } from 'app/core/auth/auth.service';
+import { CampaignService } from './../../campaign.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-details-campaigns',
     templateUrl: './details-campaigns.component.html',
     styleUrls: ['./details-campaigns.component.scss'],
 })
-export class DetailsCampaignsComponent implements OnInit {
+export class DetailsCampaignsComponent implements OnInit, OnDestroy {
+
+    private clientId: string;
 
     showAlert: boolean = false;
     composeForm: FormGroup;
@@ -20,15 +27,26 @@ export class DetailsCampaignsComponent implements OnInit {
     showGroupId = false;
 
     labels$: Observable<Group[]>;
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     constructor(
         private _formBuilder: FormBuilder,
         private _matDialogRef: MatDialogRef<DetailsCampaignsComponent>,
         private _campaignService: CampaignService,
         private _msgsService: MsgsService,
+        private _msgTemplateService: MsgTemplateService,
+        private _auth: AuthService,
     ) {}
 
     ngOnInit(): void {
+        this._auth.checkClientId()
+            .then(resp => {
+                this.clientId = resp['sub'];
+            })
+            .catch(error => {
+                console.log("Error _auth", error);
+            });
+
         this.composeForm = this._formBuilder.group({
             name: ['', [Validators.required, Validators.minLength(4)]],
             target: ['', [Validators.required]],
@@ -36,16 +54,30 @@ export class DetailsCampaignsComponent implements OnInit {
             groupId: [''],
         });
 
+        this._msgTemplateService.getDefaultMsg()
+            .then(resp => {
+                this.composeForm.controls['message'].setValue(resp.message);
+            })
+            .catch(error => {
+                console.log("[MsgTemplateMessage] Error:", error);
+            });
         this.labels$ = this._msgsService.labels$;
         this._msgsService.getLabels()
             .then(resp => {
                 console.log("getLabels result", resp);
             })
-        console.log("Groups", this.labels$);
+    }
+
+    /**
+     * On destroy
+     */
+     ngOnDestroy(): void {
+        // Unsubscribe from all subscriptions
+        this._unsubscribeAll.next();
+        this._unsubscribeAll.complete();
     }
 
     saveAndClose() {
-        console.log('Save and close matdialog');
         // Hide the alert
         this.showAlert = false;
         this.createCampaign();
@@ -62,8 +94,17 @@ export class DetailsCampaignsComponent implements OnInit {
             console.log('Validation Form invalid...');
             this.showAlert = true;
         } else {
-            /* this._campaignService.createCampaign(newCampaign)
-                .then(resp => console.log("New Campaign add")); */
+            console.log("form", newCampaign)
+            this._campaignService.createCampaign(newCampaign)
+                .then((resp: CreateCampaignMutation) => {
+                    console.log("New Campaign add");
+                    // send campaign to backend
+                    this._campaignService.sendCampaign(this.clientId, resp)
+                        .pipe(takeUntil(this._unsubscribeAll))
+                        .subscribe(response => {
+                            console.log("[createCampign] send Camaign to backend", response);
+                        });
+                });
             this._matDialogRef.close();
         }
     }
@@ -72,8 +113,11 @@ export class DetailsCampaignsComponent implements OnInit {
         console.log("Target", target);
         if (target === 'GROUP') {
             this.showGroupId = true;
+            this.composeForm.controls['groupId'].setValidators(Validators.required);
         } else {
             this.showGroupId = false;
+            this.composeForm.controls['groupId'].clearValidators();
         }
+        this.composeForm.controls['groupId'].updateValueAndValidity();
     }
 }
