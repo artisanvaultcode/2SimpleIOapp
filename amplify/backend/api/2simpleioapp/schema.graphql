@@ -112,7 +112,6 @@ enum CampaignTargetOptions {
     SELECTION
 }
 
-
 type Campaign @model @auth(rules: [{allow: public}]) {
     id: ID!
     clientId: ID!
