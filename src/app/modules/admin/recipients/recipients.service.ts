@@ -272,6 +272,7 @@ export class RecipientsService
 
     /**
      * Update recipient status
+     *
      * @param recipient
      * @returns
      */
