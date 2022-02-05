@@ -11,16 +11,11 @@ import { Observable, throwError } from 'rxjs';
 export class DataService {
 
     private logger = new Logger('Devices List');
-    baseURL = environment.backendurl;
+    private baseURL = environment.backendurl;
     private httpHeaders = new HttpHeaders({
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
     });
-    httpOptions = {
-        headers: new HttpHeaders({
-            'Access-Control-Allow-Origin': '*'
-        })
-      };
 
     constructor(
         private _http: HttpClient,
