@@ -2,7 +2,7 @@ import { DetailsCampaignsComponent } from './../detail/details-campaigns.compone
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { APIService, Campaign } from 'app/API.service';
-import { Observable, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { CampaignService } from '../../campaign.service';
@@ -82,6 +82,15 @@ export class CampaignListComponent implements OnInit, OnDestroy {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();
+    }
+
+    /**
+     * Refresh
+     *
+     * @param event
+     */
+     refresh($event): void {
+        of(this._campaignService.refresh());
     }
 
     /**

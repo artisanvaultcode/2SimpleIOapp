@@ -14,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FuseAlertModule } from '@fuse/components/alert';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
     declarations: [
@@ -32,6 +33,7 @@ import { FuseAlertModule } from '@fuse/components/alert';
         MatInputModule,
         MatSelectModule,
         MatDialogModule,
+        MatTableModule,
     ]
 })
 export class CampaignModule {}
