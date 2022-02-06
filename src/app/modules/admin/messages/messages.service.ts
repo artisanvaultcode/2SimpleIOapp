@@ -514,7 +514,6 @@ export class MsgsService {
             this.api
                 .ListGroups(filter)
                 .then((result: ListGroupsQuery) => {
-                    console.log("MsgsSerbice - result: ", result);
                     const notDeleted = result.items.filter(
                         (item) => item._deleted !== true
                     );

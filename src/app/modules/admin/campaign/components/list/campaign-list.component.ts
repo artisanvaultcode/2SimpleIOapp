@@ -1,11 +1,13 @@
 import { DetailsCampaignsComponent } from './../detail/details-campaigns.component';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { APIService, Campaign } from 'app/API.service';
+import { APIService, Campaign, Group } from 'app/API.service';
 import { Observable, of, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { CampaignService } from '../../campaign.service';
+import { MsgsService } from '../../../messages/messages.service';
+import { D } from '@angular/cdk/keycodes';
 
 @Component({
     selector: 'app-campaign-list',
@@ -17,7 +19,9 @@ export class CampaignListComponent implements OnInit, OnDestroy {
     clientId$: Observable<any[]>;
     campaigns$: Observable<any[]>;
     nextPage$: Observable<any[]>;
+    labels$: Observable<Group[]>;
 
+    groupDict = {};
     campaignsCount: number = 0;
     clientId: string;
     newItem: any;
@@ -37,6 +41,7 @@ export class CampaignListComponent implements OnInit, OnDestroy {
         private _changeDetectorRef: ChangeDetectorRef,
         private api: APIService,
         private _matDialog: MatDialog,
+        private _msgsService: MsgsService,
     ) {}
 
     async ngOnInit(): Promise<void> {
@@ -46,6 +51,7 @@ export class CampaignListComponent implements OnInit, OnDestroy {
          this.campaigns$ = this._campaignService.campaigns$;
          this.nextPage$ = this._campaignService.nextPage$;
          this.clientId$ = this._campaignService.clientId$;
+         this.labels$ = this._msgsService.labels$;
          this._campaignService.clientId$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((clientIdin) => {
@@ -71,11 +77,16 @@ export class CampaignListComponent implements OnInit, OnDestroy {
         this.api.OnUpdateCampaignListener.subscribe((msg) => {
             const data = msg.value.data;
             const newCampaign: Campaign = data['onUpdateCampaign'];
-            console.log('Subscriber New', data);
             this.newItem = newCampaign;
             this._changeDetectorRef.detectChanges();
             this.onUpdateRefreshDataset(newCampaign);
         });
+
+        this._msgsService.getLabels()
+            .then(resp => console.log("Nro. de  grupos", resp))
+            .catch(error => console.log("Error: ", error));
+
+        this.groupToDict();
     }
 
     ngOnDestroy(): void {
@@ -89,7 +100,7 @@ export class CampaignListComponent implements OnInit, OnDestroy {
      *
      * @param event
      */
-     refresh($event): void {
+     refresh(): void {
         of(this._campaignService.refresh());
     }
 
@@ -116,4 +127,15 @@ export class CampaignListComponent implements OnInit, OnDestroy {
         this._matDialog.open(DetailsCampaignsComponent);
     }
 
+    groupToDict() {
+        this.labels$.subscribe((grps: Group[]) => {
+            if (grps !== null) {
+                grps.forEach((grp: Group) => {
+                    this.groupDict[grp.id] = grp.name;
+                });
+            }
+        });
+        // this.labels$.subscribe(resp => console.log("resp in groupTpDict ===>",resp));
+        // this.labels$.forEach(resp => console.log("resp in groupTpDict ===>",resp));
+    }
 }

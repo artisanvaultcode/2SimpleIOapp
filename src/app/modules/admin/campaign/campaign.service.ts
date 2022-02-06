@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import {
     APIService, CreateCampaignInput,
     ModelCampaignFilterInput,
-    Campaign, SubsStatus,
-    CreateCampaignMutation } from 'app/API.service';
+    SubsStatus, UpdateCampaignInput,
+    CreateCampaignMutation, Campaign, } from 'app/API.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { Logger } from 'aws-amplify';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
@@ -139,6 +139,24 @@ export class CampaignService {
                 retry(1),
                 catchError(this.catchErrorHttp)
             );
+    }
+
+    campaignStatus(campaign: Campaign, campaignStatus: SubsStatus): Promise<any> {
+        const dateAt = new Date().toISOString();
+        return new Promise((resolve, reject) => {
+            const payload: UpdateCampaignInput = {
+                id: campaign.id,
+                lastProcessDt: dateAt,
+                status: campaignStatus,
+                _version: campaign._version,
+            };
+            this.api.UpdateCampaign(payload)
+                .then(result => resolve(result))
+                .catch(error => {
+                    this.catchError(error);
+                    reject(error);
+                });
+        });
     }
 
     private catchError(error): void {

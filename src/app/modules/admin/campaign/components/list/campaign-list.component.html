@@ -103,7 +103,7 @@
                                 <!-- groupId Column -->
                                 <ng-container matColumnDef="groupId">
                                   <th mat-header-cell *matHeaderCellDef> Group ID </th>
-                                  <td mat-cell *matCellDef="let element"> {{element.groupId}} </td>
+                                  <td mat-cell *matCellDef="let element"> {{groupDict[element.groupId]}} </td>
                                 </ng-container>
 
                                 <!-- message Column -->
@@ -143,12 +143,10 @@
                                     </th>
                                     <td *matCellDef="let element">
                                         <div>
-                                            <!-- <app-control [clientId]="tClientId"
-                                                         [deviceEle]="element"
-                                                         [isAll]="false"
-                                                         (doSendMessage)="sendSmsMessages($event)"
-                                                         (doSendAwake)="sendAwakeSync($event)">
-                                            </app-control> -->
+                                            <app-control [clientId]="tClientId"
+                                                         [campaignEle]="element"
+                                                         [campaignStatus]="element.status">
+                                            </app-control>
                                         </div>
                                     </td>
                                 </ng-container>

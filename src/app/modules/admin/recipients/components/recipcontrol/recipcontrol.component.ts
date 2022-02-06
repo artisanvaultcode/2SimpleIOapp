@@ -28,7 +28,7 @@ export class RecipcontrolComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
-    setWBList(recipient: any[], status: string): void {
+    setWBList(recipient: any, status: string): void {
         let wbl: EntityStatus;
         if (status === 'WL'){
             wbl = EntityStatus.WL;

@@ -15,12 +15,15 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FuseAlertModule } from '@fuse/components/alert';
 import { MatTableModule } from '@angular/material/table';
+import { ControlComponent } from './components/control/control.component';
+import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
     declarations: [
         CampaignComponent,
         CampaignListComponent,
-        DetailsCampaignsComponent
+        DetailsCampaignsComponent,
+        ControlComponent
     ],
     imports: [
         RouterModule.forChild(campaignRoute),
@@ -34,6 +37,7 @@ import { MatTableModule } from '@angular/material/table';
         MatSelectModule,
         MatDialogModule,
         MatTableModule,
+        MatMenuModule
     ]
 })
 export class CampaignModule {}

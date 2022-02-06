@@ -1,0 +1,23 @@
+<div class="flex items-center" *ngIf="campaignStatus === 'ACTIVE' ">
+    <!-- More menu -->
+    <button
+        mat-icon-button
+        [matMenuTriggerFor]="moreMenu">
+        <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+    </button>
+    <mat-menu #moreMenu="matMenu">
+        <button *ngIf="campaignEle.status==='ACTIVE'"
+                mat-menu-item
+                (click)="activateCampaign(campaignEle,'INACTIVE')">
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>Inactive</span>
+        </button>
+        <button *ngIf="campaignEle.status==='ACTIVE'"
+                mat-menu-item
+                (click)="activateCampaign(campaignEle, 'SUSPENDED')"
+        >
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>Suspended</span>
+        </button>
+    </mat-menu>
+</div>

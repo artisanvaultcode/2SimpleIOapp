@@ -265,7 +265,7 @@ export class RecipientsService
                     resolve(result);
                 }).catch( (error) => {
                     this.catchError(error);
-                    resolve(error);
+                    reject(error);
             });
         });
     }
@@ -289,7 +289,7 @@ export class RecipientsService
                     resolve(result);
                 }).catch( (error) => {
                     this.catchError(error);
-                    resolve(error);
+                    reject(error);
             });
         });
     }
