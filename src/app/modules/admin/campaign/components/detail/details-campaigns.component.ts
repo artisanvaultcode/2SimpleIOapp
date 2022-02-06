@@ -24,7 +24,8 @@ export class DetailsCampaignsComponent implements OnInit, OnDestroy {
     composeForm: FormGroup;
     newCampaignInput: CreateCampaignInput;
     targetValues = ["ALL", "GROUP", "SELECTION"];
-    showGroupId = false;
+    showGroupId: boolean = false;
+    isSelection: boolean = false;
 
     labels$: Observable<Group[]>;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -113,10 +114,16 @@ export class DetailsCampaignsComponent implements OnInit, OnDestroy {
         console.log("Target", target);
         if (target === 'GROUP') {
             this.showGroupId = true;
+            this.isSelection = false;
             this.composeForm.controls['groupId'].setValidators(Validators.required);
         } else {
             this.showGroupId = false;
             this.composeForm.controls['groupId'].clearValidators();
+            if (target === 'SELECTION') {
+                this.isSelection = true;
+            } else {
+                this.isSelection = false;
+            }
         }
         this.composeForm.controls['groupId'].updateValueAndValidity();
     }
