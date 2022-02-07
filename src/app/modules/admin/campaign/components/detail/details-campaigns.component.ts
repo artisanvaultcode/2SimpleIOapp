@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Campaign, CreateCampaignInput,
     CreateCampaignMutation, Group }
 from 'app/API.service';
+import { ListRecipientsComponent } from './../list-recipients/list-recipients.component';
 import { MsgsService } from '../../../messages/messages.service';
 import { Observable, Subject } from 'rxjs';
 import { MsgTemplateService } from 'app/core/services/msg-template.service';
@@ -18,8 +19,11 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class DetailsCampaignsComponent implements OnInit, OnDestroy {
 
-    private clientId: string;
+    @ViewChild(ListRecipientsComponent) _listRecipients: ListRecipientsComponent;
 
+    labels$: Observable<Group[]>;
+
+    targetSelected: string = "ALL";
     showAlert: boolean = false;
     composeForm: FormGroup;
     newCampaignInput: CreateCampaignInput;
@@ -27,8 +31,8 @@ export class DetailsCampaignsComponent implements OnInit, OnDestroy {
     showGroupId: boolean = false;
     isSelection: boolean = false;
 
-    labels$: Observable<Group[]>;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+    private clientId: string;
 
     constructor(
         private _formBuilder: FormBuilder,
@@ -64,9 +68,8 @@ export class DetailsCampaignsComponent implements OnInit, OnDestroy {
             });
         this.labels$ = this._msgsService.labels$;
         this._msgsService.getLabels()
-            .then(resp => {
-                console.log("getLabels result", resp);
-            })
+            .then(resp => console.log("getLabels result", resp))
+            .catch(error => console.log("Error", error));
     }
 
     /**
@@ -85,33 +88,48 @@ export class DetailsCampaignsComponent implements OnInit, OnDestroy {
     }
 
     close() {
-        console.log("Discard to add campaign");
         this._matDialogRef.close();
     }
 
     createCampaign() {
         const newCampaign: Campaign = this.composeForm.getRawValue();
         if (this.composeForm.invalid) {
-            console.log('Validation Form invalid...');
             this.showAlert = true;
         } else {
-            console.log("form", newCampaign)
+            let campTartPromises: Promise<any>[] = []
             this._campaignService.createCampaign(newCampaign)
                 .then((resp: CreateCampaignMutation) => {
-                    console.log("New Campaign add");
-                    // send campaign to backend
-                    this._campaignService.sendCampaign(this.clientId, resp)
-                        .pipe(takeUntil(this._unsubscribeAll))
-                        .subscribe(response => {
-                            console.log("[createCampign] send Camaign to backend", response);
+                    if (this.targetSelected === 'SELECTION') {
+                        // Create Items Selected
+                        this._listRecipients.recipientTargets.forEach(element => {
+                            campTartPromises.push(this._campaignService.createCampaignTarget(resp.id, element.id));
                         });
+                        Promise.all(campTartPromises)
+                            .then(() => {
+                                // send campaign to backend
+                                this._campaignService.sendCampaign(this.clientId, resp)
+                                    .pipe(takeUntil(this._unsubscribeAll))
+                                    .subscribe(response => {
+                                        console.log("[createCampign] send Camaign to backend", response);
+                                    });
+                            })
+                            .catch(error => console.log("Error", error));
+                    } else {
+                        // send campaign to backend
+                        this._campaignService.sendCampaign(this.clientId, resp)
+                            .pipe(takeUntil(this._unsubscribeAll))
+                            .subscribe(response => {
+                                console.log("[createCampign] send Camaign to backend", response);
+                            });
+                    }
+
                 });
             this._matDialogRef.close();
         }
     }
 
     showGroup(target) {
-        console.log("Target", target);
+        this.targetSelected = target;
         if (target === 'GROUP') {
             this.showGroupId = true;
             this.isSelection = false;

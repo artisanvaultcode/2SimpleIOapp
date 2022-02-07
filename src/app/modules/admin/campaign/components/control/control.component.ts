@@ -31,7 +31,6 @@ export class ControlComponent implements OnInit, OnChanges {
     }
 
     activateCampaign(campaignEle: Campaign, status: SubsStatus) {
-        console.log("[activateCampaign] Campaign", campaignEle, " Status ", status)
         this._campaignService.campaignStatus(campaignEle, status)
             .then(resp => console.log("Update campaign ", resp))
             .catch(error => console.log(error));

@@ -4,9 +4,12 @@ import {
     APIService, CreateCampaignInput,
     ModelCampaignFilterInput,
     SubsStatus, UpdateCampaignInput,
-    CreateCampaignMutation, Campaign, } from 'app/API.service';
+    CreateCampaignMutation, Campaign, CampaignTarget,
+    ModelCampaignTargetFilterInput,
+    CreateCampaignTargetInput,
+    CreateCampaignTargetMutation, } from 'app/API.service';
 import { AuthService } from 'app/core/auth/auth.service';
-import { Logger } from 'aws-amplify';
+import { Hub, Logger } from 'aws-amplify';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import * as _ from 'lodash';
 import { environment } from 'environments/environment';
@@ -22,6 +25,8 @@ export class CampaignService {
     private _campaigns: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _pageChange: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private _clientId: BehaviorSubject<any | null> = new BehaviorSubject(null);
+    private _campaignsTarget: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
+    private _pageChangeTarget: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private baseURL = environment.backendurl;
     private httpHeaders = new HttpHeaders({
         'Access-Control-Allow-Origin': '*',
@@ -30,6 +35,7 @@ export class CampaignService {
 
     pageSize: number;
     nextToken: string = null;
+    nextTokenTarget: string = null;
 
     constructor(
         private api: APIService,
@@ -59,6 +65,17 @@ export class CampaignService {
         return this._clientId.asObservable();
     }
 
+    /**
+     * Getter for CampaignTarget
+     */
+     get campaignTargets$(): Observable<any[]>
+     {
+         return this._campaignsTarget.asObservable();
+     }
+     get nextPageTarget$(): Observable<any>
+     {
+         return this._pageChangeTarget.asObservable();
+     }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -67,7 +84,12 @@ export class CampaignService {
         of(this.getCampaigns());
     }
 
+    refreshTarget(campId): void {
+        of(this.getCampaignsTarget(campId));
+    }
+
     async getCampaigns(searchTxt?: string, nextToken?: string) {
+        this.activateProgressBar();
         const {sub} = await this._auth.checkClientId();
         this._clientId.next(sub);
         let filter: ModelCampaignFilterInput = {
@@ -88,17 +110,48 @@ export class CampaignService {
                     const notDeleted = result.items.filter(item => item._deleted !== true);
                     this._campaigns.next(notDeleted);
                     resolve(notDeleted.length);
+                    this.activateProgressBar('off');
                 })
                 .catch((err) => {
                         this.catchError(err);
                         reject(err);
+                        this.activateProgressBar('off');
                     });
 
         });
     }
 
+
+    async getCampaignsTarget(campId: string, searchTxt?: string, nextToken?: string) {
+        this.activateProgressBar();
+        let filter: ModelCampaignTargetFilterInput;
+        if (searchTxt !== undefined && searchTxt) {
+            filter = {
+                campaignId: { eq: campId}
+            };
+        }
+        this.nextTokenTarget = nextToken ? nextToken : null;
+        return new Promise((resolve, reject) => {
+           this.api.ListCampaignTargets(filter, this.pageSize, this.nextTokenTarget)
+                .then((result) => {
+                    this.nextTokenTarget = !_.isEmpty(result['nextToken']) ? result['nextToken'] : null;
+                    this._pageChangeTarget.next(this.nextTokenTarget);
+                    const notDeleted = result.items.filter(item => item._deleted !== true);
+                    this._campaignsTarget.next(notDeleted);
+                    resolve(notDeleted.length);
+                    this.activateProgressBar('off');
+                })
+                .catch((err) => {
+                        this.catchError(err);
+                        reject(err);
+                        this.activateProgressBar('off');
+                    });
+
+        });
+    }
+
+
     async createCampaign(camp: Campaign) {
-        console.log("Add new Campaign");
         const dateAt = new Date().toISOString();
         const { sub } = await this._auth.checkClientId();
         return new Promise((resolve, reject) => {
@@ -122,6 +175,31 @@ export class CampaignService {
                 });
         });
     }
+
+
+    async createCampaignTarget(campId: string, recipId: string) {
+        const dateAt = new Date().toISOString();
+        return new Promise((resolve, reject) => {
+            const _payload: CreateCampaignTargetInput = {
+                id: null,
+                campaignId: campId,
+                recipientId: recipId,
+                lastProcessDt: dateAt,
+                status: SubsStatus.ACTIVE,
+                campaignTargetRecipientId: recipId
+            };
+            this.api
+                .CreateCampaignTarget(_payload)
+                .then((resp: CreateCampaignTargetMutation) => {
+                    resolve(resp);
+                })
+                .catch((error: any) => {
+                    this.catchError(error);
+                    reject(error.message);
+                });
+        });
+    }
+
 
     sendCampaign(clientId: string, campaign: CreateCampaignMutation): Observable<any> {
         const endPoint = `${this.baseURL}/campaign/send`;
@@ -156,6 +234,15 @@ export class CampaignService {
                     this.catchError(error);
                     reject(error);
                 });
+        });
+    }
+
+    activateProgressBar(active = 'on') {
+        Hub.dispatch('processing', {
+            event: 'progressbar',
+            data: {
+                activate: active,
+            },
         });
     }
 

@@ -44,7 +44,7 @@ export class CampaignListComponent implements OnInit, OnDestroy {
         private _msgsService: MsgsService,
     ) {}
 
-    async ngOnInit(): Promise<void> {
+    ngOnInit() {
         /**
          * Get Campaigns
          */
@@ -78,8 +78,8 @@ export class CampaignListComponent implements OnInit, OnDestroy {
             const data = msg.value.data;
             const newCampaign: Campaign = data['onUpdateCampaign'];
             this.newItem = newCampaign;
-            this._changeDetectorRef.detectChanges();
             this.onUpdateRefreshDataset(newCampaign);
+            this._changeDetectorRef.markForCheck();
         });
 
         this._msgsService.getLabels()
@@ -117,14 +117,18 @@ export class CampaignListComponent implements OnInit, OnDestroy {
                         for (const property in camp) {
                             camp[property] = newCampaign[property];
                         }
+                        this.refresh();
                     }
                 });
             });
     }
 
     addNewCampaign() {
-        console.log("New Campaign");
-        this._matDialog.open(DetailsCampaignsComponent);
+        const dialogRef = this._matDialog.open(DetailsCampaignsComponent);
+        dialogRef.afterClosed()
+            .subscribe(result => {
+                this.refresh();
+            })
     }
 
     groupToDict() {
@@ -135,7 +139,5 @@ export class CampaignListComponent implements OnInit, OnDestroy {
                 });
             }
         });
-        // this.labels$.subscribe(resp => console.log("resp in groupTpDict ===>",resp));
-        // this.labels$.forEach(resp => console.log("resp in groupTpDict ===>",resp));
     }
 }
