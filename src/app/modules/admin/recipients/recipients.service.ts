@@ -3,7 +3,8 @@ import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import {filter, map, switchMap, take, tap} from 'rxjs/operators';
 import * as _ from 'lodash';
-import {Logger} from '@aws-amplify/core';
+import { Logger } from '@aws-amplify/core';
+import { Hub } from 'aws-amplify'
 import {AuthService} from '../../../core/auth/auth.service';
 import {
     APIService,
@@ -15,7 +16,7 @@ import {
     SearchableRecipientSortInput,
     SearchableSortDirection,
     UpdateRecipientInput
-} from '../../../API.service';
+} from 'app/API.service';
 
 
 @Injectable({
@@ -85,6 +86,7 @@ export class RecipientsService
      */
     async getRecipients(searchTxt?: string, nextToken?: string): Promise<any>
     {
+        this.activateProgressBar();
         const { sub } = await this.auth.checkClientId();
         const filterRec: ModelRecipientFilterInput =  {
             clientId: { eq: sub},
@@ -101,10 +103,12 @@ export class RecipientsService
                     const notDeleted = result.items.filter(item => item._deleted !== true);
                     this._recipients.next(notDeleted);
                     resolve(notDeleted.length);
+                    this.activateProgressBar('off');
                 })
                 .catch((err) => {
                         this.catchError(err);
                         reject(err);
+                        this.activateProgressBar('off');
                     });
 
         });
@@ -417,6 +421,15 @@ export class RecipientsService
                 })
             ))
         );
+    }
+
+    activateProgressBar(active = 'on') {
+        Hub.dispatch('processing', {
+            event: 'progressbar',
+            data: {
+                activate: active,
+            },
+        });
     }
 
     private catchError(error): void {

@@ -248,7 +248,6 @@ export type UpdateRecipientInput = {
   _deleted?: boolean | null;
   clientId?: string | null;
   _version?: number | null;
-  _deleted?: boolean | null;
   recipientGroupId?: string | null;
 };
 

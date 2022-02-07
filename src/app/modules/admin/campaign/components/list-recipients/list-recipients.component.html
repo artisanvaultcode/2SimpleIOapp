@@ -1,0 +1,124 @@
+<div>
+    <hr>
+    <mat-drawer-container
+        class="flex-auto h-full bg-card dark:bg-transparent">
+        <mat-drawer-content class="flex flex-col">
+            <ng-container *ngIf="isLoading" >
+                <mat-progress-bar mode="query" ></mat-progress-bar>
+            </ng-container>
+            <!-- Main -->
+            <div class="flex">
+                <div class="flex-auto mx-2 border">
+                    <!-- Header -->
+                    <div class="flex flex-col sm:flex-row md:flex-col flex-auto justify-between px-2 mt-0 border-b">
+                        <!-- Title -->
+                        <div>
+                            <div class="text-2xl font-extrabold tracking-tight leading-none">Recipients</div>
+                        </div>
+                        <!-- Main actions -->
+                        <div class="flex items-center my-2">
+                            <!-- Search -->
+                            <div class="flex-auto">
+                                <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded w-full min-w-50">
+                                    <mat-icon
+                                        class="icon-size-5"
+                                        matPrefix
+                                        [svgIcon]="'heroicons_solid:search'"></mat-icon>
+                                    <input
+                                        matInput
+                                        [formControl]="searchInputControl"
+                                        [autocomplete]="'off'"
+                                        [placeholder]="'Search recipient by phone'">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Recipients list -->
+                    <div class="relative">
+                        <ng-container *ngIf="recipients$ | async as recipients">
+                            <ng-container *ngIf="recipients.length; else noContacts">
+                                <ng-container *ngFor="let contact of recipients; let i = index; trackBy: trackByFn">
+
+                                    <!-- Recipients -->
+                                    <div class="flex"> <!-- mb-2 min-w-0 ml-4 -->
+                                        <div
+                                            class="min-w-0 z-20 px-6 md:px-8 py-2 cursor-pointer border-b"
+                                            (click)="addCampaigTarget(contact)">
+                                            <div class="font-medium leading-5 truncate">{{contact.phone}}</div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+                        </ng-container>
+                        <!-- No contacts -->
+                        <ng-template #noContacts>
+                            <div class="p-8 sm:p-16 border-t text-2xl font-semibold tracking-tight text-center">No recipients!</div>
+                        </ng-template>
+                    </div>
+
+                    <div id="nPage" class="dark:bg-transparent text-right mx-8 mt-2 mb-2">
+                        <ng-container *ngIf="nextPage$ | async as nextPage">
+                            <button
+                                [hidden]="nextPage===null"
+                                mat-flat-button
+                                [color]="'primary'"
+                                (click)="gotoNextPage(nextPage)">
+                                <mat-icon [svgIcon]="'heroicons_outline:arrow-circle-right'" class="icon-size-8"></mat-icon>
+                                <span class="ml-2 mr-1"></span>
+                            </button>
+                        </ng-container>
+                    </div>
+                </div>
+                <div class="flex-auto mx-2 border">
+                    <div class="px-6 border-b">
+                        <!-- Header -->
+                        <div class="flex flex-col sm:flex-row md:flex-col flex-auto justify-between px-2 mt-0 border-b">
+                            <!-- Title -->
+                            <div>
+                                <div class="text-2xl font-extrabold tracking-tight leading-none">Target Recipients</div>
+                            </div>
+                            <!-- Main actions -->
+                            <div class="flex items-center my-2">
+                                <!-- Search -->
+                                <!-- <div class="flex-auto">
+                                    <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded w-full min-w-50">
+                                        <mat-icon
+                                            class="icon-size-5"
+                                            matPrefix
+                                            [svgIcon]="'heroicons_solid:search'"></mat-icon>
+                                        <input
+                                            matInput
+                                            [formControl]="searchInputControl"
+                                            [autocomplete]="'off'"
+                                            [placeholder]="'Search recipient by phone'">
+                                    </mat-form-field>
+                                </div> -->
+                            </div>
+                        </div>
+                        <!-- TargetRecipients list -->
+                        <div class="relative">
+                            <ng-container *ngIf="recipientTargets as targets">
+                                <ng-container *ngIf="targets.length; else noRecipTarget">
+                                    <ng-container *ngFor="let recip of targets; let i = index; trackBy: trackByFn">
+                                        <!-- Recipients -->
+                                        <div class="flex"> <!-- mb-2 min-w-0 ml-4 -->
+                                            <div
+                                                class="min-w-0 z-20 px-6 md:px-8 py-2 cursor-pointer border-b"
+                                                (click)="removeRecipient(recip.phone)">
+                                                <div class="font-medium leading-5 truncate">{{recip.phone}}</div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </ng-container>
+                            </ng-container>
+                            <!-- No contacts -->
+                            <ng-template #noRecipTarget>
+                                <div class="p-8 sm:p-16 border-t text-2xl font-semibold tracking-tight text-center">No recipients!</div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-drawer-content>
+    </mat-drawer-container>
+</div>

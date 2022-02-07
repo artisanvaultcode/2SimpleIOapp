@@ -17,13 +17,17 @@ import { FuseAlertModule } from '@fuse/components/alert';
 import { MatTableModule } from '@angular/material/table';
 import { ControlComponent } from './components/control/control.component';
 import { MatMenuModule } from '@angular/material/menu';
+import { ListRecipientsComponent } from './components/list-recipients/list-recipients.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
     declarations: [
         CampaignComponent,
         CampaignListComponent,
         DetailsCampaignsComponent,
-        ControlComponent
+        ControlComponent,
+        ListRecipientsComponent
     ],
     imports: [
         RouterModule.forChild(campaignRoute),
@@ -37,7 +41,9 @@ import { MatMenuModule } from '@angular/material/menu';
         MatSelectModule,
         MatDialogModule,
         MatTableModule,
-        MatMenuModule
+        MatMenuModule,
+        MatProgressBarModule,
+        MatSlideToggleModule,
     ]
 })
 export class CampaignModule {}
