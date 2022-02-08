@@ -7,7 +7,6 @@ import { takeUntil } from 'rxjs/operators';
 
 import { CampaignService } from '../../campaign.service';
 import { MsgsService } from '../../../messages/messages.service';
-import { D } from '@angular/cdk/keycodes';
 
 @Component({
     selector: 'app-campaign-list',

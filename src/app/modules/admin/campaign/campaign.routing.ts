@@ -2,6 +2,7 @@ import { Route } from '@angular/router';
 import { CampaignComponent } from './campaign.component';
 import { CampaignResolver } from './campaign.resolver';
 import { CampaignListComponent } from './components/list/campaign-list.component';
+import { DetailsCampaignsComponent } from './components/detail/details-campaigns.component';
 
 export const campaignRoute: Route[] = [
     {
@@ -9,11 +10,15 @@ export const campaignRoute: Route[] = [
         component: CampaignComponent,
         children: [
             {
-              path: '',
-              component: CampaignListComponent,
-              resolve  : {
-                tasks    : CampaignResolver,
-              }
+                path: '',
+                component: CampaignListComponent,
+                resolve  : {
+                  tasks    : CampaignResolver,
+                }
+            },
+            {
+                path: 'addcampaign',
+                component: DetailsCampaignsComponent
             }
         ]
     }

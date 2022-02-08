@@ -67,6 +67,7 @@ export const appRoutes: Route[] = [
             {path: 'messages', loadChildren: () => import('app/modules/admin/messages/messages.module').then(m => m.MessagesModule)},
             {path: 'enterprisebi', loadChildren: () => import('app/modules/admin/enterprisebi/enterprisebi.module').then(m => m.EnterprisebiModule)},
             {path: 'campaign', loadChildren: () => import('app/modules/admin/campaign/campaign.module').then(m => m.CampaignModule)},
+            {path: 'campaign/addcampaign', loadChildren: () => import('app/modules/admin/campaign/campaign.module').then(m => m.CampaignModule)},
             {path: 'me', loadChildren: () => import('app/modules/client/settings/settings.module').then(m => m.SettingsModule)},
             {path: 'logout', loadChildren: () => import('app/auth/sign-out/sign-out.module').then(m => m.AuthSignOutModule)},
         ]
