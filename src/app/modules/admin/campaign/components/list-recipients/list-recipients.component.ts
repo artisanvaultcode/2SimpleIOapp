@@ -1,12 +1,15 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Hub } from 'aws-amplify';
 import { Observable, of, Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 
 import { CampaignService } from './../../campaign.service';
 import { RecipientsService } from './../../../recipients/recipients.service';
-import { Recipient } from 'app/API.service';
+import { Group, Recipient } from 'app/API.service';
+import { Location } from "@angular/common";
+import { MsgsService } from './../../../messages/messages.service';
+
 
 @Component({
     selector: 'app-list-recipients',
@@ -19,12 +22,21 @@ export class ListRecipientsComponent implements OnInit {
 
     recipients$: Observable<any[]>;
     nextPage$: Observable<any[]>;
-    searchInputControl: FormControl = new FormControl();
     campaignTargets$: Observable<any[]>;
+    recipientTargets: Recipient[] = [];
+    searchInputControl: FormControl = new FormControl();
+    composeForm: FormGroup;
+    filterGroup: FormControl;
+    filterGroup$: Observable<string>;
+    labels$: Observable<Group[]>;
 
+    showAlert: boolean = false;
     isLoading: boolean;
     recipientsCount: number = 0;
-    recipientTargets: Recipient[] = [];
+    targetSelected: string = "ALL";
+    targetValues = ["ALL", "GROUP", "SELECTION"];
+    showGroupId: boolean = false;
+    isSelection: boolean = false;
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -32,6 +44,9 @@ export class ListRecipientsComponent implements OnInit {
         private _recipientsService: RecipientsService,
         private _changeDetectorRef: ChangeDetectorRef,
         private _campaignService: CampaignService,
+        private _formBuilder: FormBuilder,
+        private _location: Location,
+        private _msgsService: MsgsService,
     ) {
         Hub.listen('processing', (data) => {
             if (data.payload.event === 'progressbar') {
@@ -43,7 +58,6 @@ export class ListRecipientsComponent implements OnInit {
 
     ngOnInit(): void {
         this.recipients$ = this._recipientsService.recipients$;
-        this._recipientsService.pageSize = 6;
         this._recipientsService.getRecipients()
             .then(resp => console.log("Recipients count", resp))
             .catch(error => console.log("Error", error));
@@ -63,6 +77,18 @@ export class ListRecipientsComponent implements OnInit {
                 )
             )
             .subscribe();
+
+        this.composeForm = this._formBuilder.group({
+            name: ['', [Validators.required, Validators.minLength(4)]],
+            target: ['', [Validators.required]],
+            message: ['', [Validators.required, Validators.minLength(4)]],
+            groupId: [''],
+        });
+
+        this.labels$ = this._msgsService.labels$;
+        this._msgsService.getLabels()
+            .then(resp => console.log("getLabels result", resp))
+            .catch(error => console.log("Error", error));
     }
 
     gotoNextPage(nextPage): void {
@@ -76,5 +102,33 @@ export class ListRecipientsComponent implements OnInit {
     removeRecipient(recip) {
         let recipFiltered = this.recipientTargets.filter(recipt => recipt.phone !== recip);
         this.recipientTargets = recipFiltered;
+    }
+
+    back() {
+        // Back page
+        //this._router.navigateByUrl("/campaign");
+        this._location.back();
+    }
+
+    showGroup(target) {
+        this.targetSelected = target;
+        if (target === 'GROUP') {
+            this.showGroupId = true;
+            this.isSelection = false;
+            this.composeForm.controls['groupId'].setValidators(Validators.required);
+        } else {
+            this.showGroupId = false;
+            this.composeForm.controls['groupId'].clearValidators();
+            if (target === 'SELECTION') {
+                this.isSelection = true;
+            } else {
+                this.isSelection = false;
+            }
+        }
+        this.composeForm.controls['groupId'].updateValueAndValidity();
+    }
+
+    groupChange(event) {
+        console.log("[Radio button] change:", event, "\n\nGroup Id: ", event.value);
     }
 }

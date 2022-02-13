@@ -2,7 +2,7 @@ import { Route } from '@angular/router';
 import { CampaignComponent } from './campaign.component';
 import { CampaignResolver } from './campaign.resolver';
 import { CampaignListComponent } from './components/list/campaign-list.component';
-import { DetailsCampaignsComponent } from './components/detail/details-campaigns.component';
+import { ListRecipientsComponent } from './components/list-recipients/list-recipients.component';
 
 export const campaignRoute: Route[] = [
     {
@@ -18,7 +18,7 @@ export const campaignRoute: Route[] = [
             },
             {
                 path: 'addcampaign',
-                component: DetailsCampaignsComponent
+                component: ListRecipientsComponent
             }
         ]
     }

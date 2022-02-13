@@ -20,6 +20,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { ListRecipientsComponent } from './components/list-recipients/list-recipients.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatRadioModule } from '@angular/material/radio';
 
 @NgModule({
     declarations: [
@@ -44,6 +45,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
         MatMenuModule,
         MatProgressBarModule,
         MatSlideToggleModule,
+        MatRadioModule,
     ]
 })
 export class CampaignModule {}

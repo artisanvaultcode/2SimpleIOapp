@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
 import { Campaign, CreateCampaignInput,
     CreateCampaignMutation, Group }
 from 'app/API.service';
@@ -11,6 +10,7 @@ import { MsgTemplateService } from 'app/core/services/msg-template.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { CampaignService } from './../../campaign.service';
 import { takeUntil } from 'rxjs/operators';
+import { Location } from "@angular/common";
 
 @Component({
     selector: 'app-details-campaigns',
@@ -36,11 +36,11 @@ export class DetailsCampaignsComponent implements OnInit, OnDestroy {
 
     constructor(
         private _formBuilder: FormBuilder,
-        private _matDialogRef: MatDialogRef<DetailsCampaignsComponent>,
         private _campaignService: CampaignService,
         private _msgsService: MsgsService,
         private _msgTemplateService: MsgTemplateService,
         private _auth: AuthService,
+        private _location: Location,
     ) {}
 
     ngOnInit(): void {
@@ -87,8 +87,10 @@ export class DetailsCampaignsComponent implements OnInit, OnDestroy {
         this.createCampaign();
     }
 
-    close() {
-        this._matDialogRef.close();
+    back() {
+        // Back page
+        //this._router.navigateByUrl("/campaign");
+        this._location.back();
     }
 
     createCampaign() {
@@ -124,7 +126,6 @@ export class DetailsCampaignsComponent implements OnInit, OnDestroy {
                     }
 
                 });
-            this._matDialogRef.close();
         }
     }
 

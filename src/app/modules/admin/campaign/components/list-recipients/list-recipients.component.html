@@ -1,13 +1,100 @@
-<div>
-    <hr>
+<div class="absolute inset-0 flex flex-col h-full min-w-0 overflow-hidden bg-card dark:bg-transparent"> <!-- flex flex-col max-w-240 md:min-w-160 -m-6 widthcon -->
+    <!-- Header -->
+    <div class="flex">  <!-- justify-between items-center h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary text-on-primary -->
+        <div class="flex-initial py-4 px-0 border-b"> <!--  flex-col sm:flex-row md:flex-col  -->
+            <button
+                class="ml-4 px-1 sm:px-4 min-w-10"
+                mat-flat-button
+                [color]="'primary'"
+                (click)="back()">
+                <mat-icon
+                    class="text-current"
+                    [svgIcon]="'heroicons_outline:chevron-left'"></mat-icon>
+                    <span class="hidden sm:inline-block ml-2">Back</span>
+            </button>
+        </div>
+        <div class="flex-auto py-4 px-8 md:px-16 border-b">
+            <div class="text-4xl font-extrabold tracking-tight leading-none">
+                Add Campaign
+            </div>
+        </div>
+        <!-- Panel toggle -->
+        <div class="flex-initial py-4 px-4 border-b">
+            <button
+                class="ml-4 px-2 min-w-0"
+                mat-flat-button
+                [color]="'primary'"
+                (click)="back()">
+            <mat-icon [svgIcon]="'heroicons_outline:menu'"></mat-icon>
+        </button>
+        </div>
+    </div>
+    <!-- Warn -->
+    <fuse-alert
+        class="mt-8 -mb-4"
+        *ngIf="showAlert"
+        [type]="'warn'">
+        <span fuseAlertTitle>Warn alert</span>
+        Fill all required fields to proceed next step
+    </fuse-alert>
+    <!-- form -->
+    <form [formGroup]="composeForm">
+        <div class="flex flex-col sm:flex-row w-full">
+            <div class="mx-2 py-2 px-2">  <!-- border-b -->
+                <!-- Name -->
+                <mat-form-field class="w-full sm:w-100 md:w-120">
+                    <mat-label>Name</mat-label>
+                    <input
+                        matInput
+                        [formControlName]="'name'">
+                </mat-form-field>
+            </div>
+            <div class="mx-2 py-2 px-2">  <!-- border-b -->
+                <!-- Campaign Target -->
+                <mat-form-field class="w-32">
+                    <mat-label>Target</mat-label>
+                    <mat-select
+                        class="w-32"
+                        (selectionChange)="showGroup($event.value)"
+                        [formControlName]="'target'">
+                        <mat-option>Select target</mat-option>
+                        <mat-option
+                            *ngFor="let tar of targetValues"
+                            [value]="tar">
+                            {{tar}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="flex flex-col sm:flex-row w-full" *ngIf="showGroupId">
+            <div class="text-2xl font-bold mx-4 py-2 px-2">Groups:</div>
+            <div class="mx-4 py-3 px-2">
+                <mat-radio-group
+                    class="text-lg font-bold"
+                    aria-label="Select an option"
+                    [formControlName]="'groupId'">
+                    <mat-radio-button
+                        class="mx-2 px-2"
+                        *ngFor="let group of (labels$ | async)"
+                        [value]="group.id"
+                        color="primary"
+                        (change)="groupChange($event)">
+                        {{group.name}}
+                    </mat-radio-button>
+                </mat-radio-group>
+            </div>
+        </div>
+    </form>
     <mat-drawer-container
+        *ngIf="isSelection"
         class="flex-auto h-full bg-card dark:bg-transparent">
         <mat-drawer-content class="flex flex-col">
             <ng-container *ngIf="isLoading" >
                 <mat-progress-bar mode="query" ></mat-progress-bar>
             </ng-container>
             <!-- Main -->
-            <div class="flex">
+            <div class="flex flex-col sm:flex-row">
                 <div class="flex-auto mx-2 border">
                     <!-- Header -->
                     <div class="flex flex-col sm:flex-row md:flex-col flex-auto justify-between px-2 mt-0 border-b">

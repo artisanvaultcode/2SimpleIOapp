@@ -7,7 +7,8 @@ import {
     CreateCampaignMutation, Campaign, CampaignTarget,
     ModelCampaignTargetFilterInput,
     CreateCampaignTargetInput,
-    CreateCampaignTargetMutation, } from 'app/API.service';
+    CreateCampaignTargetMutation,
+    ModelRecipientFilterInput, } from 'app/API.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { Hub, Logger } from 'aws-amplify';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
@@ -235,6 +236,14 @@ export class CampaignService {
                     reject(error);
                 });
         });
+    }
+
+    async getCampaignByGroupId(gId: string) {
+        this.activateProgressBar();
+        const { sub } = await this._auth.checkClientId();
+        const recipFilter: ModelRecipientFilterInput = {
+            
+        }
     }
 
     activateProgressBar(active = 'on') {
