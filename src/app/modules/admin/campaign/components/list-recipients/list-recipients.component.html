@@ -24,7 +24,7 @@
                 class="ml-4 px-2 min-w-0"
                 mat-flat-button
                 [color]="'primary'"
-                (click)="back()">
+                (click)="detailCampaign()">
             <mat-icon [svgIcon]="'heroicons_outline:menu'"></mat-icon>
         </button>
         </div>
@@ -86,13 +86,23 @@
             </div>
         </div>
     </form>
+    <ng-container *ngIf="isLoading" >
+        <mat-progress-bar mode="query" ></mat-progress-bar>
+    </ng-container>
+    <mat-drawer-container *ngIf="isAll"
+        class="bg-card dark:bg-transparent m-6">
+        <mat-drawer-content class="flex flex-col border">
+            <div class="py-4 px-6">
+                <mat-card class="px-12">
+                    Messages will be sent to All recipients
+                </mat-card>
+            </div>
+        </mat-drawer-content>
+    </mat-drawer-container>
     <mat-drawer-container
         *ngIf="isSelection"
         class="flex-auto h-full bg-card dark:bg-transparent">
         <mat-drawer-content class="flex flex-col">
-            <ng-container *ngIf="isLoading" >
-                <mat-progress-bar mode="query" ></mat-progress-bar>
-            </ng-container>
             <!-- Main -->
             <div class="flex flex-col sm:flex-row">
                 <div class="flex-auto mx-2 border">
@@ -209,3 +219,13 @@
         </mat-drawer-content>
     </mat-drawer-container>
 </div>
+<!-- Fuse Drawer Panel Details Campaign -->
+<fuse-drawer
+    class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999"
+    fixed
+    [mode]="'over'"
+    [opened]="false"
+    [name]="'campDetails'"
+    [position]="'right'">
+    <app-details-campaigns (closeOrCancelEvent)="toggleDrawerClose($event)"></app-details-campaigns> <!-- [currentMsg]="currentMsg" (closeOrCancelEvent)="toggleDrawerClose($event)" -->
+</fuse-drawer>

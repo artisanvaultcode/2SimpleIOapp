@@ -14,7 +14,7 @@ export class MsgTemplateDefaultComponent implements OnInit {
 
     id: string;
     version: number;
-    isLoadingMsg: boolean;
+    isLoading: boolean;
     msgDefault: CreateMsgTemplateInput;
     composeForm: FormGroup;
     showAlert: boolean = false;
@@ -30,8 +30,8 @@ export class MsgTemplateDefaultComponent implements OnInit {
         private _changeDetectorRef: ChangeDetectorRef,
     ) {
         Hub.listen('processing', (data) => {
-            if (data.payload.event === 'progressbarmsg') {
-                this.isLoadingMsg = data.payload.data.activate === 'on';
+            if (data.payload.event === 'progressbar') {
+                this.isLoading = data.payload.data.activate === 'on';
                 this._changeDetectorRef.markForCheck();
             }
         });

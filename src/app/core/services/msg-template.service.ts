@@ -157,8 +157,8 @@ export class MsgTemplateService {
                     const notDeleted = resp.items.filter(
                         (item) => item._deleted !== true
                     );
-                    this._message.next(notDeleted[0]);
                     resolve(notDeleted[0]);
+                    this._message.next(notDeleted[0]);
                     this.activateProgressBar('off');
                 })
                 .catch((error: any) => {
@@ -171,7 +171,7 @@ export class MsgTemplateService {
 
     activateProgressBar(active = 'on') {
         Hub.dispatch('processing', {
-            event: 'progressbarmsg',
+            event: 'progressbar',
             data: {
                 activate: active,
             },

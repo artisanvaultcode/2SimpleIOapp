@@ -9,6 +9,7 @@ import { RecipientsService } from './../../../recipients/recipients.service';
 import { Group, Recipient } from 'app/API.service';
 import { Location } from "@angular/common";
 import { MsgsService } from './../../../messages/messages.service';
+import { FuseDrawerService } from '@fuse/components/drawer';
 
 
 @Component({
@@ -37,6 +38,7 @@ export class ListRecipientsComponent implements OnInit {
     targetValues = ["ALL", "GROUP", "SELECTION"];
     showGroupId: boolean = false;
     isSelection: boolean = false;
+    isAll: boolean = false;
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -47,6 +49,7 @@ export class ListRecipientsComponent implements OnInit {
         private _formBuilder: FormBuilder,
         private _location: Location,
         private _msgsService: MsgsService,
+        private _fuseDrawerService: FuseDrawerService,
     ) {
         Hub.listen('processing', (data) => {
             if (data.payload.event === 'progressbar') {
@@ -59,13 +62,13 @@ export class ListRecipientsComponent implements OnInit {
     ngOnInit(): void {
         this.recipients$ = this._recipientsService.recipients$;
         this._recipientsService.getRecipients()
-            .then(resp => console.log("Recipients count", resp))
+            .then(resp => this.recipientsCount = resp)
             .catch(error => console.log("Error", error));
         this.nextPage$ = this._recipientsService.nextPage$;
 
         this.campaignTargets$ = this._campaignService.campaignTargets$;
         this._campaignService.getCampaignsTarget(this.campId)
-            .then(resp => console.log("CampaignTarget count", resp))
+            .then(resp => resp)
             .catch(error => console.log("Error: ", error));
 
         this.searchInputControl.valueChanges
@@ -87,7 +90,7 @@ export class ListRecipientsComponent implements OnInit {
 
         this.labels$ = this._msgsService.labels$;
         this._msgsService.getLabels()
-            .then(resp => console.log("getLabels result", resp))
+            .then(resp => resp)
             .catch(error => console.log("Error", error));
     }
 
@@ -115,14 +118,19 @@ export class ListRecipientsComponent implements OnInit {
         if (target === 'GROUP') {
             this.showGroupId = true;
             this.isSelection = false;
+            this.isAll = false;
             this.composeForm.controls['groupId'].setValidators(Validators.required);
         } else {
             this.showGroupId = false;
             this.composeForm.controls['groupId'].clearValidators();
             if (target === 'SELECTION') {
                 this.isSelection = true;
+                this.isAll = false;
             } else {
                 this.isSelection = false;
+                if (target === 'ALL') {
+                    this.isAll = true;
+                }
             }
         }
         this.composeForm.controls['groupId'].updateValueAndValidity();
@@ -130,5 +138,16 @@ export class ListRecipientsComponent implements OnInit {
 
     groupChange(event) {
         console.log("[Radio button] change:", event, "\n\nGroup Id: ", event.value);
+    }
+
+    detailCampaign() {
+        const drawer = this._fuseDrawerService.getComponent('campDetails');
+        drawer.open();
+        this._changeDetectorRef.detectChanges();
+    }
+
+    toggleDrawerClose(drawerName): void {
+        const drawer = this._fuseDrawerService.getComponent(drawerName);
+        drawer.close();
     }
 }

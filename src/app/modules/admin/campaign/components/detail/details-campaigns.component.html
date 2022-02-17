@@ -1,98 +1,55 @@
 <div class="absolute inset-0 flex flex-col h-full min-w-0 overflow-hidden bg-card dark:bg-transparent"> <!-- flex flex-col max-w-240 md:min-w-160 -m-6 widthcon -->
     <!-- Header -->
     <div class="flex">  <!-- justify-between items-center h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary text-on-primary -->
-        <div class="flex-initial py-4 px-0 border-b"> <!--  flex-col sm:flex-row md:flex-col  -->
+        <div class="flex-initial py-4 px-6 border-b"> <!--  flex-col sm:flex-row md:flex-col  -->
+            <!-- Close button -->
             <button
-                class="ml-4 px-1 sm:px-4 min-w-10"
-                mat-flat-button
-                [color]="'primary'"
-                (click)="back()">
-                <mat-icon
-                    class="text-current"
-                    [svgIcon]="'heroicons_outline:chevron-left'"></mat-icon>
-                    <span class="hidden sm:inline-block ml-2">Back</span>
+                mat-icon-button
+                (click)="closePanel($event)">
+                <mat-icon [svgIcon]="'heroicons_outline:x'"></mat-icon>
             </button>
         </div>
         <div class="flex-auto py-6 px-8 md:px-16 border-b">
-            <div class="text-4xl font-extrabold tracking-tight leading-none">
-                Add Campaign
+            <div class="text-2xl font-extrabold tracking-tight leading-none">
+                Details
             </div>
         </div>
     </div>
-    <!-- Warn -->
-    <fuse-alert
-        class="mt-8 -mb-4"
-        *ngIf="showAlert"
-        [type]="'warn'">
-        <span fuseAlertTitle>Warn alert</span>
-        Fill all required fields to proceed next step
-    </fuse-alert>
-    <mat-dialog-content>
-        <!-- Compose form -->
-        <form
-            class="flex flex-col flex-auto pb-0 mb-0 pt-6 px-6 sm:pt-8 sm:px-8 overflow-y-auto"
-            [formGroup]="composeForm">
-                <!-- Name -->
-                <mat-form-field>
-                    <mat-label>Name</mat-label>
-                    <input
-                        matInput
-                        [formControlName]="'name'">
-                </mat-form-field>
-                <!-- Campaign Target -->
-                <mat-form-field>
-                    <mat-label>Target</mat-label>
-                    <mat-select
-                        (selectionChange)="showGroup($event.value)"
-                        [formControlName]="'target'">
-                        <mat-option>Select target</mat-option>
-                        <mat-option
-                            *ngFor="let tar of targetValues"
-                            [value]="tar">
-                            {{tar}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <!-- GroupId -->
-                <mat-form-field
-                    *ngIf="showGroupId">
-                    <mat-label>Group ID</mat-label>
-                    <mat-select
-
-                        [formControlName]="'groupId'">
-                        <mat-option>Select Group</mat-option>
-                        <mat-option
-                            *ngFor="let group of (labels$ | async)"
-                            [value]="group.id">
-                            {{group.name}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <!-- Message -->
-                <mat-form-field class="pb-0 mb-0">
-                    <mat-label>Message</mat-label>
-                    <textarea
-                        matInput
-                        [formControlName]="'message'"></textarea>
-                </mat-form-field>
-                <mat-label class="text-warn pt-0 mt-0">
-                    * Default message, you can change it.
-                </mat-label>
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between mt-4 sm:mt-6">
-
-                <div class="flex items-center mt-4 mb-2 sm:mt-0">
-                    <button
-                        class="order-first sm:order-last"
-                        mat-flat-button
-                        [color]="'primary'"
-                        (click)="saveAndClose()">
-                        Save
-                    </button>
-                </div>
-            </div>
-        </form>
-        <div class="flex flex-col flex-auto pt-0 px-6 sm:px-8 overflow-y-auto">
-            <app-list-recipients *ngIf="isSelection"></app-list-recipients>
-        </div>
+    <mat-dialog-content class="flex flex-col">
+        <!-- Message -->
+        <mat-form-field class="pb-0 mb-0 pt-4 px-4">
+            <mat-label>Message</mat-label>
+            <textarea
+                matInput
+                id="default-message"
+                (change)="messageChange($event.target.value)"></textarea>
+            </mat-form-field>
+            <mat-label class="text-warn pt-0 mt-0 pb-4 px-4">
+                * Default message, you can change it.
+            </mat-label>
     </mat-dialog-content>
+    <!-- Send Schedule -->
+    <div class="flex flex-col">
+        <div class="mt-2 pb-2 px-6 md:px-12 border-b">
+            <div class="font-bold tracking-tight leading-none">
+                Send Schedule:
+            </div>
+        </div>
+        <div class="py-2 px-4 w-full">
+            <!-- Select send type -->
+            <mat-form-field class="w-full">
+                <mat-label>Send Type</mat-label>
+                <mat-select
+                    [(value)]="typeSelected"
+                    (selectionChange)="sendTypeChange($event.value)">
+                    <!-- <mat-option>Select send type</mat-option> -->
+                    <mat-option
+                        *ngFor="let st of sendTypes"
+                        [value]="st.type">
+                        {{st.value}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
 </div>

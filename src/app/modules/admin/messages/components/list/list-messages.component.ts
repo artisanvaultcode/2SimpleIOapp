@@ -13,10 +13,10 @@ import {debounceTime, switchMap, takeUntil} from 'rxjs/operators';
 import {FuseMediaWatcherService} from '@fuse/services/media-watcher';
 import {DetailsMessagesComponent} from '../details/details-messages.component';
 import {MsgsService} from '../../messages.service';
-import {EntityStatus, Group, MsgTemplate, MsgToGroup} from '../../../../../API.service';
+import {EntityStatus, Group, MsgTemplate, MsgToGroup} from 'app/API.service';
 import {MessageModel} from '../../models/MessageModel';
 import {Hub} from 'aws-amplify';
-import {FuseDrawerService} from '../../../../../../@fuse/components/drawer';
+import {FuseDrawerService} from '@fuse/components/drawer';
 
 @Component({
     selector       : 'messages-list',

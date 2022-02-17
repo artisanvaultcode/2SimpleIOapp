@@ -232,7 +232,8 @@ export class RecipientsService
                 carrierStatus: null,
                 lastProcessDt: dateAt,
                 status: EntityStatus.ACTIVE,
-                recipientGroupId: this.defaultGroupId
+                recipientGroupId: this.defaultGroupId,
+                groupId: this.defaultGroupId
             };
             this.api.CreateRecipient(payloadInput)
                 .then((result) => {
@@ -262,7 +263,8 @@ export class RecipientsService
                 _version: recipient._version,
                 _deleted: null,
                 status: EntityStatus.ACTIVE,
-                recipientGroupId: this.defaultGroupId
+                recipientGroupId: this.defaultGroupId,
+                groupId: this.defaultGroupId
             };
             this.api.UpdateRecipient(payloadInput)
                 .then((result) => {
@@ -316,6 +318,7 @@ export class RecipientsService
                         phone: recipient.phone,
                         phoneTxt: recipient.phone.toString(),
                         recipientGroupId: recipient.recipientGroupId,
+                        groupId: recipient.recipientGroupId,
                         lastProcessDt: dateAt,
                         _version: oldRec._version,
                         status: recipient.status || EntityStatus.ACTIVE

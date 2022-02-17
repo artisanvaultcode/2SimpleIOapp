@@ -1,3 +1,4 @@
+import { ListRecipientsQuery } from './../../../API.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
@@ -15,6 +16,7 @@ import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import * as _ from 'lodash';
 import { environment } from 'environments/environment';
 import { catchError, retry } from 'rxjs/operators';
+import { ModelStringInput } from '../../../API.service';
 
 @Injectable({
     providedIn: 'root',
@@ -28,6 +30,8 @@ export class CampaignService {
     private _clientId: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private _campaignsTarget: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _pageChangeTarget: BehaviorSubject<any | null> = new BehaviorSubject(null);
+    private _recipients: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
+
     private baseURL = environment.backendurl;
     private httpHeaders = new HttpHeaders({
         'Access-Control-Allow-Origin': '*',
@@ -78,6 +82,14 @@ export class CampaignService {
          return this._pageChangeTarget.asObservable();
      }
 
+
+     /**
+     * Getter for recipients
+     */
+    get recipients$(): Observable<any>
+    {
+        return this._recipients.asObservable();
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -238,12 +250,28 @@ export class CampaignService {
         });
     }
 
-    async getCampaignByGroupId(gId: string) {
+    async getCampaignByGroupId(gId: ModelStringInput, nextToken?: string, searchTxt?: string, filterRec?: string): Promise<any> {
         this.activateProgressBar();
         const { sub } = await this._auth.checkClientId();
         const recipFilter: ModelRecipientFilterInput = {
-            
-        }
+            clientId: sub,
+            groupId: gId
+        };
+        this.nextToken = nextToken ? nextToken : null;
+        return new Promise((resolve, reject) => {
+            this.api.ListRecipients(recipFilter, this.pageSize, nextToken)
+                .then((result: ListRecipientsQuery) => {
+                    this.nextToken = !_.isEmpty(result['nextToken']) ? result['nextToken'] : null;
+                    this._pageChange.next(this.nextToken);
+                    const notDeleted = result.items.filter(item => item._deleted !== true);
+                    this._recipients.next(notDeleted);
+                    resolve(notDeleted.length);
+                    this.activateProgressBar('off');
+                })
+                .catch(error => {
+                    this.catchError(error);
+                });
+        })
     }
 
     activateProgressBar(active = 'on') {
