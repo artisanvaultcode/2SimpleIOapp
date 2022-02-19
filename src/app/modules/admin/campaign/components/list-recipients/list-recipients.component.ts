@@ -24,7 +24,7 @@ export class ListRecipientsComponent implements OnInit {
     @ViewChild(MatChipList) chipList: MatChipList;
 
     recipients$: Observable<any[]>;
-    nextPageRecips$: Observable<any[]>;
+    nextPage$: Observable<any[]>;
     campaignTargets$: Observable<any[]>;
     recipientTargets: Recipient[] = [];
     searchInputControl: FormControl = new FormControl();
@@ -66,11 +66,11 @@ export class ListRecipientsComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.recipients$ = this._campaignService.recipients$;
-        this._campaignService.searchRecipients()
+        this.recipients$ = this._recipientsService.recipients$;
+        this._recipientsService.getRecipients()
             .then(resp => this.recipientsCount = resp)
             .catch(error => console.log("Error", error));
-        this.nextPageRecips$ = this._campaignService.nextPageRecips$;
+        this.nextPage$ = this._recipientsService.nextPage$;
 
         this.campaignTargets$ = this._campaignService.campaignTargets$;
         this._campaignService.getCampaignsTarget(this.campId)
@@ -165,7 +165,7 @@ export class ListRecipientsComponent implements OnInit {
                 this._recipientsService.getRecipientsByGroupId(ref.value.id)
                     .then(resp => this.recipientsCount = resp)
                     .catch(error => console.log("Error", error));
-                this.nextPageRecips$ = this._recipientsService.nextPage$;
+                this.nextPage$ = this._recipientsService.nextPage$;
             }
             else item.selected = false;
         });

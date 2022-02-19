@@ -11,6 +11,7 @@ import { ListRecipientsComponent } from './components/list-recipients/list-recip
 
 import { FuseAlertModule } from '@fuse/components/alert';
 import { FuseDrawerModule } from '@fuse/components/drawer';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -25,6 +26,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
     declarations: [
@@ -53,6 +55,8 @@ import { MatChipsModule } from '@angular/material/chips';
         MatRadioModule,
         MatCardModule,
         MatChipsModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
     ]
 })
 export class CampaignModule {}
