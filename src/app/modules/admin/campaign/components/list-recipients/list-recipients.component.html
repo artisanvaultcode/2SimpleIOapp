@@ -1,13 +1,132 @@
-<div>
-    <hr>
+<div class="absolute inset-0 flex flex-col h-full min-w-0 overflow-hidden bg-card dark:bg-transparent"> <!-- flex flex-col max-w-240 md:min-w-160 -m-6 widthcon -->
+    <!-- Header -->
+    <div class="flex">  <!-- justify-between items-center h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary text-on-primary -->
+        <div class="flex-initial py-4 px-0 border-b"> <!--  flex-col sm:flex-row md:flex-col  -->
+            <button
+                class="ml-4 px-1 sm:px-4 min-w-10"
+                mat-flat-button
+                [color]="'primary'"
+                (click)="back()">
+                <mat-icon
+                    class="text-current"
+                    [svgIcon]="'heroicons_outline:chevron-left'"></mat-icon>
+                    <span class="hidden sm:inline-block ml-2">Back</span>
+            </button>
+        </div>
+        <div class="flex-auto py-4 px-8 md:px-16 border-b">
+            <div class="text-4xl font-extrabold tracking-tight leading-none">
+                Add Campaign
+            </div>
+        </div>
+        <!-- Panel toggle -->
+        <div class="flex-initial py-4 px-4 border-b">
+            <button
+                class="ml-4 px-2 min-w-0"
+                mat-flat-button
+                [color]="'primary'"
+                (click)="detailCampaign()">
+            <mat-icon [svgIcon]="'heroicons_outline:menu'"></mat-icon>
+        </button>
+        </div>
+    </div>
+    <!-- Warn -->
+    <fuse-alert
+        class="mt-8 -mb-4"
+        *ngIf="showAlert"
+        [type]="'warn'">
+        <span fuseAlertTitle>Warn alert</span>
+        Fill all required fields to proceed next step
+    </fuse-alert>
+    <!-- form -->
+    <form [formGroup]="composeForm">
+        <div class="flex flex-col sm:flex-row w-full">
+            <div class="mx-2 py-2 px-2">  <!-- border-b -->
+                <!-- Name -->
+                <mat-form-field class="w-full sm:w-100 md:w-120">
+                    <mat-label>Name</mat-label>
+                    <input
+                        matInput
+                        [formControlName]="'name'">
+                </mat-form-field>
+            </div>
+            <div class="mx-2 py-2 px-2">  <!-- border-b -->
+                <!-- Campaign Target -->
+                <mat-form-field class="w-32">
+                    <mat-label>Target</mat-label>
+                    <mat-select
+                        class="w-32"
+                        (selectionChange)="showGroup($event.value)"
+                        [formControlName]="'target'">
+                        <mat-option>Select target</mat-option>
+                        <mat-option
+                            *ngFor="let tar of targetValues"
+                            [value]="tar">
+                            {{tar}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="flex flex-col sm:flex-row w-full" *ngIf="showGroupId">
+            <div class="text-2xl font-bold mx-4 py-2 px-2">Groups:</div>
+            <div class="mx-4 py-3 px-2">
+                <mat-radio-group
+                    class="text-lg font-bold"
+                    aria-label="Select an option"
+                    [formControlName]="'groupId'">
+                    <mat-radio-button
+                        class="mx-2 px-2"
+                        *ngFor="let group of (labels$ | async)"
+                        [value]="group"
+                        color="primary"
+                        (change)="groupChange($event)">
+                        {{group.name}}
+                    </mat-radio-button>
+                </mat-radio-group>
+            </div>
+        </div>
+    </form>
+    <ng-container *ngIf="isLoading" >
+        <mat-progress-bar mode="query" ></mat-progress-bar>
+    </ng-container>
+    <mat-drawer-container *ngIf="isAllandGroup"
+        class="bg-card dark:bg-transparent m-6">
+        <mat-drawer-content class="flex flex-col border">
+            <div class="py-4 px-6">
+                <mat-card class="px-12">
+                    <mat-card-title id="cardTitleInfo">
+                        {{cardMsg}}
+                    </mat-card-title>
+                </mat-card>
+            </div>
+        </mat-drawer-content>
+    </mat-drawer-container>
+    <mat-drawer-container *ngIf="showGroupFilter"
+        class="h-32 bg-card dark:bg-transparent mx-2"> <!-- flex-auto h-24  -->
+        <mat-drawer-content class="flex flex-col py-2 px-2">
+            <ng-container
+                *ngIf="labels$ | async as groups">
+                <mat-label>Group filter:</mat-label>
+                <mat-chip-list>
+                    <mat-chip
+                        *ngFor="let group of groups"
+                        color="primary"
+                        selectable="true"
+                        #ref="matChip"
+                        [value]="group"
+                        (click)="onClickFilter(ref)">
+                        {{group.name}}
+                    </mat-chip>
+                </mat-chip-list>
+            </ng-container>
+        </mat-drawer-content>
+    </mat-drawer-container>
     <mat-drawer-container
+        *ngIf="isSelection"
         class="flex-auto h-full bg-card dark:bg-transparent">
         <mat-drawer-content class="flex flex-col">
-            <ng-container *ngIf="isLoading" >
-                <mat-progress-bar mode="query" ></mat-progress-bar>
-            </ng-container>
             <!-- Main -->
-            <div class="flex">
+            <div class="flex flex-col sm:flex-row">
                 <div class="flex-auto mx-2 border">
                     <!-- Header -->
                     <div class="flex flex-col sm:flex-row md:flex-col flex-auto justify-between px-2 mt-0 border-b">
@@ -37,7 +156,7 @@
                     <div class="relative">
                         <ng-container *ngIf="recipients$ | async as recipients">
                             <ng-container *ngIf="recipients.length; else noContacts">
-                                <ng-container *ngFor="let contact of recipients; let i = index; trackBy: trackByFn">
+                                <ng-container *ngFor="let contact of recipients">
 
                                     <!-- Recipients -->
                                     <div class="flex"> <!-- mb-2 min-w-0 ml-4 -->
@@ -57,12 +176,12 @@
                     </div>
 
                     <div id="nPage" class="dark:bg-transparent text-right mx-8 mt-2 mb-2">
-                        <ng-container *ngIf="nextPage$ | async as nextPage">
+                        <ng-container *ngIf="nextPageRecips$ | async as nextPage">
                             <button
                                 [hidden]="nextPage===null"
                                 mat-flat-button
                                 [color]="'primary'"
-                                (click)="gotoNextPage(nextPage)">
+                                (click)="gotoNextPageRecip(nextPage)">
                                 <mat-icon [svgIcon]="'heroicons_outline:arrow-circle-right'" class="icon-size-8"></mat-icon>
                                 <span class="ml-2 mr-1"></span>
                             </button>
@@ -99,7 +218,7 @@
                         <div class="relative">
                             <ng-container *ngIf="recipientTargets as targets">
                                 <ng-container *ngIf="targets.length; else noRecipTarget">
-                                    <ng-container *ngFor="let recip of targets; let i = index; trackBy: trackByFn">
+                                    <ng-container *ngFor="let recip of targets">
                                         <!-- Recipients -->
                                         <div class="flex"> <!-- mb-2 min-w-0 ml-4 -->
                                             <div
@@ -122,3 +241,13 @@
         </mat-drawer-content>
     </mat-drawer-container>
 </div>
+<!-- Fuse Drawer Panel Details Campaign -->
+<fuse-drawer
+    class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999"
+    fixed
+    [mode]="'over'"
+    [opened]="false"
+    [name]="'campDetails'"
+    [position]="'right'">
+    <app-details-campaigns (closeOrCancelEvent)="toggleDrawerClose($event)"></app-details-campaigns> <!-- [currentMsg]="currentMsg" (closeOrCancelEvent)="toggleDrawerClose($event)" -->
+</fuse-drawer>

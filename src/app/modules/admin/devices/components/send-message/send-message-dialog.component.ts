@@ -38,7 +38,6 @@ export class SendMessageDialogComponent implements OnInit {
         this.metaForm = this._formBuilder.group({
             phoneNumber: ['+1']
         });
-        console.log(this.data);
         this.devices = this.data['sendDevices'];
     }
 

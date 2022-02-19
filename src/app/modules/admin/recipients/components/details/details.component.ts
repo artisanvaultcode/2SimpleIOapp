@@ -18,8 +18,8 @@ import { takeUntil } from 'rxjs/operators';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { RecipientListComponent } from '../list/recipient-list.component';
 import { RecipientsService } from '../../recipients.service';
-import { EntityStatus } from '../../../../../API.service';
-import { FuseUtils } from '../../../../../../@fuse/utils';
+import { EntityStatus } from 'app/API.service';
+import { FuseUtils } from '@fuse/utils';
 import { GroupsRecipientsService } from '../../groups-recipients.service';
 
 interface IStatus {
@@ -258,8 +258,6 @@ export class ContactsDetailsComponent
         // Get the contact object
         const contact = this.contactForm.getRawValue();
         this._recipientService.updateRecipientDetail(contact).then((resp) => {
-            console.log('[updateContact] resp update', resp);
-            console.log('Recipient updated');
             // Toggle the edit mode off
             this.toggleEditMode(false);
             this._changeDetectorRef.markForCheck();

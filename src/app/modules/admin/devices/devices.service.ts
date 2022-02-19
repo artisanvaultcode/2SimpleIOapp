@@ -141,7 +141,6 @@ export class DevicesService
         return new Promise((resolve, reject) => {
             this.api.SearchDevices(filter, sortCriteria)
                 .then((result) => {
-                    console.log(result.items);
                     this._devices.next(result.items);
                     resolve(result.items.length);
                 })

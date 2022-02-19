@@ -1,6 +1,5 @@
 import { DetailsCampaignsComponent } from './../detail/details-campaigns.component';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { APIService, Campaign, Group } from 'app/API.service';
 import { Observable, of, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -39,7 +38,6 @@ export class CampaignListComponent implements OnInit, OnDestroy {
         private _campaignService: CampaignService,
         private _changeDetectorRef: ChangeDetectorRef,
         private api: APIService,
-        private _matDialog: MatDialog,
         private _msgsService: MsgsService,
     ) {}
 
@@ -123,11 +121,7 @@ export class CampaignListComponent implements OnInit, OnDestroy {
     }
 
     addNewCampaign() {
-        const dialogRef = this._matDialog.open(DetailsCampaignsComponent);
-        dialogRef.afterClosed()
-            .subscribe(result => {
-                this.refresh();
-            })
+        // BORRAR
     }
 
     groupToDict() {

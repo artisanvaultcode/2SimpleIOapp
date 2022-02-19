@@ -59,7 +59,6 @@ export class MetadatadialogComponent implements OnInit {
     saveAndClose(): void {
         const freqrawdata = this.metaForm.getRawValue();
         this.metadata.frequency = freqrawdata;
-        console.log('Nuevos valores freq', freqrawdata, this.metadata);
         // Save data
         this._devService.updateMetadataDevice(this.data.devselect, JSON.stringify(this.metadata))
         // Update data on UI

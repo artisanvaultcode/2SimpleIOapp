@@ -83,7 +83,6 @@ export class DevicesListComponent implements OnInit, OnDestroy, AfterViewInit {
         this.api.OnUpdateDeviceListener.subscribe((msg) => {
             const data = msg.value.data;
             const newDevice: Device = data['onUpdateDevice'];
-            console.log('Subscriber New', data);
             this.newItem = newDevice;
             this._changeDetectorRef.detectChanges();
             this.onUpdateRefreshDataset(newDevice);

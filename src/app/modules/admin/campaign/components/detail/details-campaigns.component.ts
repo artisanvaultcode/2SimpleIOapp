@@ -1,148 +1,92 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
-import { Campaign, CreateCampaignInput,
-    CreateCampaignMutation, Group }
-from 'app/API.service';
-import { ListRecipientsComponent } from './../list-recipients/list-recipients.component';
-import { MsgsService } from '../../../messages/messages.service';
-import { Observable, Subject } from 'rxjs';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { MsgTemplateService } from 'app/core/services/msg-template.service';
-import { AuthService } from 'app/core/auth/auth.service';
-import { CampaignService } from './../../campaign.service';
-import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-details-campaigns',
     templateUrl: './details-campaigns.component.html',
     styleUrls: ['./details-campaigns.component.scss'],
 })
-export class DetailsCampaignsComponent implements OnInit, OnDestroy {
+export class DetailsCampaignsComponent implements OnInit {
 
-    @ViewChild(ListRecipientsComponent) _listRecipients: ListRecipientsComponent;
+    // =========================== REVISAR
+    /// @ViewChild(ListRecipientsComponent) _listRecipients: ListRecipientsComponent;
+    @Output() closeOrCancelEvent: EventEmitter<any> = new EventEmitter<any>();
 
-    labels$: Observable<Group[]>;
-
-    targetSelected: string = "ALL";
-    showAlert: boolean = false;
-    composeForm: FormGroup;
-    newCampaignInput: CreateCampaignInput;
-    targetValues = ["ALL", "GROUP", "SELECTION"];
-    showGroupId: boolean = false;
-    isSelection: boolean = false;
-
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
-    private clientId: string;
+    msgDefault: string ="";
+    dt: any;
+    typeSelected = 1;
+    onceSchedule: boolean = true;
+    minDate: Date = new Date();
+    isScheduler: boolean = false;
+    // Shipping Schedule ============================ VER
+    sendTypes = [
+        {"type": 0, "value": "Right now"},
+        {"type": 1, "value": "One hour later"},
+        {"type": 2, "value": "Two hours later"},
+        {"type": 3, "value": "Scheduled"}]
 
     constructor(
-        private _formBuilder: FormBuilder,
-        private _matDialogRef: MatDialogRef<DetailsCampaignsComponent>,
-        private _campaignService: CampaignService,
-        private _msgsService: MsgsService,
         private _msgTemplateService: MsgTemplateService,
-        private _auth: AuthService,
     ) {}
 
     ngOnInit(): void {
-        this._auth.checkClientId()
-            .then(resp => {
-                this.clientId = resp['sub'];
-            })
-            .catch(error => {
-                console.log("Error _auth", error);
-            });
-
-        this.composeForm = this._formBuilder.group({
-            name: ['', [Validators.required, Validators.minLength(4)]],
-            target: ['', [Validators.required]],
-            message: ['', [Validators.required, Validators.minLength(4)]],
-            groupId: [''],
-        });
 
         this._msgTemplateService.getDefaultMsg()
             .then(resp => {
-                this.composeForm.controls['message'].setValue(resp.message);
+                document.getElementById('default-message').textContent = resp['message'];
+                this.msgDefault = resp.message;
             })
             .catch(error => {
                 console.log("[MsgTemplateMessage] Error:", error);
             });
-        this.labels$ = this._msgsService.labels$;
-        this._msgsService.getLabels()
-            .then(resp => console.log("getLabels result", resp))
-            .catch(error => console.log("Error", error));
+        // Set Hour
+        this.dt = new Date();
+        this.dt.setHours( this.dt.getHours() + 1);
+        console.log("An hour late:", this.dt);
+
     }
 
-    /**
-     * On destroy
-     */
-     ngOnDestroy(): void {
-        // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next();
-        this._unsubscribeAll.complete();
+    closePanel(event: any): void {
+        this.closeOrCancelEvent.emit('campDetails');
     }
 
-    saveAndClose() {
-        // Hide the alert
-        this.showAlert = false;
-        this.createCampaign();
+    messageChange(msg) {
+        this.msgDefault = msg;
     }
 
-    close() {
-        this._matDialogRef.close();
-    }
-
-    createCampaign() {
-        const newCampaign: Campaign = this.composeForm.getRawValue();
-        if (this.composeForm.invalid) {
-            this.showAlert = true;
+    sendTypeChange(event) {
+        console.log("[Send Type] event", event);
+        console.log("typeSelected", this.typeSelected);
+        if (this.sendTypes[this.typeSelected]['value'] === 'Scheduled') {
+            console.log("SELECTED SCHEDULED");
+            this.isScheduler = true;
         } else {
-            let campTartPromises: Promise<any>[] = []
-            this._campaignService.createCampaign(newCampaign)
-                .then((resp: CreateCampaignMutation) => {
-                    if (this.targetSelected === 'SELECTION') {
-                        // Create Items Selected
-                        this._listRecipients.recipientTargets.forEach(element => {
-                            campTartPromises.push(this._campaignService.createCampaignTarget(resp.id, element.id));
-                        });
-                        Promise.all(campTartPromises)
-                            .then(() => {
-                                // send campaign to backend
-                                this._campaignService.sendCampaign(this.clientId, resp)
-                                    .pipe(takeUntil(this._unsubscribeAll))
-                                    .subscribe(response => {
-                                        console.log("[createCampign] send Camaign to backend", response);
-                                    });
-                            })
-                            .catch(error => console.log("Error", error));
-                    } else {
-                        // send campaign to backend
-                        this._campaignService.sendCampaign(this.clientId, resp)
-                            .pipe(takeUntil(this._unsubscribeAll))
-                            .subscribe(response => {
-                                console.log("[createCampign] send Camaign to backend", response);
-                            });
-                    }
-
-                });
-            this._matDialogRef.close();
+            this.isScheduler = false;
         }
     }
 
-    showGroup(target) {
-        this.targetSelected = target;
-        if (target === 'GROUP') {
-            this.showGroupId = true;
-            this.isSelection = false;
-            this.composeForm.controls['groupId'].setValidators(Validators.required);
+    onClickDate(element) {
+        console.log("[onClickDate] event", element, "\n\nId", element.id);
+        if (element.id === 'op1') {
+            this.onceSchedule = true;
         } else {
-            this.showGroupId = false;
-            this.composeForm.controls['groupId'].clearValidators();
-            if (target === 'SELECTION') {
-                this.isSelection = true;
-            } else {
-                this.isSelection = false;
-            }
+            this.onceSchedule = false;
         }
-        this.composeForm.controls['groupId'].updateValueAndValidity();
+    }
+
+    onDateChange(typeDate, minmax, value) {
+        if (typeDate === 'single') {
+            console.log("[OnDateChange] SINGLE value", value, "\nMinMax", minmax);
+        } else {
+            console.log("[OnDateChange] RANGE value", value, "\nMinMax", minmax);
+        }
+    }
+
+    hoursChange(value, hourmins) {
+        if (hourmins === 'hour') {
+            console.log("[hoursChange] hourmins", hourmins, "\nDato de hora", value);
+        } else{
+            console.log("[hoursChange] hourmins", hourmins, "\nDato de minutos", value);
+        }
     }
 }

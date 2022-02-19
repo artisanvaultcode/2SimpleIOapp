@@ -2,10 +2,10 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import {filter, map, switchMap, take, tap} from 'rxjs/operators';
-import * as _ from 'lodash';
+
 import { Logger } from '@aws-amplify/core';
 import { Hub } from 'aws-amplify'
-import {AuthService} from '../../../core/auth/auth.service';
+import { AuthService } from '../../../core/auth/auth.service';
 import {
     APIService,
     CreateRecipientInput,
@@ -18,6 +18,7 @@ import {
     UpdateRecipientInput
 } from 'app/API.service';
 
+import * as _ from 'lodash';
 
 @Injectable({
     providedIn: 'root'
@@ -25,9 +26,10 @@ import {
 export class RecipientsService
 {
 
-    // Private
     pageSize: number;
     nextToken: string = null;
+
+    // Private
     private logger = new Logger('RecipientsList');
     private _recipient: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private _recipients: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
@@ -106,10 +108,10 @@ export class RecipientsService
                     this.activateProgressBar('off');
                 })
                 .catch((err) => {
-                        this.catchError(err);
-                        reject(err);
-                        this.activateProgressBar('off');
-                    });
+                    this.catchError(err);
+                    reject(err);
+                    this.activateProgressBar('off');
+                });
 
         });
     }
@@ -200,6 +202,35 @@ export class RecipientsService
         );
     }
 
+
+    async getRecipientsByGroupId(gId: any, nextToken?: string): Promise<any> {
+        this.activateProgressBar();
+        const { sub } = await this.auth.checkClientId();
+        const recipFilter: ModelRecipientFilterInput = {
+            clientId: { eq: sub },
+            and :[
+                { groupId: { eq: gId }}
+            ]
+        };
+        this.nextToken = nextToken ? nextToken : null;
+        return new Promise((resolve, reject) => {
+            this.api.ListRecipients(recipFilter, this.pageSize, nextToken)
+                .then((result: ListRecipientsQuery) => {
+                    this.nextToken = !_.isEmpty(result['nextToken']) ? result['nextToken'] : null;
+                    this._pageChange.next(this.nextToken);
+                    const notDeleted = result.items.filter(item => item._deleted !== true);
+                    this._recipients.next(notDeleted);
+                    resolve(notDeleted.length);
+                    this.activateProgressBar('off');
+                })
+                .catch(error => {
+                    this.activateProgressBar('off');
+                    this.catchError(error);
+                    reject(error);
+                });
+        })
+    }
+
     importRecipients(data: any[]): Promise<any> {
         const allAdditions = [];
         data.forEach( (item) =>{
@@ -232,7 +263,8 @@ export class RecipientsService
                 carrierStatus: null,
                 lastProcessDt: dateAt,
                 status: EntityStatus.ACTIVE,
-                recipientGroupId: this.defaultGroupId
+                recipientGroupId: this.defaultGroupId,
+                groupId: this.defaultGroupId
             };
             this.api.CreateRecipient(payloadInput)
                 .then((result) => {
@@ -262,7 +294,8 @@ export class RecipientsService
                 _version: recipient._version,
                 _deleted: null,
                 status: EntityStatus.ACTIVE,
-                recipientGroupId: this.defaultGroupId
+                recipientGroupId: this.defaultGroupId,
+                groupId: this.defaultGroupId
             };
             this.api.UpdateRecipient(payloadInput)
                 .then((result) => {
@@ -316,6 +349,7 @@ export class RecipientsService
                         phone: recipient.phone,
                         phoneTxt: recipient.phone.toString(),
                         recipientGroupId: recipient.recipientGroupId,
+                        groupId: recipient.recipientGroupId,
                         lastProcessDt: dateAt,
                         _version: oldRec._version,
                         status: recipient.status || EntityStatus.ACTIVE

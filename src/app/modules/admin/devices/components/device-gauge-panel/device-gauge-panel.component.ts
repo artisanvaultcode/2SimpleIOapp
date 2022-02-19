@@ -190,9 +190,7 @@ export class DeviceGaugePanelComponent implements OnInit, OnDestroy, OnChanges
         // this._messagesService.activateProgressBar();
         if (clientId.currentValue) {
             const channel = `${this.clientId}-sync-ui`;
-            console.log(channel);
             this._ws.subScribeToChannel([channel], (msg) => {
-                console.log(msg);
                 if (msg) {
                     this.setSeries( msg );
 

@@ -24,14 +24,11 @@ export class DeviceRowComponent implements OnInit, OnChanges {
 
     ngOnInit(): void {
         this.cd.detectChanges();
-        console.log(this.item);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log(changes)
         if (changes['newItem']) {
             const newItem = changes['newItem'].currentValue;
-            console.log(newItem);
             if(newItem && newItem.id === this.item.id) {
                 this.item = newItem;
                 this.cd.detectChanges();
