@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Hub } from 'aws-amplify';
 import { Observable, of, Subject } from 'rxjs';
@@ -10,6 +10,7 @@ import { Group, Recipient } from 'app/API.service';
 import { Location } from "@angular/common";
 import { MsgsService } from './../../../messages/messages.service';
 import { FuseDrawerService } from '@fuse/components/drawer';
+import { MatChip, MatChipList } from '@angular/material/chips';
 
 
 @Component({
@@ -20,9 +21,10 @@ import { FuseDrawerService } from '@fuse/components/drawer';
 export class ListRecipientsComponent implements OnInit {
 
     @Input() campId: string;
+    @ViewChild(MatChipList) chipList: MatChipList;
 
     recipients$: Observable<any[]>;
-    nextPage$: Observable<any[]>;
+    nextPageRecips$: Observable<any[]>;
     campaignTargets$: Observable<any[]>;
     recipientTargets: Recipient[] = [];
     searchInputControl: FormControl = new FormControl();
@@ -32,13 +34,17 @@ export class ListRecipientsComponent implements OnInit {
     labels$: Observable<Group[]>;
 
     showAlert: boolean = false;
-    isLoading: boolean;
-    recipientsCount: number = 0;
-    targetSelected: string = "ALL";
-    targetValues = ["ALL", "GROUP", "SELECTION"];
     showGroupId: boolean = false;
+    showGroupFilter: boolean = false;
     isSelection: boolean = false;
     isAll: boolean = false;
+    isAllandGroup: boolean = false;
+    isLoading: boolean;
+    recipientsCount: number = 0;
+    groupId: string = "";
+    cardMsg: string = "";
+    targetSelected: string = "ALL";
+    targetValues = ["ALL", "GROUP", "SELECTION"];
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -60,11 +66,11 @@ export class ListRecipientsComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.recipients$ = this._recipientsService.recipients$;
-        this._recipientsService.getRecipients()
+        this.recipients$ = this._campaignService.recipients$;
+        this._campaignService.searchRecipients()
             .then(resp => this.recipientsCount = resp)
             .catch(error => console.log("Error", error));
-        this.nextPage$ = this._recipientsService.nextPage$;
+        this.nextPageRecips$ = this._campaignService.nextPageRecips$;
 
         this.campaignTargets$ = this._campaignService.campaignTargets$;
         this._campaignService.getCampaignsTarget(this.campId)
@@ -94,8 +100,11 @@ export class ListRecipientsComponent implements OnInit {
             .catch(error => console.log("Error", error));
     }
 
-    gotoNextPage(nextPage): void {
-        this._recipientsService.goNextPage(null, nextPage);
+    gotoNextPageRecip(nextPage): void {
+        this._campaignService.goNextPageRecips(null, nextPage);
+        /* if ( this.isSelection && this.groupId === "" ) {
+        } else if ( this.isSelection && this.groupId !== "" )
+            this._recipientsService.getRecipientsByGroupId(this.groupId, nextPage); */
     }
 
     addCampaigTarget(recip: Recipient) {
@@ -119,6 +128,8 @@ export class ListRecipientsComponent implements OnInit {
             this.showGroupId = true;
             this.isSelection = false;
             this.isAll = false;
+            this.showGroupFilter = false;
+            this.isAllandGroup = false;
             this.composeForm.controls['groupId'].setValidators(Validators.required);
         } else {
             this.showGroupId = false;
@@ -126,10 +137,15 @@ export class ListRecipientsComponent implements OnInit {
             if (target === 'SELECTION') {
                 this.isSelection = true;
                 this.isAll = false;
+                this.showGroupFilter = true;
+                this.isAllandGroup = false;
             } else {
                 this.isSelection = false;
+                this.showGroupFilter = false;
                 if (target === 'ALL') {
                     this.isAll = true;
+                    this.isAllandGroup = true;
+                    this.cardMsg = "Messages will be sent to All recipients";
                 }
             }
         }
@@ -137,7 +153,22 @@ export class ListRecipientsComponent implements OnInit {
     }
 
     groupChange(event) {
-        console.log("[Radio button] change:", event, "\n\nGroup Id: ", event.value);
+        this.isAllandGroup = true;
+        this.cardMsg = `Messages will be sent to all recipients in the \"${event.value.name}\" group`;
+    }
+
+    onClickFilter(ref: MatChip) {
+        this.chipList.chips.forEach((item: MatChip) => {
+            if (item === ref) {
+                ref.selected = true;
+                this.groupId = ref.value.id;
+                this._recipientsService.getRecipientsByGroupId(ref.value.id)
+                    .then(resp => this.recipientsCount = resp)
+                    .catch(error => console.log("Error", error));
+                this.nextPageRecips$ = this._recipientsService.nextPage$;
+            }
+            else item.selected = false;
+        });
     }
 
     detailCampaign() {

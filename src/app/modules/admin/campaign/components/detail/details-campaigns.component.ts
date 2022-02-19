@@ -48,9 +48,7 @@ export class DetailsCampaignsComponent implements OnInit {
     }
 
     messageChange(msg) {
-        console.log("change default message: ", msg);
         this.msgDefault = msg;
-        console.log("msgDefault", this.msgDefault);
     }
 
     sendTypeChange(typeS: string) {

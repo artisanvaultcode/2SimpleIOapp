@@ -78,7 +78,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
                 this.clientId = resp['sub'];
             });
         Auth.currentSession().then(resp => {
-            console.log("auth.session", resp);
             this.jwtToken = resp.getAccessToken().getJwtToken();
         })
     }

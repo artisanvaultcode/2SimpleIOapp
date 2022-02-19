@@ -1,22 +1,24 @@
-import { ListRecipientsQuery } from './../../../API.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
     APIService, CreateCampaignInput,
     ModelCampaignFilterInput,
     SubsStatus, UpdateCampaignInput,
-    CreateCampaignMutation, Campaign, CampaignTarget,
+    CreateCampaignMutation, Campaign,
     ModelCampaignTargetFilterInput,
     CreateCampaignTargetInput,
     CreateCampaignTargetMutation,
-    ModelRecipientFilterInput, } from 'app/API.service';
+    SearchableRecipientFilterInput,
+    SearchableRecipientSortableFields,
+    SearchableSortDirection,
+    SearchableRecipientSortInput,
+    SearchRecipientsQuery, } from 'app/API.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { Hub, Logger } from 'aws-amplify';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import * as _ from 'lodash';
 import { environment } from 'environments/environment';
 import { catchError, retry } from 'rxjs/operators';
-import { ModelStringInput } from '../../../API.service';
 
 @Injectable({
     providedIn: 'root',
@@ -27,9 +29,10 @@ export class CampaignService {
     private logger = new Logger(' [CampaignService] ');
     private _campaigns: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _pageChange: BehaviorSubject<any | null> = new BehaviorSubject(null);
+    private _pageChangeTarget: BehaviorSubject<any | null> = new BehaviorSubject(null);
+    private _pageChangeRecips: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private _clientId: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private _campaignsTarget: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
-    private _pageChangeTarget: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private _recipients: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
 
     private baseURL = environment.backendurl;
@@ -39,8 +42,10 @@ export class CampaignService {
     });
 
     pageSize: number;
+    pageSizeRecips: number;
     nextToken: string = null;
     nextTokenTarget: string = null;
+    nextTokenRecips: string = null;
 
     constructor(
         private api: APIService,
@@ -48,6 +53,7 @@ export class CampaignService {
         private _http: HttpClient
     ) {
         this.pageSize = 10;
+        this.pageSizeRecips = 10;
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -90,6 +96,10 @@ export class CampaignService {
     {
         return this._recipients.asObservable();
     }
+    get nextPageRecips$(): Observable<any>
+    {
+        return this._pageChangeRecips.asObservable();
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -100,6 +110,53 @@ export class CampaignService {
     refreshTarget(campId): void {
         of(this.getCampaignsTarget(campId));
     }
+    // ======================================== VER =====================================
+    refreshRecips(): void {
+        this.nextTokenRecips = null;
+        this._pageChangeRecips.next(this.nextTokenRecips);
+        // of(this.getCampaignsTarget(campId)); ====================================== VER
+    }
+
+    goNextPageRecips(searchTxt: string, nextPageToken: string) {
+        of(this.searchRecipients(searchTxt, nextPageToken))
+    }
+
+    async searchRecipients(searchTxt?: string, nextToken?: string): Promise<any> {
+        this.activateProgressBar();
+        const { sub } = await this._auth.checkClientId();
+        const searchRecips: SearchableRecipientFilterInput =  {
+            clientId: { eq: sub},
+        };
+        if (searchTxt !== undefined && searchTxt) {
+            searchRecips['and'] = [{groupId: {eq: searchTxt}}];
+        }
+        console.log("[searchRecipients] searchCriteria", searchRecips);
+        this.nextTokenRecips = nextToken ? nextToken : null;
+        const sortCriteria: SearchableRecipientSortInput= {
+            field: SearchableRecipientSortableFields.groupId,
+            direction: SearchableSortDirection.asc
+        };
+        return new Promise((resolve, reject) => {
+            this.api.SearchRecipients(searchRecips, sortCriteria, this.pageSizeRecips, this.nextTokenRecips)
+                .then((result: SearchRecipientsQuery) => {
+                    console.log("[serachREcipients] result", result, "\n\n\n\n");
+                    this.nextTokenRecips = !_.isEmpty(result['nextToken']) ? result['nextToken'] : null;
+                    console.log("[searchRecipients] nextTokenREcips", this.nextTokenRecips);
+                    this._pageChangeRecips.next(this.nextTokenRecips);
+                    console.log("[searchRecipients] _pageChangeREcips", this._pageChangeRecips);
+                    const notDeleted = result.items.filter(item => item._deleted !== true);
+                    this._recipients.next(notDeleted);
+                    resolve(notDeleted.length);
+                    this.activateProgressBar('off');
+                })
+                .catch((err) => {
+                    this.catchErrorLocal(err);
+                    reject(err);
+                    this.activateProgressBar('off');
+                });
+        });
+    }
+
 
     async getCampaigns(searchTxt?: string, nextToken?: string) {
         this.activateProgressBar();
@@ -126,10 +183,10 @@ export class CampaignService {
                     this.activateProgressBar('off');
                 })
                 .catch((err) => {
-                        this.catchError(err);
-                        reject(err);
-                        this.activateProgressBar('off');
-                    });
+                    this.catchErrorLocal(err);
+                    reject(err);
+                    this.activateProgressBar('off');
+                });
 
         });
     }
@@ -155,10 +212,10 @@ export class CampaignService {
                     this.activateProgressBar('off');
                 })
                 .catch((err) => {
-                        this.catchError(err);
-                        reject(err);
-                        this.activateProgressBar('off');
-                    });
+                    this.catchErrorLocal(err);
+                    reject(err);
+                    this.activateProgressBar('off');
+                });
 
         });
     }
@@ -183,7 +240,7 @@ export class CampaignService {
                 .CreateCampaign(_payload)
                 .then((resp: CreateCampaignMutation) => resolve(resp))
                 .catch((error: any) => {
-                    this.catchError(error);
+                    this.catchErrorLocal(error);
                     reject(error.message);
                 });
         });
@@ -207,7 +264,7 @@ export class CampaignService {
                     resolve(resp);
                 })
                 .catch((error: any) => {
-                    this.catchError(error);
+                    this.catchErrorLocal(error);
                     reject(error.message);
                 });
         });
@@ -244,34 +301,10 @@ export class CampaignService {
             this.api.UpdateCampaign(payload)
                 .then(result => resolve(result))
                 .catch(error => {
-                    this.catchError(error);
+                    this.catchErrorLocal(error);
                     reject(error);
                 });
         });
-    }
-
-    async getCampaignByGroupId(gId: ModelStringInput, nextToken?: string, searchTxt?: string, filterRec?: string): Promise<any> {
-        this.activateProgressBar();
-        const { sub } = await this._auth.checkClientId();
-        const recipFilter: ModelRecipientFilterInput = {
-            clientId: sub,
-            groupId: gId
-        };
-        this.nextToken = nextToken ? nextToken : null;
-        return new Promise((resolve, reject) => {
-            this.api.ListRecipients(recipFilter, this.pageSize, nextToken)
-                .then((result: ListRecipientsQuery) => {
-                    this.nextToken = !_.isEmpty(result['nextToken']) ? result['nextToken'] : null;
-                    this._pageChange.next(this.nextToken);
-                    const notDeleted = result.items.filter(item => item._deleted !== true);
-                    this._recipients.next(notDeleted);
-                    resolve(notDeleted.length);
-                    this.activateProgressBar('off');
-                })
-                .catch(error => {
-                    this.catchError(error);
-                });
-        })
     }
 
     activateProgressBar(active = 'on') {
@@ -283,7 +316,7 @@ export class CampaignService {
         });
     }
 
-    private catchError(error): void {
+    private catchErrorLocal(error): void {
         console.log(error);
         this.logger.debug('OOPS!', error);
     }

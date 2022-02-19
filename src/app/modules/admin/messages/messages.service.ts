@@ -280,7 +280,6 @@ export class MsgsService {
             status: EntityStatus.INACTIVE,
             _version: foundGroupId._versionGroupMsg,
         };
-        console.log(payload);
         return new Promise((resolve, reject) => {
             this.api
                 .UpdateMsgToGroup(payload)

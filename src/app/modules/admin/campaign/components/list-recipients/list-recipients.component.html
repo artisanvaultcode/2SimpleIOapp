@@ -77,7 +77,7 @@
                     <mat-radio-button
                         class="mx-2 px-2"
                         *ngFor="let group of (labels$ | async)"
-                        [value]="group.id"
+                        [value]="group"
                         color="primary"
                         (change)="groupChange($event)">
                         {{group.name}}
@@ -89,14 +89,36 @@
     <ng-container *ngIf="isLoading" >
         <mat-progress-bar mode="query" ></mat-progress-bar>
     </ng-container>
-    <mat-drawer-container *ngIf="isAll"
+    <mat-drawer-container *ngIf="isAllandGroup"
         class="bg-card dark:bg-transparent m-6">
         <mat-drawer-content class="flex flex-col border">
             <div class="py-4 px-6">
                 <mat-card class="px-12">
-                    Messages will be sent to All recipients
+                    <mat-card-title id="cardTitleInfo">
+                        {{cardMsg}}
+                    </mat-card-title>
                 </mat-card>
             </div>
+        </mat-drawer-content>
+    </mat-drawer-container>
+    <mat-drawer-container *ngIf="showGroupFilter"
+        class="h-32 bg-card dark:bg-transparent mx-2"> <!-- flex-auto h-24  -->
+        <mat-drawer-content class="flex flex-col py-2 px-2">
+            <ng-container
+                *ngIf="labels$ | async as groups">
+                <mat-label>Group filter:</mat-label>
+                <mat-chip-list>
+                    <mat-chip
+                        *ngFor="let group of groups"
+                        color="primary"
+                        selectable="true"
+                        #ref="matChip"
+                        [value]="group"
+                        (click)="onClickFilter(ref)">
+                        {{group.name}}
+                    </mat-chip>
+                </mat-chip-list>
+            </ng-container>
         </mat-drawer-content>
     </mat-drawer-container>
     <mat-drawer-container
@@ -134,7 +156,7 @@
                     <div class="relative">
                         <ng-container *ngIf="recipients$ | async as recipients">
                             <ng-container *ngIf="recipients.length; else noContacts">
-                                <ng-container *ngFor="let contact of recipients; let i = index; trackBy: trackByFn">
+                                <ng-container *ngFor="let contact of recipients">
 
                                     <!-- Recipients -->
                                     <div class="flex"> <!-- mb-2 min-w-0 ml-4 -->
@@ -154,12 +176,12 @@
                     </div>
 
                     <div id="nPage" class="dark:bg-transparent text-right mx-8 mt-2 mb-2">
-                        <ng-container *ngIf="nextPage$ | async as nextPage">
+                        <ng-container *ngIf="nextPageRecips$ | async as nextPage">
                             <button
                                 [hidden]="nextPage===null"
                                 mat-flat-button
                                 [color]="'primary'"
-                                (click)="gotoNextPage(nextPage)">
+                                (click)="gotoNextPageRecip(nextPage)">
                                 <mat-icon [svgIcon]="'heroicons_outline:arrow-circle-right'" class="icon-size-8"></mat-icon>
                                 <span class="ml-2 mr-1"></span>
                             </button>
@@ -196,7 +218,7 @@
                         <div class="relative">
                             <ng-container *ngIf="recipientTargets as targets">
                                 <ng-container *ngIf="targets.length; else noRecipTarget">
-                                    <ng-container *ngFor="let recip of targets; let i = index; trackBy: trackByFn">
+                                    <ng-container *ngFor="let recip of targets">
                                         <!-- Recipients -->
                                         <div class="flex"> <!-- mb-2 min-w-0 ml-4 -->
                                             <div

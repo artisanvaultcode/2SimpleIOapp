@@ -49,8 +49,6 @@ export class WebsocketService {
     var formData = new FormData();
     formData.append('topicname', 'sync-sms');
     formData.append('eventname', 'events');
-    console.log("chkDevices send", this.baseURL+'/chkdevices');
-    console.log("ChkDevices", formData);
     return this._http.post(this.baseURL+'/chkdevices', formData, this.httpOptions);
   }
 
@@ -75,14 +73,10 @@ export class WebsocketService {
 
   sendMsg(itemId: string, phone: string, eventname: string){
     const clientId = this._userService.user;
-    console.log("Método senMsg - clientId: ", clientId, this._userService.user$);
     var formData = new FormData();
     formData.append('eventname', eventname);
-    console.log("send Msg - Datos: ", itemId, phone, eventname)
     formData.append('phone', phone);
     formData.append('itemId', itemId);
-    console.log("FormData", formData);
-    console.log(formData.get('phone'))
     return this._http.post(this.baseURL+'/sendmsg', formData, this.httpOptions);
   }
 
