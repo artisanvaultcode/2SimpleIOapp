@@ -4,13 +4,16 @@ import { Hub } from 'aws-amplify';
 import { Observable, of, Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 
+import { AuthService } from 'app/core/auth/auth.service';
+import { DetailsCampaignsComponent } from './../detail/details-campaigns.component';
 import { CampaignService } from './../../campaign.service';
 import { RecipientsService } from './../../../recipients/recipients.service';
-import { Group, Recipient } from 'app/API.service';
+import { Group, Recipient, CreateCampaignInput, CreateCampaignMutation } from 'app/API.service';
 import { Location } from "@angular/common";
 import { MsgsService } from './../../../messages/messages.service';
 import { FuseDrawerService } from '@fuse/components/drawer';
 import { MatChip, MatChipList } from '@angular/material/chips';
+import { MsgTemplateService } from 'app/core/services/msg-template.service';
 
 
 @Component({
@@ -22,6 +25,7 @@ export class ListRecipientsComponent implements OnInit {
 
     @Input() campId: string;
     @ViewChild(MatChipList) chipList: MatChipList;
+    @ViewChild(DetailsCampaignsComponent) detCampaign;
 
     recipients$: Observable<any[]>;
     nextPage$: Observable<any[]>;
@@ -45,6 +49,9 @@ export class ListRecipientsComponent implements OnInit {
     cardMsg: string = "";
     targetSelected: string = "ALL";
     targetValues = ["ALL", "GROUP", "SELECTION"];
+    dateStart;
+    onceMany: number = 1;
+    hourLate: number = 1;
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -56,6 +63,8 @@ export class ListRecipientsComponent implements OnInit {
         private _location: Location,
         private _msgsService: MsgsService,
         private _fuseDrawerService: FuseDrawerService,
+        private _msgTemplateService: MsgTemplateService,
+        private _auth: AuthService,
     ) {
         Hub.listen('processing', (data) => {
             if (data.payload.event === 'progressbar') {
@@ -100,6 +109,18 @@ export class ListRecipientsComponent implements OnInit {
             .catch(error => console.log("Error", error));
     }
 
+    ngAfterViewInit() {
+        this._msgTemplateService.getDefaultMsg()
+            .then(resp => {
+                document.getElementById('default-message').textContent = resp['message'];
+                this.detCampaign.msgDefault = resp.message;
+                this.composeForm.patchValue({message: resp.message})
+            })
+            .catch(error => {
+                console.log("[MsgTemplateMessage] Error:", error);
+            });
+    }
+
     gotoNextPageRecip(nextPage): void {
         this._campaignService.goNextPageRecips(null, nextPage);
         /* if ( this.isSelection && this.groupId === "" ) {
@@ -114,6 +135,37 @@ export class ListRecipientsComponent implements OnInit {
     removeRecipient(recip) {
         let recipFiltered = this.recipientTargets.filter(recipt => recipt.phone !== recip);
         this.recipientTargets = recipFiltered;
+    }
+
+    async sendMsgs() {
+        this.composeForm.patchValue({message: this.detCampaign.msgDefault})
+        console.log("Enviar... composeForm", this.composeForm);
+        if (this.composeForm.invalid) {
+            console.log("Invalid Form")
+            this.showAlert = true;
+        } else {
+            this.showAlert = false;
+            let campData = this.composeForm.getRawValue();
+            const { sub } = await this._auth.checkClientId();
+            let camp: CreateCampaignInput = {
+                id: null,
+                clientId: sub,
+                name: campData['name'],
+                target: campData['target'],
+                groupId: campData['groupId']['id'],
+                message: campData['message'],
+            }
+            console.log("Send Right now, CreateCampaignInput", camp);
+            this._campaignService.createCampaign(camp)
+                .then((creCampMut: CreateCampaignMutation) => {
+                    if (this.detCampaign.typeSelected === 0) {
+                        console.log("Send right now");
+                        this._campaignService.sendCampaign(creCampMut)
+                            .subscribe()
+                    }
+                })
+                .catch(error => console.log(error));
+        }
     }
 
     back() {

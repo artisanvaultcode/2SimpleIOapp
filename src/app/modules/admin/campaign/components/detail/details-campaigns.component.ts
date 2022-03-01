@@ -1,5 +1,4 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { MsgTemplateService } from 'app/core/services/msg-template.service';
 
 @Component({
     selector: 'app-details-campaigns',
@@ -14,7 +13,7 @@ export class DetailsCampaignsComponent implements OnInit {
 
     msgDefault: string ="";
     dt: any;
-    typeSelected = 1;
+    typeSelected = 0;
     onceSchedule: boolean = true;
     minDate: Date = new Date();
     isScheduler: boolean = false;
@@ -25,20 +24,10 @@ export class DetailsCampaignsComponent implements OnInit {
         {"type": 2, "value": "Two hours later"},
         {"type": 3, "value": "Scheduled"}]
 
-    constructor(
-        private _msgTemplateService: MsgTemplateService,
-    ) {}
+    constructor() {}
 
     ngOnInit(): void {
 
-        this._msgTemplateService.getDefaultMsg()
-            .then(resp => {
-                document.getElementById('default-message').textContent = resp['message'];
-                this.msgDefault = resp.message;
-            })
-            .catch(error => {
-                console.log("[MsgTemplateMessage] Error:", error);
-            });
         // Set Hour
         this.dt = new Date();
         this.dt.setHours( this.dt.getHours() + 1);

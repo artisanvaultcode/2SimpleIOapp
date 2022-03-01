@@ -221,27 +221,24 @@ export class CampaignService {
     }
 
 
-    async createCampaign(camp: Campaign) {
+    async createCampaign(_payload: CreateCampaignInput) {
+        this.activateProgressBar();
         const dateAt = new Date().toISOString();
         const { sub } = await this._auth.checkClientId();
         return new Promise((resolve, reject) => {
-            const _payload: CreateCampaignInput = {
-                id: null,
-                clientId: sub,
-                name: camp.name,
-                target: camp.target,
-                groupId: camp.groupId,
-                message: camp.message,
-                lastProcessDt: dateAt,
-                metadata: camp.metadata,
-                status: SubsStatus.ACTIVE
-            };
+            _payload['lastProcessDt'] = dateAt;
+            _payload['status'] = SubsStatus.ACTIVE;
+            _payload['metadata'] = '';
             this.api
                 .CreateCampaign(_payload)
-                .then((resp: CreateCampaignMutation) => resolve(resp))
+                .then((resp: CreateCampaignMutation) => {
+                    resolve(resp)
+                    this.activateProgressBar('off');
+                })
                 .catch((error: any) => {
                     this.catchErrorLocal(error);
                     reject(error.message);
+                    this.activateProgressBar('off');
                 });
         });
     }
@@ -271,12 +268,12 @@ export class CampaignService {
     }
 
 
-    sendCampaign(clientId: string, campaign: CreateCampaignMutation): Observable<any> {
+    sendCampaign(campaign: CreateCampaignMutation): Observable<any> {
         const endPoint = `${this.baseURL}/campaign/send`;
         const headers = this.httpHeaders;
         const payload = {
             id: campaign.id,
-            clientId: clientId,
+            clientId: campaign.clientId,
             name: campaign.name,
             target: campaign.target,
             groupId: campaign.groupId,
@@ -288,6 +285,31 @@ export class CampaignService {
                 catchError(this.catchErrorHttp)
             );
     }
+
+    scheduledCampaign(clientId: string, campaign: CreateCampaignMutation,
+        hours: number, dateMin: any, dateMax: any, hour: number,
+        minutes: number, hourSchedRange: string): Observable<any> {
+        const endPoint = `${this.baseURL}/campaign/scheduled`;
+        const headers = this.httpHeaders;
+        const payload = {
+            id: campaign.id,
+            clientId: clientId,
+            name: campaign.name,
+            target: campaign.target,
+            groupId: campaign.groupId,
+            hoursched: hourSchedRange
+        };
+        if (hourSchedRange === 'hours') {
+            payload['hours'] = hours;
+        }
+        return this._http
+            .post<any>(endPoint, JSON.stringify(payload), { headers })
+            .pipe(
+                retry(1),
+                catchError(this.catchErrorHttp)
+            );
+    }
+
 
     campaignStatus(campaign: Campaign, campaignStatus: SubsStatus): Promise<any> {
         const dateAt = new Date().toISOString();
