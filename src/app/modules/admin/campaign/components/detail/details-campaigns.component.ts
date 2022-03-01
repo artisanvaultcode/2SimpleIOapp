@@ -1,5 +1,4 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { MsgTemplateService } from 'app/core/services/msg-template.service';
 
 @Component({
     selector: 'app-details-campaigns',
@@ -13,8 +12,11 @@ export class DetailsCampaignsComponent implements OnInit {
     @Output() closeOrCancelEvent: EventEmitter<any> = new EventEmitter<any>();
 
     msgDefault: string ="";
-    dt: any;
-    typeSelected = 1;
+    daySelect: Date;
+    typeSelected = 0;
+    repeat = 2;
+    hourIni = 8;
+    minsIni = 30;
     onceSchedule: boolean = true;
     minDate: Date = new Date();
     isScheduler: boolean = false;
@@ -25,25 +27,12 @@ export class DetailsCampaignsComponent implements OnInit {
         {"type": 2, "value": "Two hours later"},
         {"type": 3, "value": "Scheduled"}]
 
-    constructor(
-        private _msgTemplateService: MsgTemplateService,
-    ) {}
+    constructor() {}
 
     ngOnInit(): void {
-
-        this._msgTemplateService.getDefaultMsg()
-            .then(resp => {
-                document.getElementById('default-message').textContent = resp['message'];
-                this.msgDefault = resp.message;
-            })
-            .catch(error => {
-                console.log("[MsgTemplateMessage] Error:", error);
-            });
-        // Set Hour
-        this.dt = new Date();
-        this.dt.setHours( this.dt.getHours() + 1);
-        console.log("An hour late:", this.dt);
-
+        // Set Day default
+        this.daySelect = new Date();
+        this.daySelect.setDate(this.daySelect.getDate() + 1);
     }
 
     closePanel(event: any): void {
@@ -74,19 +63,8 @@ export class DetailsCampaignsComponent implements OnInit {
         }
     }
 
-    onDateChange(typeDate, minmax, value) {
-        if (typeDate === 'single') {
-            console.log("[OnDateChange] SINGLE value", value, "\nMinMax", minmax);
-        } else {
-            console.log("[OnDateChange] RANGE value", value, "\nMinMax", minmax);
-        }
+    onDateChange(value) {
+        console.log("[OnDateChange] SINGLE value", value);
     }
 
-    hoursChange(value, hourmins) {
-        if (hourmins === 'hour') {
-            console.log("[hoursChange] hourmins", hourmins, "\nDato de hora", value);
-        } else{
-            console.log("[hoursChange] hourmins", hourmins, "\nDato de minutos", value);
-        }
-    }
 }

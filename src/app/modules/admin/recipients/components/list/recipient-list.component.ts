@@ -1,3 +1,4 @@
+import { AuthService } from 'app/core/auth/auth.service';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -50,7 +51,8 @@ export class RecipientListComponent implements OnInit, OnDestroy {
         @Inject(DOCUMENT) private _document: any,
         private _router: Router,
         private _bottomSheet: MatBottomSheet,
-        private _fuseMediaWatcherService: FuseMediaWatcherService
+        private _fuseMediaWatcherService: FuseMediaWatcherService,
+        private _auth: AuthService,
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -173,14 +175,15 @@ export class RecipientListComponent implements OnInit, OnDestroy {
         this._recipientsService.refresh();
     }
 
-    uploadFile($event): void {
+    async uploadFile($event) {
         const fileToUpload = this._bottomSheet.open(UploadCsvDialogComponent, {
             data: { fileTarget: 'QUEUE' },
         });
+        const {sub} = await this._auth.checkClientId();
         fileToUpload.afterDismissed().subscribe((data) => {
             if (data) {
                 this._recipientsService
-                    .importRecipients(data?.items)
+                    .importRecipients(data?.items, sub)
                     .then((results) => {
                         this._recipientsService.refresh();
                     });

@@ -10,7 +10,7 @@
                 <mat-icon
                     class="text-current"
                     [svgIcon]="'heroicons_outline:chevron-left'"></mat-icon>
-                    <span class="hidden sm:inline-block ml-2">Back</span>
+                <span class="hidden sm:inline-block ml-2">Back</span>
             </button>
         </div>
         <div class="flex-auto py-4 px-8 md:px-16 border-b">
@@ -25,8 +25,8 @@
                 mat-flat-button
                 [color]="'primary'"
                 (click)="detailCampaign()">
-            <mat-icon [svgIcon]="'heroicons_outline:menu'"></mat-icon>
-        </button>
+                <mat-icon [svgIcon]="'heroicons_outline:menu'"></mat-icon>
+            </button>
         </div>
     </div>
     <!-- Warn -->
@@ -65,6 +65,21 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
+            </div>
+            <!-- Send campaign to backend -->
+            <div class="flex flex-row-reverse my-6 mx-4 w-full">
+                <div class="flex-initial">
+                    <button
+                        class="mt-2 px-2 sm:px-4 min-w-10"
+                        mat-flat-button
+                        [color]="'primary'"
+                        (click)="sendMsgs()">
+                        <span class="mr-2 hidden sm:inline-block">Enviar</span>
+                        <mat-icon
+                            class="text-current"
+                            [svgIcon]="'heroicons_outline:paper-airplane'"></mat-icon>
+                    </button>
+                </div>
             </div>
         </div>
         <div class="flex flex-col sm:flex-row w-full" *ngIf="showGroupId">
@@ -176,12 +191,12 @@
                     </div>
 
                     <div id="nPage" class="dark:bg-transparent text-right mx-8 mt-2 mb-2">
-                        <ng-container *ngIf="nextPageRecips$ | async as nextPage">
+                        <ng-container *ngIf="nextPage$ | async as nextPage">
                             <button
                                 [hidden]="nextPage===null"
                                 mat-flat-button
                                 [color]="'primary'"
-                                (click)="gotoNextPageRecip(nextPage)">
+                                (click)="gotoNextPage(nextPage)">
                                 <mat-icon [svgIcon]="'heroicons_outline:arrow-circle-right'" class="icon-size-8"></mat-icon>
                                 <span class="ml-2 mr-1"></span>
                             </button>
