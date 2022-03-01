@@ -75,11 +75,16 @@ export class ListRecipientsComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.recipients$ = this._recipientsService.recipients$;
+        /* this.recipients$ = this._recipientsService.recipients$;
         this._recipientsService.getRecipients()
             .then(resp => this.recipientsCount = resp)
             .catch(error => console.log("Error", error));
-        this.nextPage$ = this._recipientsService.nextPage$;
+        this.nextPage$ = this._recipientsService.nextPage$; */
+        this.recipients$ = this._campaignService.recipients$
+        this._campaignService.getRecipients()
+            .then(resp => this.recipientsCount = resp)
+            .catch(error => console.log("Error", error));
+        this.nextPage$ = this._campaignService.nextPageRecips$;
 
         this.campaignTargets$ = this._campaignService.campaignTargets$;
         this._campaignService.getCampaignsTarget(this.campId)
@@ -121,7 +126,7 @@ export class ListRecipientsComponent implements OnInit {
             });
     }
 
-    gotoNextPageRecip(nextPage): void {
+    gotoNextPage(nextPage): void {
         this._campaignService.goNextPageRecips(null, nextPage);
         /* if ( this.isSelection && this.groupId === "" ) {
         } else if ( this.isSelection && this.groupId !== "" )
@@ -147,22 +152,37 @@ export class ListRecipientsComponent implements OnInit {
             this.showAlert = false;
             let campData = this.composeForm.getRawValue();
             const { sub } = await this._auth.checkClientId();
+            let grouptmp = '';
+            if (campData['target'] === 'GROUP') grouptmp = campData['groupId']['id'];
             let camp: CreateCampaignInput = {
                 id: null,
                 clientId: sub,
                 name: campData['name'],
                 target: campData['target'],
-                groupId: campData['groupId']['id'],
+                groupId: grouptmp,
                 message: campData['message'],
             }
-            console.log("Send Right now, CreateCampaignInput", camp);
+            console.log("CreateCampaignInput", camp);
             this._campaignService.createCampaign(camp)
                 .then((creCampMut: CreateCampaignMutation) => {
-                    if (this.detCampaign.typeSelected === 0) {
-                        console.log("Send right now");
-                        this._campaignService.sendCampaign(creCampMut)
-                            .subscribe()
+                    console.log("Campaign create Mutation", creCampMut);
+                    let promTragets = [];
+                    if (creCampMut.target === 'SELECTION') {
+                        console.log("Selected Recipients", this.recipientTargets);
+                        this.recipientTargets.forEach((recip: Recipient) => {
+                            promTragets.push(this._campaignService.createCampaignTarget(creCampMut.id, recip.id))
+                        })
                     }
+                    Promise.all(promTragets)
+                        .then(values => {
+                            console.log("All Promise", values);
+                            if (this.detCampaign.typeSelected === 0) {
+                                console.log("Send right now");
+                                this._campaignService.sendCampaign(creCampMut)
+                                    .subscribe();
+                                this.back();
+                            }
+                        })
                 })
                 .catch(error => console.log(error));
         }

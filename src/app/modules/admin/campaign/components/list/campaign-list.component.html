@@ -168,6 +168,18 @@
                     </ng-template>
 
                 </div>
+                <div id="nPage" class="dark:bg-transparent text-right mx-8 mt-2 mb-2">
+                    <ng-container *ngIf="nextPage$ | async as nextPage">
+                        <button
+                            [hidden]="nextPage===null"
+                            mat-flat-button
+                            [color]="'primary'"
+                            (click)="gotoNextPage(nextPage)">
+                            <mat-icon [svgIcon]="'heroicons_outline:arrow-circle-right'" class="icon-size-8"></mat-icon>
+                            <span class="ml-2 mr-1"></span>
+                        </button>
+                    </ng-container>
+                </div>
             </div>
 
         </mat-drawer-content>

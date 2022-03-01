@@ -46,6 +46,9 @@ export class CampaignListComponent implements OnInit, OnDestroy {
          * Get Campaigns
          */
          this.campaigns$ = this._campaignService.campaigns$;
+         this._campaignService.getCampaigns()
+            .then(resp => console.log("Campaign number", resp))
+            .catch(err => console.log(err));
          this.nextPage$ = this._campaignService.nextPage$;
          this.clientId$ = this._campaignService.clientId$;
          this.labels$ = this._msgsService.labels$;
@@ -97,7 +100,7 @@ export class CampaignListComponent implements OnInit, OnDestroy {
      *
      * @param event
      */
-     refresh(): void {
+    refresh(): void {
         of(this._campaignService.refresh());
     }
 
@@ -118,6 +121,10 @@ export class CampaignListComponent implements OnInit, OnDestroy {
                     }
                 });
             });
+    }
+
+    gotoNextPage(nextPage) {
+        this._campaignService.goNextPage(null, nextPage);
     }
 
     addNewCampaign() {

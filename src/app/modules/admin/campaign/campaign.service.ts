@@ -12,7 +12,9 @@ import {
     SearchableRecipientSortableFields,
     SearchableSortDirection,
     SearchableRecipientSortInput,
-    SearchRecipientsQuery, } from 'app/API.service';
+    SearchRecipientsQuery,
+    ModelRecipientFilterInput,
+    ListRecipientsQuery, } from 'app/API.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { Hub, Logger } from 'aws-amplify';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
@@ -118,7 +120,11 @@ export class CampaignService {
     }
 
     goNextPageRecips(searchTxt: string, nextPageToken: string) {
-        of(this.searchRecipients(searchTxt, nextPageToken))
+        of(this.getRecipients(searchTxt, nextPageToken));
+    }
+
+    goNextPage(searchTxt: string, nextPageToken: string) {
+        of(this.getCampaigns(searchTxt, nextPageToken));
     }
 
     async searchRecipients(searchTxt?: string, nextToken?: string): Promise<any> {
@@ -158,7 +164,40 @@ export class CampaignService {
     }
 
 
-    async getCampaigns(searchTxt?: string, nextToken?: string) {
+    async getRecipients(filterTxt?: string, nextToken?: string): Promise<any> {
+        this.activateProgressBar();
+        const { sub } = await this._auth.checkClientId();
+        const filterRecips: ModelRecipientFilterInput =  {
+            clientId: { eq: sub},
+        };
+        if (filterTxt !== undefined && filterTxt) {
+            filterRecips['and'] = [{groupId: {eq: filterTxt}}];
+        }
+        console.log("[getRecipients] filterCriteria", filterRecips);
+        this.nextTokenRecips = nextToken ? nextToken : null;
+        return new Promise((resolve, reject) => {
+            this.api.ListRecipients(filterRecips, this.pageSizeRecips, this.nextTokenRecips)
+                .then((result: ListRecipientsQuery) => {
+                    console.log("[getREcipients] result", result, "\n\n\n\n");
+                    this.nextTokenRecips = !_.isEmpty(result['nextToken']) ? result['nextToken'] : null;
+                    console.log("[getRecipients] nextTokenREcips", this.nextTokenRecips);
+                    this._pageChangeRecips.next(this.nextTokenRecips);
+                    console.log("[getRecipients] _pageChangeREcips", this._pageChangeRecips);
+                    const notDeleted = result.items.filter(item => item._deleted !== true);
+                    this._recipients.next(notDeleted);
+                    resolve(notDeleted.length);
+                    this.activateProgressBar('off');
+                })
+                .catch((err) => {
+                    this.catchErrorLocal(err);
+                    reject(err);
+                    this.activateProgressBar('off');
+                });
+        });
+    }
+
+
+    async getCampaigns(searchTxt?: string, nextToken?: string): Promise<any> {
         this.activateProgressBar();
         const {sub} = await this._auth.checkClientId();
         this._clientId.next(sub);
@@ -192,7 +231,7 @@ export class CampaignService {
     }
 
 
-    async getCampaignsTarget(campId: string, searchTxt?: string, nextToken?: string) {
+    async getCampaignsTarget(campId: string, searchTxt?: string, nextToken?: string): Promise<any> {
         this.activateProgressBar();
         let filter: ModelCampaignTargetFilterInput;
         if (searchTxt !== undefined && searchTxt) {
@@ -221,10 +260,9 @@ export class CampaignService {
     }
 
 
-    async createCampaign(_payload: CreateCampaignInput) {
+    async createCampaign(_payload: CreateCampaignInput): Promise<CreateCampaignMutation> {
         this.activateProgressBar();
         const dateAt = new Date().toISOString();
-        const { sub } = await this._auth.checkClientId();
         return new Promise((resolve, reject) => {
             _payload['lastProcessDt'] = dateAt;
             _payload['status'] = SubsStatus.ACTIVE;
@@ -233,6 +271,7 @@ export class CampaignService {
                 .CreateCampaign(_payload)
                 .then((resp: CreateCampaignMutation) => {
                     resolve(resp)
+                    console.log("Create Campaign Mutation", resp);
                     this.activateProgressBar('off');
                 })
                 .catch((error: any) => {
@@ -244,7 +283,7 @@ export class CampaignService {
     }
 
 
-    async createCampaignTarget(campId: string, recipId: string) {
+    async createCampaignTarget(campId: string, recipId: string): Promise<CreateCampaignTargetMutation> {
         const dateAt = new Date().toISOString();
         return new Promise((resolve, reject) => {
             const _payload: CreateCampaignTargetInput = {
@@ -258,6 +297,7 @@ export class CampaignService {
             this.api
                 .CreateCampaignTarget(_payload)
                 .then((resp: CreateCampaignTargetMutation) => {
+                    console.log("Create Target Mutation", resp);
                     resolve(resp);
                 })
                 .catch((error: any) => {
