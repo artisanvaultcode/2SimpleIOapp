@@ -147,9 +147,7 @@ export class CampaignService {
                 .then((result: SearchRecipientsQuery) => {
                     console.log("[serachREcipients] result", result, "\n\n\n\n");
                     this.nextTokenRecips = !_.isEmpty(result['nextToken']) ? result['nextToken'] : null;
-                    console.log("[searchRecipients] nextTokenREcips", this.nextTokenRecips);
                     this._pageChangeRecips.next(this.nextTokenRecips);
-                    console.log("[searchRecipients] _pageChangeREcips", this._pageChangeRecips);
                     const notDeleted = result.items.filter(item => item._deleted !== true);
                     this._recipients.next(notDeleted);
                     resolve(notDeleted.length);
@@ -180,9 +178,7 @@ export class CampaignService {
                 .then((result: ListRecipientsQuery) => {
                     console.log("[getREcipients] result", result, "\n\n\n\n");
                     this.nextTokenRecips = !_.isEmpty(result['nextToken']) ? result['nextToken'] : null;
-                    console.log("[getRecipients] nextTokenREcips", this.nextTokenRecips);
                     this._pageChangeRecips.next(this.nextTokenRecips);
-                    console.log("[getRecipients] _pageChangeREcips", this._pageChangeRecips);
                     const notDeleted = result.items.filter(item => item._deleted !== true);
                     this._recipients.next(notDeleted);
                     resolve(notDeleted.length);
@@ -326,22 +322,20 @@ export class CampaignService {
             );
     }
 
-    scheduledCampaign(clientId: string, campaign: CreateCampaignMutation,
-        hours: number, dateMin: any, dateMax: any, hour: number,
-        minutes: number, hourSchedRange: string): Observable<any> {
+    scheduledCampaign(campaign: CreateCampaignMutation, sendType: number,
+        dateSchedule: any, onceSend: number, repeat: number, hourIni: number,
+        minsIni: number): Observable<any> {
         const endPoint = `${this.baseURL}/campaign/scheduled`;
         const headers = this.httpHeaders;
         const payload = {
-            id: campaign.id,
-            clientId: clientId,
-            name: campaign.name,
-            target: campaign.target,
-            groupId: campaign.groupId,
-            hoursched: hourSchedRange
+            campId: campaign.id,
+            sendType: sendType,
+            dateSchedule: dateSchedule,
+            onceSend: onceSend,
+            repeat: repeat,
+            hourIni: hourIni,
+            minsIni: minsIni,
         };
-        if (hourSchedRange === 'hours') {
-            payload['hours'] = hours;
-        }
         return this._http
             .post<any>(endPoint, JSON.stringify(payload), { headers })
             .pipe(

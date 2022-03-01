@@ -145,6 +145,13 @@ export class ListRecipientsComponent implements OnInit {
     async sendMsgs() {
         this.composeForm.patchValue({message: this.detCampaign.msgDefault})
         console.log("Enviar... composeForm", this.composeForm);
+        // Ver todas las variables
+        console.log("typeSelected", this.detCampaign.typeSelected);
+        console.log("Day selected", this.detCampaign.daySelect);
+        console.log("Once Scheduled", this.detCampaign.onceSchedule);
+        console.log("Repeat: ", this.detCampaign.repeat);
+        console.log("Hora", this.detCampaign.hourIni);
+        console.log("Minutos", this.detCampaign.minsIni);
         if (this.composeForm.invalid) {
             console.log("Invalid Form")
             this.showAlert = true;
@@ -179,6 +186,12 @@ export class ListRecipientsComponent implements OnInit {
                             if (this.detCampaign.typeSelected === 0) {
                                 console.log("Send right now");
                                 this._campaignService.sendCampaign(creCampMut)
+                                    .subscribe();
+                                this.back();
+                            } else {
+                                this._campaignService.scheduledCampaign(creCampMut, this.detCampaign.typeSelected,
+                                    this.detCampaign.daySelect, this.detCampaign.onceSchedule ? 0 : 1,
+                                    this.detCampaign.repeat, this.detCampaign.hourIni, this.detCampaign.minsIni)
                                     .subscribe();
                                 this.back();
                             }

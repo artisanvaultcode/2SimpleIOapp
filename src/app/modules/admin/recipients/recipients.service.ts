@@ -147,7 +147,7 @@ export class RecipientsService
         });
     }
 
-    recipientExists(searchTxt?: string): Promise<any>
+    recipientExists(searchTxt: string, clientId: string): Promise<any>
     {
         // eslint-disable-next-line @typescript-eslint/no-shadow
         let filter: ModelRecipientFilterInput;
@@ -158,7 +158,8 @@ export class RecipientsService
                     {
                         phoneTxt: {contains: searchTxt}
                     }
-                ]
+                ],
+                and: [{ clientId: {eq: clientId} }]
             };
         }
         return new Promise((resolve, reject) => {
@@ -231,13 +232,13 @@ export class RecipientsService
         })
     }
 
-    importRecipients(data: any[]): Promise<any> {
+    importRecipients(data: any[], clientId: string): Promise<any> {
         const allAdditions = [];
         data.forEach( (item) =>{
-            this.recipientExists(item)
+            this.recipientExists(item, clientId)
                 .then( (exists) => {
                     if (exists.length === 0) {
-                        allAdditions.push(this.addRecipient(item));
+                        allAdditions.push(this.addRecipient(item, clientId));
                     } else {
                         allAdditions.push(this.updateRecipient(exists));
                     }
@@ -254,12 +255,13 @@ export class RecipientsService
         });
     }
 
-    addRecipient(item): Promise<any> {
+    addRecipient(item, clientId): Promise<any> {
         const dateAt = new Date().toISOString();
         return new Promise((resolve, reject) => {
             const payloadInput: CreateRecipientInput = {
                 phone: item,
                 phoneTxt: item,
+                clientId: clientId,
                 carrierStatus: null,
                 lastProcessDt: dateAt,
                 status: EntityStatus.ACTIVE,
