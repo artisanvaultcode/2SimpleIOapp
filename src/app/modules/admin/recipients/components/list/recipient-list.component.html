@@ -51,7 +51,7 @@
                                     matInput
                                     [formControl]="searchInputControl"
                                     [autocomplete]="'off'"
-                                    [placeholder]="'Search recipient by phone'">
+                                    [placeholder]="'Search recipient by phone (wilcard * available ex: *9098*)'">
                             </mat-form-field>
                         </div>
                         <!-- Add contact button -->
@@ -79,7 +79,7 @@
                 <div class="relative">
                     <ng-container *ngIf="recipients$ | async as recipients">
                         <ng-container *ngIf="recipients.length; else noContacts">
-                            <ng-container *ngFor="let contact of recipients; let i = index; trackBy: trackByFn">
+                            <ng-container *ngFor="let contact of contactLists; let i = index; trackBy: trackByFn">
 
                                 <!-- Contact -->
                                 <div class="flex flex-row mb-2">
@@ -90,11 +90,21 @@
                                                     [routerLink]="['./', contact.id]"
                                         >
                                         <div class="min-w-0 ml-4">
-                                            <div class="font-medium leading-5 truncate">{{contact.phone}}</div>
+                                            <div  *ngIf="contact.status==='BL' || contact.status==='WL' " class="font-medium leading-5" style ="color : darkgray;">
+                                                {{contact.phone}}
+                                                <span style="font-size: x-small;">{{contact.status}}</span>
+                                            </div>
+                                            <div  *ngIf="contact.status==='ACTIVE'" class="font-medium leading-5" style="color : blue;">{{contact.phone}}</div>
+                                            <div  *ngIf="contact.status==='PROCESS'" class="font-medium leading-5" style="color : darkgreen;">{{contact.phone}}</div>
+                                            <div  *ngIf="contact.status==='SENT'" class="font-medium leading-5" style="color : green;">{{contact.phone}}</div>
+                                            <div  *ngIf="contact.status==='INACTIVE'" class="font-medium leading-5" style="color : gray;">{{contact.phone}}</div>
                                             <div class="leading-5 truncate text-secondary">{{contact?.Group?.name}}</div>
                                         </div>
                                     </a> <!-- (click)="activateDevice([deviceEle], 'INACTIVE')" -->
-                                    <div class="control z-20 px-6 py-1 md:px-8 border-b">
+                                    <div *ngIf="contact.Group && contact.Group.name" class="control z-20 px-6 py-1 md:px-8 border-b" style="margin-top: 0.5em;">
+                                        <app-recipcontrol [recipientEle]="contact"></app-recipcontrol>
+                                    </div>
+                                    <div *ngIf="!contact.Group " class="control z-20 px-6 py-1 md:px-8 border-b">
                                         <app-recipcontrol [recipientEle]="contact"></app-recipcontrol>
                                     </div>
                                 </div>
@@ -110,15 +120,18 @@
 
                 </div>
 
-                <div id="nPage" class="dark:bg-transparent text-right mx-8 mt-2">
+                <div id="nPage"
+                     class="dark:bg-transparent text-center mx-8 mt-2"
+                     *ngIf="contactLists && contactLists.length>0"
+                >
                     <ng-container *ngIf="nextPage$ | async as nextPage">
                         <button
                             [hidden]="nextPage===null"
                             mat-flat-button
                             [color]="'primary'"
                             (click)="gotoNextPage(nextPage)">
-                            <mat-icon [svgIcon]="'heroicons_outline:arrow-circle-right'" class="icon-size-8"></mat-icon>
-                            <span class="ml-2 mr-1"></span>
+                            <mat-icon [svgIcon]="'feather:more-horizontal'" class="icon-size-8"></mat-icon>
+                            <span class="ml-2 mr-1">More</span>
                         </button>
                     </ng-container>
                 </div>

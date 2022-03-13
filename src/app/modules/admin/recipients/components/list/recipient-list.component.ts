@@ -34,6 +34,8 @@ export class RecipientListComponent implements OnInit, OnDestroy {
     recipient$: Observable<any>;
     nextPage$: Observable<any[]>;
 
+    contactLists: any[] = [];
+
     recipientsCount: number = 0;
     contactsTableColumns: string[] = ['name', 'email', 'phoneNumber', 'job'];
     drawerMode: 'side' | 'over';
@@ -69,18 +71,18 @@ export class RecipientListComponent implements OnInit, OnDestroy {
         this._recipientsService.recipients$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((contacts: any[]) => {
-                // Update the counts
-                this.recipientsCount = contacts.length;
-                if (contacts.length > 0){
-                    document.getElementById("nPage").hidden = false;
-                } else {
-                    document.getElementById("nPage").hidden = true;
+                if (contacts === null || contacts.length===0) {
+                    this.contactLists = [];
                 }
+                if (contacts && contacts.length > 0) {
+                    contacts.forEach(item => this.contactLists.push(item));
+                }
+                this.recipientsCount = this.contactLists.length;
                 // Mark for check
-                this._changeDetectorRef.markForCheck();
+                this._changeDetectorRef.detectChanges();
             });
 
-        this.recipient$ = this._recipientsService.recipient$
+        this.recipient$ = this._recipientsService.recipient$;
         // Get the contact
         this._recipientsService.recipient$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -95,7 +97,7 @@ export class RecipientListComponent implements OnInit, OnDestroy {
         this.searchInputControl.valueChanges
             .pipe(
                 takeUntil(this._unsubscribeAll),
-                switchMap((query) =>
+                switchMap(query =>
                     // Search
                     of(this._recipientsService.searchRecipients(query))
                 )
@@ -133,7 +135,7 @@ export class RecipientListComponent implements OnInit, OnDestroy {
             .pipe(
                 takeUntil(this._unsubscribeAll),
                 filter<KeyboardEvent>(
-                    (event) =>
+                    event =>
                         (event.ctrlKey === true || event.metaKey) && // Ctrl or Cmd
                         event.key === '/' // '/'
                 )
@@ -172,6 +174,8 @@ export class RecipientListComponent implements OnInit, OnDestroy {
     }
 
     refresh($event): void {
+        this.contactLists = [];
+        this.searchInputControl.setValue(null);
         this._recipientsService.refresh();
     }
 
@@ -196,20 +200,17 @@ export class RecipientListComponent implements OnInit, OnDestroy {
      */
     createContact(): void {
         // Create the contact
-        this._recipientsService.createContact().subscribe((newContact) => {
-            // Go to the new contact
-            this._router.navigate(['./', newContact.id], {
-                relativeTo: this._activatedRoute,
-            });
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
-        });
+        // this._recipientsService.createContact().subscribe((newContact) => {
+        //     // Go to the new contact
+        //     this._router.navigate(['./', newContact.id], {
+        //         relativeTo: this._activatedRoute,
+        //     });
+        //
+        //     // Mark for check
+        //     this._changeDetectorRef.markForCheck();
+        // });
     }
 
-    onPaginateChange(evet) {
-        console.log('pagination', evet);
-    }
     /**
      * Track by function for ngFor loops
      *
@@ -220,11 +221,4 @@ export class RecipientListComponent implements OnInit, OnDestroy {
         return item.id || index;
     }
 
-    nextPageLeft() {
-        console.log('next page left');
-    }
-
-    nextPageRight() {
-        console.log('next page Right');
-    }
 }

@@ -4,7 +4,7 @@ import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import {filter, map, switchMap, take, tap} from 'rxjs/operators';
 
 import { Logger } from '@aws-amplify/core';
-import { Hub } from 'aws-amplify'
+import { Hub } from 'aws-amplify';
 import { AuthService } from '../../../core/auth/auth.service';
 import {
     APIService,
@@ -44,7 +44,7 @@ export class RecipientsService
         private _httpClient: HttpClient
     )
     {
-        this.pageSize = 10;
+        this.pageSize = 20;
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -86,12 +86,12 @@ export class RecipientsService
     /**
      * Get recipients
      */
-    async getRecipients(searchTxt?: string, nextToken?: string): Promise<any>
-    {
+    async getRecipients(searchTxt?: string, nextToken?: string): Promise<any> {
         this.activateProgressBar();
         const { sub } = await this.auth.checkClientId();
         const filterRec: ModelRecipientFilterInput =  {
             clientId: { eq: sub},
+            status: { ne: EntityStatus.INACTIVE}
         };
         if (searchTxt !== undefined && searchTxt) {
             filterRec['phoneTxt'] = { contains: searchTxt};
@@ -102,9 +102,8 @@ export class RecipientsService
                 .then((result: ListRecipientsQuery) => {
                     this.nextToken = !_.isEmpty(result['nextToken']) ? result['nextToken'] : null;
                     this._pageChange.next(this.nextToken);
-                    const notDeleted = result.items.filter(item => item._deleted !== true);
-                    this._recipients.next(notDeleted);
-                    resolve(notDeleted.length);
+                    this._recipients.next(result.items);
+                    resolve(result.items);
                     this.activateProgressBar('off');
                 })
                 .catch((err) => {
@@ -116,16 +115,19 @@ export class RecipientsService
         });
     }
 
-    searchRecipients(searchTxt: string): Promise<any> {
+    async searchRecipients(searchTxt: string): Promise<any> {
+
         if (searchTxt.length===0) {
             this.refresh();
             return Promise.resolve();
         }
+        const { sub } = await this.auth.checkClientId();
         // eslint-disable-next-line @typescript-eslint/no-shadow
         const filter: SearchableRecipientFilterInput = {
-            phone: { eq: searchTxt },
+            clientId: { eq: sub},
+            phone: { wildcard: searchTxt },
             or :[
-                { phoneTxt: {match: searchTxt}}
+                { phoneTxt: {wildcard: searchTxt}}
             ]
 
         };
@@ -134,8 +136,11 @@ export class RecipientsService
             direction: SearchableSortDirection.asc
         };
         return new Promise((resolve, reject) => {
-            this.api.SearchRecipients(filter, sortCriteria)
+            this.api.SearchRecipients(filter, sortCriteria, 10)
                 .then((result) => {
+                    this.nextToken = null;
+                    this._pageChange.next(this.nextToken);
+                    this._recipients.next(null);
                     this._recipients.next(result.items);
                     resolve(result.items.length);
                 })
@@ -147,13 +152,14 @@ export class RecipientsService
         });
     }
 
-    recipientExists(searchTxt: string, clientId: string): Promise<any>
-    {
+    async recipientExists(searchTxt: string, clientId: string): Promise<any> {
         // eslint-disable-next-line @typescript-eslint/no-shadow
         let filter: ModelRecipientFilterInput;
+        const { sub } = await this.auth.checkClientId();
         if (searchTxt !== undefined && searchTxt) {
             filter = {
                 phone: { eq: searchTxt},
+                clientId: { eq: sub},
                 or: [
                     {
                         phoneTxt: {contains: searchTxt}
@@ -224,12 +230,12 @@ export class RecipientsService
                     resolve(notDeleted.length);
                     this.activateProgressBar('off');
                 })
-                .catch(error => {
+                .catch((error) => {
                     this.activateProgressBar('off');
                     this.catchError(error);
                     reject(error);
                 });
-        })
+        });
     }
 
     importRecipients(data: any[], clientId: string): Promise<any> {
@@ -366,100 +372,7 @@ export class RecipientsService
         });
     }
 
-    /**
-     * Create contact
-     */
-    createContact(): Observable<any>
-    {
-        return this.recipients$.pipe(
-            take(1),
-            switchMap(contacts => this._httpClient.post<any>('api/apps/contacts/contact', {}).pipe(
-                map((newContact) => {
-
-                    // Update the contacts with the new contact
-                    this._recipients.next([newContact, ...contacts]);
-
-                    // Return the new contact
-                    return newContact;
-                })
-            ))
-        );
-    }
-
-
-    /**
-     * Update contact
-     *
-     * @param id
-     * @param contact
-     */
-    updateContact(id: string, contact: any): Observable<any>
-    {
-        return this.recipient$.pipe(
-            take(1),
-            switchMap(contacts => this._httpClient.patch<any>('api/apps/contacts/contact', {
-                id,
-                contact
-            }).pipe(
-                map((updatedContact) => {
-
-                    // Find the index of the updated contact
-                    const index = contacts.findIndex(item => item.id === id);
-
-                    // Update the contact
-                    contacts[index] = updatedContact;
-
-                    // Update the contacts
-                    this._recipients.next(contacts);
-
-                    // Return the updated contact
-                    return updatedContact;
-                }),
-                switchMap(updatedContact => this.recipient$.pipe(
-                    take(1),
-                    filter(item => item && item.id === id),
-                    tap(() => {
-
-                        // Update the contact if it's selected
-                        this._recipient.next(updatedContact);
-
-                        // Return the updated contact
-                        return updatedContact;
-                    })
-                ))
-            ))
-        );
-    }
-
-    /**
-     * Delete the contact
-     *
-     * @param id
-     */
-    deleteContact(id: string): Observable<boolean>
-    {
-        return this.recipient$.pipe(
-            take(1),
-            switchMap(contacts => this._httpClient.delete('api/apps/contacts/contact', {params: {id}}).pipe(
-                map((isDeleted: boolean) => {
-
-                    // Find the index of the deleted contact
-                    const index = contacts.findIndex(item => item.id === id);
-
-                    // Delete the contact
-                    contacts.splice(index, 1);
-
-                    // Update the contacts
-                    this._recipients.next(contacts);
-
-                    // Return the deleted status
-                    return isDeleted;
-                })
-            ))
-        );
-    }
-
-    activateProgressBar(active = 'on') {
+    activateProgressBar(active = 'on'): void {
         Hub.dispatch('processing', {
             event: 'progressbar',
             data: {

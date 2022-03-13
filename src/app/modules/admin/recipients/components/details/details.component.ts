@@ -177,11 +177,11 @@ export class ContactsDetailsComponent
             search = search.toLowerCase();
         }
         // filter the banks
-        this.filteredStatus.next(
-            this.statusOptions.filter(
-                (lang) => lang.name.toLowerCase().indexOf(search) > -1
-            )
-        );
+        // this.filteredStatus.next(
+        //     this.statusOptions.filter(
+        //         (lang) => lang.name.toLowerCase().indexOf(search) > -1
+        //     )
+        // );
     }
 
     private _filterGroups(): void {
@@ -199,13 +199,10 @@ export class ContactsDetailsComponent
         // filter the banks
         this.filteredGroups.next(
             this.groupsOptions.filter(
-                (lang) => lang.name.toLowerCase().indexOf(search) > -1
+                lang => lang.name.toLowerCase().indexOf(search) > -1
             )
         );
     }
-
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    ngOnViewInit() {}
     /**
      * On destroy
      */
@@ -290,7 +287,7 @@ export class ContactsDetailsComponent
 
                 // Get the next/previous contact's id
                 const currentContactIndex = this.contacts.findIndex(
-                    (item) => item.id === id
+                    item => item.id === id
                 );
                 const nextContactIndex =
                     currentContactIndex +
@@ -301,30 +298,30 @@ export class ContactsDetailsComponent
                         : this.contacts[nextContactIndex].id;
 
                 // Delete the contact
-                this._recipientService
-                    .deleteContact(id)
-                    .subscribe((isDeleted) => {
-                        // Return if the contact wasn't deleted...
-                        if (!isDeleted) {
-                            return;
-                        }
-
-                        // Navigate to the next contact if available
-                        if (nextContactId) {
-                            this._router.navigate(['../', nextContactId], {
-                                relativeTo: this._activatedRoute,
-                            });
-                        }
-                        // Otherwise, navigate to the parent
-                        else {
-                            this._router.navigate(['../'], {
-                                relativeTo: this._activatedRoute,
-                            });
-                        }
-
-                        // Toggle the edit mode off
-                        this.toggleEditMode(false);
-                    });
+                // this._recipientService
+                //     .deleteContact(id)
+                //     .subscribe((isDeleted) => {
+                //         // Return if the contact wasn't deleted...
+                //         if (!isDeleted) {
+                //             return;
+                //         }
+                //
+                //         // Navigate to the next contact if available
+                //         if (nextContactId) {
+                //             this._router.navigate(['../', nextContactId], {
+                //                 relativeTo: this._activatedRoute,
+                //             });
+                //         }
+                //         // Otherwise, navigate to the parent
+                //         else {
+                //             this._router.navigate(['../'], {
+                //                 relativeTo: this._activatedRoute,
+                //             });
+                //         }
+                //
+                //         // Toggle the edit mode off
+                //         this.toggleEditMode(false);
+                //     });
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
