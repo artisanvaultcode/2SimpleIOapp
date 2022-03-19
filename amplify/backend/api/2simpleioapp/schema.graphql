@@ -111,8 +111,13 @@ enum CampaignTargetOptions {
     GROUP
     SELECTION
 }
+enum CampaignTypeOptions {
+    EXPRESS
+    SCHEDULED
+}
 
-type Campaign @model @auth(rules: [{allow: public}]) {
+type Campaign @model @auth(rules: [{allow: public}])
+@key(name: "byClientId", fields: ["clientId"], queryField: "allByClientId"){
     id: ID!
     clientId: ID!
     name: String
@@ -121,7 +126,9 @@ type Campaign @model @auth(rules: [{allow: public}]) {
     message: String
     lastProcessDt: AWSDateTime
     metadata: String
-    status: SubsStatus
+    status: SubsStatus,
+    archive: Boolean
+    cType: CampaignTypeOptions
 }
 
 type CampaignTarget @model @auth(rules: [{allow: public}]) {

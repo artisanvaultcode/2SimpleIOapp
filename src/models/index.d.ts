@@ -33,6 +33,17 @@ export enum SubsStatus {
   SUSPENDED = "SUSPENDED"
 }
 
+export enum CampaignTargetOptions {
+  ALL = "ALL",
+  GROUP = "GROUP",
+  SELECTION = "SELECTION"
+}
+
+export enum CampaignTypeOptions {
+  EXPRESS = "EXPRESS",
+  SCHEDULED = "SCHEDULED"
+}
+
 
 
 type GroupMetaData = {
@@ -60,6 +71,14 @@ type HisSmsLogMetaData = {
 }
 
 type SubscriberMetaData = {
+  readOnlyFields: 'createdAt' | 'updatedAt';
+}
+
+type CampaignMetaData = {
+  readOnlyFields: 'createdAt' | 'updatedAt';
+}
+
+type CampaignTargetMetaData = {
   readOnlyFields: 'createdAt' | 'updatedAt';
 }
 
@@ -126,6 +145,7 @@ export declare class Device {
   readonly lastProcessDt?: string;
   readonly phoneTxt?: string;
   readonly status?: EntityStatus | keyof typeof EntityStatus;
+  readonly clientId?: string;
   readonly createdAt?: string;
   readonly updatedAt?: string;
   constructor(init: ModelInit<Device, DeviceMetaData>);
@@ -161,4 +181,35 @@ export declare class Subscriber {
   readonly updatedAt?: string;
   constructor(init: ModelInit<Subscriber, SubscriberMetaData>);
   static copyOf(source: Subscriber, mutator: (draft: MutableModel<Subscriber, SubscriberMetaData>) => MutableModel<Subscriber, SubscriberMetaData> | void): Subscriber;
+}
+
+export declare class Campaign {
+  readonly id: string;
+  readonly clientId: string;
+  readonly name?: string;
+  readonly target?: CampaignTargetOptions | keyof typeof CampaignTargetOptions;
+  readonly groupId?: string;
+  readonly message?: string;
+  readonly lastProcessDt?: string;
+  readonly metadata?: string;
+  readonly status?: SubsStatus | keyof typeof SubsStatus;
+  readonly archive?: boolean;
+  readonly cType?: CampaignTypeOptions | keyof typeof CampaignTypeOptions;
+  readonly createdAt?: string;
+  readonly updatedAt?: string;
+  constructor(init: ModelInit<Campaign, CampaignMetaData>);
+  static copyOf(source: Campaign, mutator: (draft: MutableModel<Campaign, CampaignMetaData>) => MutableModel<Campaign, CampaignMetaData> | void): Campaign;
+}
+
+export declare class CampaignTarget {
+  readonly id: string;
+  readonly campaignId: string;
+  readonly recipientId?: string;
+  readonly recipient?: Recipient;
+  readonly lastProcessDt?: string;
+  readonly status?: SubsStatus | keyof typeof SubsStatus;
+  readonly createdAt?: string;
+  readonly updatedAt?: string;
+  constructor(init: ModelInit<CampaignTarget, CampaignTargetMetaData>);
+  static copyOf(source: CampaignTarget, mutator: (draft: MutableModel<CampaignTarget, CampaignTargetMetaData>) => MutableModel<CampaignTarget, CampaignTargetMetaData> | void): CampaignTarget;
 }

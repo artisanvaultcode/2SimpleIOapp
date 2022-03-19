@@ -673,6 +673,8 @@ query GetCampaign($id: ID!) {
     lastProcessDt
     metadata
     status
+    archive
+    cType
     _version
     _deleted
     _lastChangedAt
@@ -696,6 +698,44 @@ query ListCampaigns(
       lastProcessDt
       metadata
       status
+      archive
+      cType
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query AllByClientId(
+  $clientId: ID
+  $sortDirection: ModelSortDirection
+  $filter: ModelCampaignFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  allByClientId(
+    clientId: $clientId
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      clientId
+      name
+      target
+      groupId
+      message
+      lastProcessDt
+      metadata
+      status
+      archive
+      cType
       _version
       _deleted
       _lastChangedAt
@@ -728,6 +768,8 @@ query SyncCampaigns(
       lastProcessDt
       metadata
       status
+      archive
+      cType
       _version
       _deleted
       _lastChangedAt

@@ -245,7 +245,6 @@ export type UpdateRecipientInput = {
   groupId?: string | null;
   phoneTxt?: string | null;
   status?: EntityStatus | null;
-  _deleted?: boolean | null;
   clientId?: string | null;
   _version?: number | null;
   recipientGroupId?: string | null;
@@ -558,6 +557,8 @@ export type CreateCampaignInput = {
   lastProcessDt?: string | null;
   metadata?: string | null;
   status?: SubsStatus | null;
+  archive?: boolean | null;
+  cType?: CampaignTypeOptions | null;
   _version?: number | null;
 };
 
@@ -565,6 +566,11 @@ export enum CampaignTargetOptions {
   ALL = "ALL",
   GROUP = "GROUP",
   SELECTION = "SELECTION"
+}
+
+export enum CampaignTypeOptions {
+  EXPRESS = "EXPRESS",
+  SCHEDULED = "SCHEDULED"
 }
 
 export type ModelCampaignConditionInput = {
@@ -576,6 +582,8 @@ export type ModelCampaignConditionInput = {
   lastProcessDt?: ModelStringInput | null;
   metadata?: ModelStringInput | null;
   status?: ModelSubsStatusInput | null;
+  archive?: ModelBooleanInput | null;
+  cType?: ModelCampaignTypeOptionsInput | null;
   and?: Array<ModelCampaignConditionInput | null> | null;
   or?: Array<ModelCampaignConditionInput | null> | null;
   not?: ModelCampaignConditionInput | null;
@@ -584,6 +592,18 @@ export type ModelCampaignConditionInput = {
 export type ModelCampaignTargetOptionsInput = {
   eq?: CampaignTargetOptions | null;
   ne?: CampaignTargetOptions | null;
+};
+
+export type ModelBooleanInput = {
+  ne?: boolean | null;
+  eq?: boolean | null;
+  attributeExists?: boolean | null;
+  attributeType?: ModelAttributeTypes | null;
+};
+
+export type ModelCampaignTypeOptionsInput = {
+  eq?: CampaignTypeOptions | null;
+  ne?: CampaignTypeOptions | null;
 };
 
 export type Campaign = {
@@ -597,6 +617,8 @@ export type Campaign = {
   lastProcessDt?: string | null;
   metadata?: string | null;
   status?: SubsStatus | null;
+  archive?: boolean | null;
+  cType?: CampaignTypeOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -614,6 +636,8 @@ export type UpdateCampaignInput = {
   lastProcessDt?: string | null;
   metadata?: string | null;
   status?: SubsStatus | null;
+  archive?: boolean | null;
+  cType?: CampaignTypeOptions | null;
   _version?: number | null;
 };
 
@@ -932,6 +956,8 @@ export type ModelCampaignFilterInput = {
   lastProcessDt?: ModelStringInput | null;
   metadata?: ModelStringInput | null;
   status?: ModelSubsStatusInput | null;
+  archive?: ModelBooleanInput | null;
+  cType?: ModelCampaignTypeOptionsInput | null;
   and?: Array<ModelCampaignFilterInput | null> | null;
   or?: Array<ModelCampaignFilterInput | null> | null;
   not?: ModelCampaignFilterInput | null;
@@ -943,6 +969,11 @@ export type ModelCampaignConnection = {
   nextToken?: string | null;
   startedAt?: number | null;
 };
+
+export enum ModelSortDirection {
+  ASC = "ASC",
+  DESC = "DESC"
+}
 
 export type ModelCampaignTargetFilterInput = {
   id?: ModelIDInput | null;
@@ -1438,6 +1469,8 @@ export type CreateCampaignMutation = {
   lastProcessDt?: string | null;
   metadata?: string | null;
   status?: SubsStatus | null;
+  archive?: boolean | null;
+  cType?: CampaignTypeOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -1456,6 +1489,8 @@ export type UpdateCampaignMutation = {
   lastProcessDt?: string | null;
   metadata?: string | null;
   status?: SubsStatus | null;
+  archive?: boolean | null;
+  cType?: CampaignTypeOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -1474,6 +1509,8 @@ export type DeleteCampaignMutation = {
   lastProcessDt?: string | null;
   metadata?: string | null;
   status?: SubsStatus | null;
+  archive?: boolean | null;
+  cType?: CampaignTypeOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -2189,6 +2226,8 @@ export type GetCampaignQuery = {
   lastProcessDt?: string | null;
   metadata?: string | null;
   status?: SubsStatus | null;
+  archive?: boolean | null;
+  cType?: CampaignTypeOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -2209,6 +2248,33 @@ export type ListCampaignsQuery = {
     lastProcessDt?: string | null;
     metadata?: string | null;
     status?: SubsStatus | null;
+    archive?: boolean | null;
+    cType?: CampaignTypeOptions | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+  } | null> | null;
+  nextToken?: string | null;
+  startedAt?: number | null;
+};
+
+export type AllByClientIdQuery = {
+  __typename: "ModelCampaignConnection";
+  items?: Array<{
+    __typename: "Campaign";
+    id: string;
+    clientId: string;
+    name?: string | null;
+    target?: CampaignTargetOptions | null;
+    groupId?: string | null;
+    message?: string | null;
+    lastProcessDt?: string | null;
+    metadata?: string | null;
+    status?: SubsStatus | null;
+    archive?: boolean | null;
+    cType?: CampaignTypeOptions | null;
     _version: number;
     _deleted?: boolean | null;
     _lastChangedAt: number;
@@ -2232,6 +2298,8 @@ export type SyncCampaignsQuery = {
     lastProcessDt?: string | null;
     metadata?: string | null;
     status?: SubsStatus | null;
+    archive?: boolean | null;
+    cType?: CampaignTypeOptions | null;
     _version: number;
     _deleted?: boolean | null;
     _lastChangedAt: number;
@@ -2832,6 +2900,8 @@ export type OnCreateCampaignSubscription = {
   lastProcessDt?: string | null;
   metadata?: string | null;
   status?: SubsStatus | null;
+  archive?: boolean | null;
+  cType?: CampaignTypeOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -2850,6 +2920,8 @@ export type OnUpdateCampaignSubscription = {
   lastProcessDt?: string | null;
   metadata?: string | null;
   status?: SubsStatus | null;
+  archive?: boolean | null;
+  cType?: CampaignTypeOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -2868,6 +2940,8 @@ export type OnDeleteCampaignSubscription = {
   lastProcessDt?: string | null;
   metadata?: string | null;
   status?: SubsStatus | null;
+  archive?: boolean | null;
+  cType?: CampaignTypeOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
@@ -3828,6 +3902,8 @@ export class APIService {
           lastProcessDt
           metadata
           status
+          archive
+          cType
           _version
           _deleted
           _lastChangedAt
@@ -3862,6 +3938,8 @@ export class APIService {
           lastProcessDt
           metadata
           status
+          archive
+          cType
           _version
           _deleted
           _lastChangedAt
@@ -3896,6 +3974,8 @@ export class APIService {
           lastProcessDt
           metadata
           status
+          archive
+          cType
           _version
           _deleted
           _lastChangedAt
@@ -5122,6 +5202,8 @@ export class APIService {
           lastProcessDt
           metadata
           status
+          archive
+          cType
           _version
           _deleted
           _lastChangedAt
@@ -5156,6 +5238,8 @@ export class APIService {
             lastProcessDt
             metadata
             status
+            archive
+            cType
             _version
             _deleted
             _lastChangedAt
@@ -5181,6 +5265,60 @@ export class APIService {
     )) as any;
     return <ListCampaignsQuery>response.data.listCampaigns;
   }
+  async AllByClientId(
+    clientId?: string,
+    sortDirection?: ModelSortDirection,
+    filter?: ModelCampaignFilterInput,
+    limit?: number,
+    nextToken?: string
+  ): Promise<AllByClientIdQuery> {
+    const statement = `query AllByClientId($clientId: ID, $sortDirection: ModelSortDirection, $filter: ModelCampaignFilterInput, $limit: Int, $nextToken: String) {
+        allByClientId(clientId: $clientId, sortDirection: $sortDirection, filter: $filter, limit: $limit, nextToken: $nextToken) {
+          __typename
+          items {
+            __typename
+            id
+            clientId
+            name
+            target
+            groupId
+            message
+            lastProcessDt
+            metadata
+            status
+            archive
+            cType
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+          }
+          nextToken
+          startedAt
+        }
+      }`;
+    const gqlAPIServiceArguments: any = {};
+    if (clientId) {
+      gqlAPIServiceArguments.clientId = clientId;
+    }
+    if (sortDirection) {
+      gqlAPIServiceArguments.sortDirection = sortDirection;
+    }
+    if (filter) {
+      gqlAPIServiceArguments.filter = filter;
+    }
+    if (limit) {
+      gqlAPIServiceArguments.limit = limit;
+    }
+    if (nextToken) {
+      gqlAPIServiceArguments.nextToken = nextToken;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <AllByClientIdQuery>response.data.allByClientId;
+  }
   async SyncCampaigns(
     filter?: ModelCampaignFilterInput,
     limit?: number,
@@ -5201,6 +5339,8 @@ export class APIService {
             lastProcessDt
             metadata
             status
+            archive
+            cType
             _version
             _deleted
             _lastChangedAt
@@ -6090,6 +6230,8 @@ export class APIService {
           lastProcessDt
           metadata
           status
+          archive
+          cType
           _version
           _deleted
           _lastChangedAt
@@ -6118,6 +6260,8 @@ export class APIService {
           lastProcessDt
           metadata
           status
+          archive
+          cType
           _version
           _deleted
           _lastChangedAt
@@ -6146,6 +6290,8 @@ export class APIService {
           lastProcessDt
           metadata
           status
+          archive
+          cType
           _version
           _deleted
           _lastChangedAt

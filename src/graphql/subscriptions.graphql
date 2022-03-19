@@ -466,6 +466,8 @@ subscription OnCreateCampaign {
     lastProcessDt
     metadata
     status
+    archive
+    cType
     _version
     _deleted
     _lastChangedAt
@@ -484,6 +486,8 @@ subscription OnUpdateCampaign {
     lastProcessDt
     metadata
     status
+    archive
+    cType
     _version
     _deleted
     _lastChangedAt
@@ -502,6 +506,8 @@ subscription OnDeleteCampaign {
     lastProcessDt
     metadata
     status
+    archive
+    cType
     _version
     _deleted
     _lastChangedAt

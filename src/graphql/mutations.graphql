@@ -532,6 +532,8 @@ mutation CreateCampaign(
     lastProcessDt
     metadata
     status
+    archive
+    cType
     _version
     _deleted
     _lastChangedAt
@@ -553,6 +555,8 @@ mutation UpdateCampaign(
     lastProcessDt
     metadata
     status
+    archive
+    cType
     _version
     _deleted
     _lastChangedAt
@@ -574,6 +578,8 @@ mutation DeleteCampaign(
     lastProcessDt
     metadata
     status
+    archive
+    cType
     _version
     _deleted
     _lastChangedAt

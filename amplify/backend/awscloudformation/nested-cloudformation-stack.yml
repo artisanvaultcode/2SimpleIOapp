@@ -245,7 +245,7 @@
             ]
           },
           "S3DeploymentBucket": "amplify-2simpleioapp-dev-213838-deployment",
-          "S3DeploymentRootKey": "amplify-appsync-files/73582179f7515d6cad6b288a138425a8c8cf79c9",
+          "S3DeploymentRootKey": "amplify-appsync-files/fffea07a9eb223a1b02c4f92b33445d9c1a912ab",
           "env": "dev"
         }
       }

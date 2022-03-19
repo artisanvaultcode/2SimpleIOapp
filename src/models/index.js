@@ -35,7 +35,18 @@ const SubsStatus = {
   "SUSPENDED": "SUSPENDED"
 };
 
-const { Group, MsgTemplate, Recipient, MsgToGroup, Device, HisSmsLog, Subscriber } = initSchema(schema);
+const CampaignTargetOptions = {
+  "ALL": "ALL",
+  "GROUP": "GROUP",
+  "SELECTION": "SELECTION"
+};
+
+const CampaignTypeOptions = {
+  "EXPRESS": "EXPRESS",
+  "SCHEDULED": "SCHEDULED"
+};
+
+const { Group, MsgTemplate, Recipient, MsgToGroup, Device, HisSmsLog, Subscriber, Campaign, CampaignTarget } = initSchema(schema);
 
 export {
   Group,
@@ -45,9 +56,13 @@ export {
   Device,
   HisSmsLog,
   Subscriber,
+  Campaign,
+  CampaignTarget,
   EntityStatus,
   Carriers,
   TemplateUsage,
   MontlyLimit,
-  SubsStatus
+  SubsStatus,
+  CampaignTargetOptions,
+  CampaignTypeOptions
 };
