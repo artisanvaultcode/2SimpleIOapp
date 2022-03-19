@@ -247,6 +247,7 @@ export type UpdateRecipientInput = {
   status?: EntityStatus | null;
   clientId?: string | null;
   _version?: number | null;
+  _deleted?: boolean;
   recipientGroupId?: string | null;
 };
 
