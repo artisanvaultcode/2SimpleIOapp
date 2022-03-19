@@ -2260,7 +2260,7 @@ export type ListCampaignsQuery = {
   startedAt?: number | null;
 };
 
-export type AllByClientIdQuery = {
+export type AllCampaignsByClientIdQuery = {
   __typename: "ModelCampaignConnection";
   items?: Array<{
     __typename: "Campaign";
@@ -5265,15 +5265,15 @@ export class APIService {
     )) as any;
     return <ListCampaignsQuery>response.data.listCampaigns;
   }
-  async AllByClientId(
+  async AllCampaignsByClientId(
     clientId?: string,
     sortDirection?: ModelSortDirection,
     filter?: ModelCampaignFilterInput,
     limit?: number,
     nextToken?: string
-  ): Promise<AllByClientIdQuery> {
-    const statement = `query AllByClientId($clientId: ID, $sortDirection: ModelSortDirection, $filter: ModelCampaignFilterInput, $limit: Int, $nextToken: String) {
-        allByClientId(clientId: $clientId, sortDirection: $sortDirection, filter: $filter, limit: $limit, nextToken: $nextToken) {
+  ): Promise<AllCampaignsByClientIdQuery> {
+    const statement = `query AllCampaignsByClientId($clientId: ID, $sortDirection: ModelSortDirection, $filter: ModelCampaignFilterInput, $limit: Int, $nextToken: String) {
+        allCampaignsByClientId(clientId: $clientId, sortDirection: $sortDirection, filter: $filter, limit: $limit, nextToken: $nextToken) {
           __typename
           items {
             __typename
@@ -5317,7 +5317,7 @@ export class APIService {
     const response = (await API.graphql(
       graphqlOperation(statement, gqlAPIServiceArguments)
     )) as any;
-    return <AllByClientIdQuery>response.data.allByClientId;
+    return <AllCampaignsByClientIdQuery>response.data.allCampaignsByClientId;
   }
   async SyncCampaigns(
     filter?: ModelCampaignFilterInput,

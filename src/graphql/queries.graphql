@@ -710,14 +710,14 @@ query ListCampaigns(
     startedAt
   }
 }
-query AllByClientId(
+query AllCampaignsByClientId(
   $clientId: ID
   $sortDirection: ModelSortDirection
   $filter: ModelCampaignFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  allByClientId(
+  allCampaignsByClientId(
     clientId: $clientId
     sortDirection: $sortDirection
     filter: $filter
