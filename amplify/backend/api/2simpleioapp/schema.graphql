@@ -117,7 +117,7 @@ enum CampaignTypeOptions {
 }
 
 type Campaign @model @auth(rules: [{allow: public}])
-@key(name: "byClientId", fields: ["clientId"], queryField: "allCampaignsByClientId"){
+@key(name: "byClientId", fields: ["clientId", "lastProcessDt", "status"], queryField: "allCampaignsByClientId"){
     id: ID!
     clientId: ID!
     name: String
@@ -126,7 +126,7 @@ type Campaign @model @auth(rules: [{allow: public}])
     message: String
     lastProcessDt: AWSDateTime
     metadata: String
-    status: SubsStatus,
+    status: SubsStatus
     archive: Boolean
     cType: CampaignTypeOptions
 }
@@ -138,4 +138,7 @@ type CampaignTarget @model @auth(rules: [{allow: public}]) {
     recipient: Recipient @connection
     lastProcessDt: AWSDateTime
     status: SubsStatus
+    groupId: String
+    group: Group @connection
+    type: CampaignTargetOptions
 }

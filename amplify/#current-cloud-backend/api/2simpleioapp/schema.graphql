@@ -117,7 +117,7 @@ enum CampaignTypeOptions {
 }
 
 type Campaign @model @auth(rules: [{allow: public}])
-@key(name: "byClientId", fields: ["clientId"], queryField: "allCampaignsByClientId"){
+@key(name: "byClientId", fields: ["clientId", "lastProcessDt", "status"], queryField: "allCampaignsByClientId"){
     id: ID!
     clientId: ID!
     name: String

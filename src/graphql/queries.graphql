@@ -712,6 +712,7 @@ query ListCampaigns(
 }
 query AllCampaignsByClientId(
   $clientId: ID
+  $lastProcessDtStatus: ModelCampaignByClientIdCompositeKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelCampaignFilterInput
   $limit: Int
@@ -719,6 +720,7 @@ query AllCampaignsByClientId(
 ) {
   allCampaignsByClientId(
     clientId: $clientId
+    lastProcessDtStatus: $lastProcessDtStatus
     sortDirection: $sortDirection
     filter: $filter
     limit: $limit

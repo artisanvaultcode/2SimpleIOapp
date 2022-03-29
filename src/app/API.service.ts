@@ -247,7 +247,6 @@ export type UpdateRecipientInput = {
   status?: EntityStatus | null;
   clientId?: string | null;
   _version?: number | null;
-  _deleted?: boolean;
   recipientGroupId?: string | null;
 };
 
@@ -969,6 +968,21 @@ export type ModelCampaignConnection = {
   items?: Array<Campaign | null> | null;
   nextToken?: string | null;
   startedAt?: number | null;
+};
+
+export type ModelCampaignByClientIdCompositeKeyConditionInput = {
+  eq?: ModelCampaignByClientIdCompositeKeyInput | null;
+  le?: ModelCampaignByClientIdCompositeKeyInput | null;
+  lt?: ModelCampaignByClientIdCompositeKeyInput | null;
+  ge?: ModelCampaignByClientIdCompositeKeyInput | null;
+  gt?: ModelCampaignByClientIdCompositeKeyInput | null;
+  between?: Array<ModelCampaignByClientIdCompositeKeyInput | null> | null;
+  beginsWith?: ModelCampaignByClientIdCompositeKeyInput | null;
+};
+
+export type ModelCampaignByClientIdCompositeKeyInput = {
+  lastProcessDt?: string | null;
+  status?: SubsStatus | null;
 };
 
 export enum ModelSortDirection {
@@ -5268,13 +5282,14 @@ export class APIService {
   }
   async AllCampaignsByClientId(
     clientId?: string,
+    lastProcessDtStatus?: ModelCampaignByClientIdCompositeKeyConditionInput,
     sortDirection?: ModelSortDirection,
     filter?: ModelCampaignFilterInput,
     limit?: number,
     nextToken?: string
   ): Promise<AllCampaignsByClientIdQuery> {
-    const statement = `query AllCampaignsByClientId($clientId: ID, $sortDirection: ModelSortDirection, $filter: ModelCampaignFilterInput, $limit: Int, $nextToken: String) {
-        allCampaignsByClientId(clientId: $clientId, sortDirection: $sortDirection, filter: $filter, limit: $limit, nextToken: $nextToken) {
+    const statement = `query AllCampaignsByClientId($clientId: ID, $lastProcessDtStatus: ModelCampaignByClientIdCompositeKeyConditionInput, $sortDirection: ModelSortDirection, $filter: ModelCampaignFilterInput, $limit: Int, $nextToken: String) {
+        allCampaignsByClientId(clientId: $clientId, lastProcessDtStatus: $lastProcessDtStatus, sortDirection: $sortDirection, filter: $filter, limit: $limit, nextToken: $nextToken) {
           __typename
           items {
             __typename
@@ -5302,6 +5317,9 @@ export class APIService {
     const gqlAPIServiceArguments: any = {};
     if (clientId) {
       gqlAPIServiceArguments.clientId = clientId;
+    }
+    if (lastProcessDtStatus) {
+      gqlAPIServiceArguments.lastProcessDtStatus = lastProcessDtStatus;
     }
     if (sortDirection) {
       gqlAPIServiceArguments.sortDirection = sortDirection;

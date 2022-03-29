@@ -859,7 +859,9 @@ export const schema = {
                     "properties": {
                         "name": "byClientId",
                         "fields": [
-                            "clientId"
+                            "clientId",
+                            "lastProcessDt",
+                            "status"
                         ],
                         "queryField": "allCampaignsByClientId"
                     }
@@ -1039,5 +1041,5 @@ export const schema = {
         }
     },
     "nonModels": {},
-    "version": "a628a17f734dde39787e0bf261bd02ba"
+    "version": "d8c7e1a6a1555c15d9c5ad71561a15bb"
 };
