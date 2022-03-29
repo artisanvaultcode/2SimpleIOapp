@@ -789,11 +789,39 @@ query GetCampaignTarget($id: ID!) {
     recipientId
     lastProcessDt
     status
+    groupId
+    type
     _version
     _deleted
     _lastChangedAt
     createdAt
     updatedAt
+    group {
+      id
+      name
+      carrier
+      status
+      msgTemplateId
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+      MsgTemplate {
+        id
+        name
+        message
+        status
+        default
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+    }
     recipient {
       id
       phone
@@ -836,11 +864,26 @@ query ListCampaignTargets(
       recipientId
       lastProcessDt
       status
+      groupId
+      type
       _version
       _deleted
       _lastChangedAt
       createdAt
       updatedAt
+      group {
+        id
+        name
+        carrier
+        status
+        msgTemplateId
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
       recipient {
         id
         phone
@@ -879,11 +922,26 @@ query SyncCampaignTargets(
       recipientId
       lastProcessDt
       status
+      groupId
+      type
       _version
       _deleted
       _lastChangedAt
       createdAt
       updatedAt
+      group {
+        id
+        name
+        carrier
+        status
+        msgTemplateId
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
       recipient {
         id
         phone

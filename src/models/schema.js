@@ -937,6 +937,35 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "groupId": {
+                    "name": "groupId",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "group": {
+                    "name": "group",
+                    "isArray": false,
+                    "type": {
+                        "model": "Group"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "association": {
+                        "connectionType": "BELONGS_TO",
+                        "targetName": "campaignTargetGroupId"
+                    }
+                },
+                "type": {
+                    "name": "type",
+                    "isArray": false,
+                    "type": {
+                        "enum": "CampaignTargetOptions"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "createdAt": {
                     "name": "createdAt",
                     "isArray": false,
@@ -1041,5 +1070,5 @@ export const schema = {
         }
     },
     "nonModels": {},
-    "version": "d8c7e1a6a1555c15d9c5ad71561a15bb"
+    "version": "c58c17ad20fc7cfcb16c50c4653c2dfb"
 };

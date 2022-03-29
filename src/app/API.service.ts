@@ -652,8 +652,11 @@ export type CreateCampaignTargetInput = {
   recipientId?: string | null;
   lastProcessDt?: string | null;
   status?: SubsStatus | null;
+  groupId?: string | null;
+  type?: CampaignTargetOptions | null;
   _version?: number | null;
   campaignTargetRecipientId?: string | null;
+  campaignTargetGroupId?: string | null;
 };
 
 export type ModelCampaignTargetConditionInput = {
@@ -661,6 +664,8 @@ export type ModelCampaignTargetConditionInput = {
   recipientId?: ModelStringInput | null;
   lastProcessDt?: ModelStringInput | null;
   status?: ModelSubsStatusInput | null;
+  groupId?: ModelStringInput | null;
+  type?: ModelCampaignTargetOptionsInput | null;
   and?: Array<ModelCampaignTargetConditionInput | null> | null;
   or?: Array<ModelCampaignTargetConditionInput | null> | null;
   not?: ModelCampaignTargetConditionInput | null;
@@ -673,11 +678,14 @@ export type CampaignTarget = {
   recipientId?: string | null;
   lastProcessDt?: string | null;
   status?: SubsStatus | null;
+  groupId?: string | null;
+  type?: CampaignTargetOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+  group?: Group | null;
   recipient?: Recipient | null;
 };
 
@@ -687,8 +695,11 @@ export type UpdateCampaignTargetInput = {
   recipientId?: string | null;
   lastProcessDt?: string | null;
   status?: SubsStatus | null;
+  groupId?: string | null;
+  type?: CampaignTargetOptions | null;
   _version?: number | null;
   campaignTargetRecipientId?: string | null;
+  campaignTargetGroupId?: string | null;
 };
 
 export type DeleteCampaignTargetInput = {
@@ -996,6 +1007,8 @@ export type ModelCampaignTargetFilterInput = {
   recipientId?: ModelStringInput | null;
   lastProcessDt?: ModelStringInput | null;
   status?: ModelSubsStatusInput | null;
+  groupId?: ModelStringInput | null;
+  type?: ModelCampaignTargetOptionsInput | null;
   and?: Array<ModelCampaignTargetFilterInput | null> | null;
   or?: Array<ModelCampaignTargetFilterInput | null> | null;
   not?: ModelCampaignTargetFilterInput | null;
@@ -1540,11 +1553,41 @@ export type CreateCampaignTargetMutation = {
   recipientId?: string | null;
   lastProcessDt?: string | null;
   status?: SubsStatus | null;
+  groupId?: string | null;
+  type?: CampaignTargetOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+  group?: {
+    __typename: "Group";
+    id: string;
+    name?: string | null;
+    carrier?: Carriers | null;
+    status?: EntityStatus | null;
+    msgTemplateId?: string | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
   recipient?: {
     __typename: "Recipient";
     id: string;
@@ -1584,11 +1627,41 @@ export type UpdateCampaignTargetMutation = {
   recipientId?: string | null;
   lastProcessDt?: string | null;
   status?: SubsStatus | null;
+  groupId?: string | null;
+  type?: CampaignTargetOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+  group?: {
+    __typename: "Group";
+    id: string;
+    name?: string | null;
+    carrier?: Carriers | null;
+    status?: EntityStatus | null;
+    msgTemplateId?: string | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
   recipient?: {
     __typename: "Recipient";
     id: string;
@@ -1628,11 +1701,41 @@ export type DeleteCampaignTargetMutation = {
   recipientId?: string | null;
   lastProcessDt?: string | null;
   status?: SubsStatus | null;
+  groupId?: string | null;
+  type?: CampaignTargetOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+  group?: {
+    __typename: "Group";
+    id: string;
+    name?: string | null;
+    carrier?: Carriers | null;
+    status?: EntityStatus | null;
+    msgTemplateId?: string | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
   recipient?: {
     __typename: "Recipient";
     id: string;
@@ -2332,11 +2435,41 @@ export type GetCampaignTargetQuery = {
   recipientId?: string | null;
   lastProcessDt?: string | null;
   status?: SubsStatus | null;
+  groupId?: string | null;
+  type?: CampaignTargetOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+  group?: {
+    __typename: "Group";
+    id: string;
+    name?: string | null;
+    carrier?: Carriers | null;
+    status?: EntityStatus | null;
+    msgTemplateId?: string | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
   recipient?: {
     __typename: "Recipient";
     id: string;
@@ -2378,11 +2511,27 @@ export type ListCampaignTargetsQuery = {
     recipientId?: string | null;
     lastProcessDt?: string | null;
     status?: SubsStatus | null;
+    groupId?: string | null;
+    type?: CampaignTargetOptions | null;
     _version: number;
     _deleted?: boolean | null;
     _lastChangedAt: number;
     createdAt: string;
     updatedAt: string;
+    group?: {
+      __typename: "Group";
+      id: string;
+      name?: string | null;
+      carrier?: Carriers | null;
+      status?: EntityStatus | null;
+      msgTemplateId?: string | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
     recipient?: {
       __typename: "Recipient";
       id: string;
@@ -2413,11 +2562,27 @@ export type SyncCampaignTargetsQuery = {
     recipientId?: string | null;
     lastProcessDt?: string | null;
     status?: SubsStatus | null;
+    groupId?: string | null;
+    type?: CampaignTargetOptions | null;
     _version: number;
     _deleted?: boolean | null;
     _lastChangedAt: number;
     createdAt: string;
     updatedAt: string;
+    group?: {
+      __typename: "Group";
+      id: string;
+      name?: string | null;
+      carrier?: Carriers | null;
+      status?: EntityStatus | null;
+      msgTemplateId?: string | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
     recipient?: {
       __typename: "Recipient";
       id: string;
@@ -2971,11 +3136,41 @@ export type OnCreateCampaignTargetSubscription = {
   recipientId?: string | null;
   lastProcessDt?: string | null;
   status?: SubsStatus | null;
+  groupId?: string | null;
+  type?: CampaignTargetOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+  group?: {
+    __typename: "Group";
+    id: string;
+    name?: string | null;
+    carrier?: Carriers | null;
+    status?: EntityStatus | null;
+    msgTemplateId?: string | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
   recipient?: {
     __typename: "Recipient";
     id: string;
@@ -3015,11 +3210,41 @@ export type OnUpdateCampaignTargetSubscription = {
   recipientId?: string | null;
   lastProcessDt?: string | null;
   status?: SubsStatus | null;
+  groupId?: string | null;
+  type?: CampaignTargetOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+  group?: {
+    __typename: "Group";
+    id: string;
+    name?: string | null;
+    carrier?: Carriers | null;
+    status?: EntityStatus | null;
+    msgTemplateId?: string | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
   recipient?: {
     __typename: "Recipient";
     id: string;
@@ -3059,11 +3284,41 @@ export type OnDeleteCampaignTargetSubscription = {
   recipientId?: string | null;
   lastProcessDt?: string | null;
   status?: SubsStatus | null;
+  groupId?: string | null;
+  type?: CampaignTargetOptions | null;
   _version: number;
   _deleted?: boolean | null;
   _lastChangedAt: number;
   createdAt: string;
   updatedAt: string;
+  group?: {
+    __typename: "Group";
+    id: string;
+    name?: string | null;
+    carrier?: Carriers | null;
+    status?: EntityStatus | null;
+    msgTemplateId?: string | null;
+    clientId?: string | null;
+    _version: number;
+    _deleted?: boolean | null;
+    _lastChangedAt: number;
+    createdAt: string;
+    updatedAt: string;
+    MsgTemplate?: {
+      __typename: "MsgTemplate";
+      id: string;
+      name?: string | null;
+      message?: string | null;
+      status?: EntityStatus | null;
+      default?: TemplateUsage | null;
+      clientId?: string | null;
+      _version: number;
+      _deleted?: boolean | null;
+      _lastChangedAt: number;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  } | null;
   recipient?: {
     __typename: "Recipient";
     id: string;
@@ -4021,11 +4276,41 @@ export class APIService {
           recipientId
           lastProcessDt
           status
+          groupId
+          type
           _version
           _deleted
           _lastChangedAt
           createdAt
           updatedAt
+          group {
+            __typename
+            id
+            name
+            carrier
+            status
+            msgTemplateId
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
           recipient {
             __typename
             id
@@ -4081,11 +4366,41 @@ export class APIService {
           recipientId
           lastProcessDt
           status
+          groupId
+          type
           _version
           _deleted
           _lastChangedAt
           createdAt
           updatedAt
+          group {
+            __typename
+            id
+            name
+            carrier
+            status
+            msgTemplateId
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
           recipient {
             __typename
             id
@@ -4141,11 +4456,41 @@ export class APIService {
           recipientId
           lastProcessDt
           status
+          groupId
+          type
           _version
           _deleted
           _lastChangedAt
           createdAt
           updatedAt
+          group {
+            __typename
+            id
+            name
+            carrier
+            status
+            msgTemplateId
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
           recipient {
             __typename
             id
@@ -5397,11 +5742,41 @@ export class APIService {
           recipientId
           lastProcessDt
           status
+          groupId
+          type
           _version
           _deleted
           _lastChangedAt
           createdAt
           updatedAt
+          group {
+            __typename
+            id
+            name
+            carrier
+            status
+            msgTemplateId
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
           recipient {
             __typename
             id
@@ -5457,11 +5832,27 @@ export class APIService {
             recipientId
             lastProcessDt
             status
+            groupId
+            type
             _version
             _deleted
             _lastChangedAt
             createdAt
             updatedAt
+            group {
+              __typename
+              id
+              name
+              carrier
+              status
+              msgTemplateId
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
             recipient {
               __typename
               id
@@ -5514,11 +5905,27 @@ export class APIService {
             recipientId
             lastProcessDt
             status
+            groupId
+            type
             _version
             _deleted
             _lastChangedAt
             createdAt
             updatedAt
+            group {
+              __typename
+              id
+              name
+              carrier
+              status
+              msgTemplateId
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
             recipient {
               __typename
               id
@@ -6337,11 +6744,41 @@ export class APIService {
           recipientId
           lastProcessDt
           status
+          groupId
+          type
           _version
           _deleted
           _lastChangedAt
           createdAt
           updatedAt
+          group {
+            __typename
+            id
+            name
+            carrier
+            status
+            msgTemplateId
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
           recipient {
             __typename
             id
@@ -6395,11 +6832,41 @@ export class APIService {
           recipientId
           lastProcessDt
           status
+          groupId
+          type
           _version
           _deleted
           _lastChangedAt
           createdAt
           updatedAt
+          group {
+            __typename
+            id
+            name
+            carrier
+            status
+            msgTemplateId
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
           recipient {
             __typename
             id
@@ -6453,11 +6920,41 @@ export class APIService {
           recipientId
           lastProcessDt
           status
+          groupId
+          type
           _version
           _deleted
           _lastChangedAt
           createdAt
           updatedAt
+          group {
+            __typename
+            id
+            name
+            carrier
+            status
+            msgTemplateId
+            clientId
+            _version
+            _deleted
+            _lastChangedAt
+            createdAt
+            updatedAt
+            MsgTemplate {
+              __typename
+              id
+              name
+              message
+              status
+              default
+              clientId
+              _version
+              _deleted
+              _lastChangedAt
+              createdAt
+              updatedAt
+            }
+          }
           recipient {
             __typename
             id

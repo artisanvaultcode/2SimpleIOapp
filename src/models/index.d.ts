@@ -208,6 +208,9 @@ export declare class CampaignTarget {
   readonly recipient?: Recipient;
   readonly lastProcessDt?: string;
   readonly status?: SubsStatus | keyof typeof SubsStatus;
+  readonly groupId?: string;
+  readonly group?: Group;
+  readonly type?: CampaignTargetOptions | keyof typeof CampaignTargetOptions;
   readonly createdAt?: string;
   readonly updatedAt?: string;
   constructor(init: ModelInit<CampaignTarget, CampaignTargetMetaData>);
