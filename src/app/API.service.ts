@@ -246,6 +246,7 @@ export type UpdateRecipientInput = {
   phoneTxt?: string | null;
   status?: EntityStatus | null;
   clientId?: string | null;
+  _deleted?: boolean | null;
   _version?: number | null;
   recipientGroupId?: string | null;
 };
