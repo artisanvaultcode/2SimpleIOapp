@@ -111,8 +111,8 @@ export class ContactsDetailsComponent
         this._recipientService.recipients$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((contacts: any[]) => {
+                console.log('contacs ------->', contacts);
                 this.contacts = contacts;
-
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
@@ -135,7 +135,7 @@ export class ContactsDetailsComponent
                         this.contactForm = this._formBuilder.group({
                             id: [contact.id],
                             phone: [contact.phoneTxt],
-                            recipientGroupId: [''],
+                            recipientGroupId: [(contact.Group)? contact.Group.id : ''],
                             status: [contact.status],
                         });
                     }
@@ -242,7 +242,6 @@ export class ContactsDetailsComponent
         } else {
             this.editMode = editMode;
         }
-
         // Mark for check
         this._changeDetectorRef.markForCheck();
     }
@@ -254,11 +253,16 @@ export class ContactsDetailsComponent
     updateContact(): void {
         // Get the contact object
         const contact = this.contactForm.getRawValue();
-        this._recipientService.updateRecipientDetail(contact).then((resp) => {
-            // Toggle the edit mode off
-            this.toggleEditMode(false);
-            this._changeDetectorRef.markForCheck();
-        });
+        this._recipientService.updateRecipientDetail(contact)
+            .then((resp) => {
+                this._recipientListComponent.refreshByFilter();
+                this._router.navigate(['../'], {
+                    relativeTo: this._activatedRoute,
+                });
+                // Toggle the edit mode off
+                this.toggleEditMode(false);
+                this._changeDetectorRef.markForCheck();
+            });
     }
 
     /**
@@ -297,31 +301,33 @@ export class ContactsDetailsComponent
                         ? null
                         : this.contacts[nextContactIndex].id;
 
+                console.log('currentContactIndex ====> ', currentContactIndex);
+                console.log('nextContactId ======>', nextContactId);
                 // Delete the contact
-                // this._recipientService
-                //     .deleteContact(id)
-                //     .subscribe((isDeleted) => {
-                //         // Return if the contact wasn't deleted...
-                //         if (!isDeleted) {
-                //             return;
-                //         }
-                //
-                //         // Navigate to the next contact if available
-                //         if (nextContactId) {
-                //             this._router.navigate(['../', nextContactId], {
-                //                 relativeTo: this._activatedRoute,
-                //             });
-                //         }
-                //         // Otherwise, navigate to the parent
-                //         else {
-                //             this._router.navigate(['../'], {
-                //                 relativeTo: this._activatedRoute,
-                //             });
-                //         }
-                //
-                //         // Toggle the edit mode off
-                //         this.toggleEditMode(false);
-                //     });
+                this._recipientService
+                    .deleteContact(id)
+                    .then((isDeleted) => {
+                        // Return if the contact wasn't deleted...
+                        if (!isDeleted) {
+                            return;
+                        }
+
+                        this._recipientListComponent.refreshByFilter();
+                        // Navigate to the next contact if available
+                        if (nextContactId) {
+                            this._router.navigate(['../', nextContactId], {
+                                relativeTo: this._activatedRoute,
+                            });
+                        }
+                        // Otherwise, navigate to the parent
+                        else {
+                            // Toggle the edit mode off
+                            this.toggleEditMode(false);
+                            this._router.navigate(['../'], {
+                                relativeTo: this._activatedRoute,
+                            });
+                        }
+                    });
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -332,7 +338,8 @@ export class ContactsDetailsComponent
     /**
      * Open the messages panel
      */
-    openPanel(): void {
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    openPanel(): any {
         // Return if the messages panel or its origin is not defined
         if (!this._detailPanel) {
             return;
@@ -344,6 +351,7 @@ export class ContactsDetailsComponent
         this._overlayRef.detach();
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     trackByFn(index: number, item: any): any {
         return item.id || index;
     }

@@ -28,7 +28,8 @@ type Group @model @auth(rules: [{allow: public}]) @key(name: "byGroup", fields: 
   clientId: String
 }
 
-type Recipient @model @searchable @auth(rules: [{allow: public}]) {
+type Recipient @model @searchable @auth(rules: [{allow: public}])
+@key(name: "rByPhoneTxt", fields: ["clientId", "phoneTxt", "lastProcessDt", "status"], queryField: "allRecipientsByPhone") {
   id: ID!
   phone: AWSPhone
   carrierStatus: String
@@ -37,6 +38,7 @@ type Recipient @model @searchable @auth(rules: [{allow: public}]) {
   groupId: ID
   phoneTxt: String
   status: EntityStatus
+  archive: Boolean
   clientId: String
 }
 
@@ -116,8 +118,21 @@ enum CampaignTypeOptions {
     SCHEDULED
 }
 
+enum CampaignStatus {
+    DEFINED
+    PROCESSING
+    PAUSE
+    COMPLETED
+}
+
+enum CampaignTargetStatus {
+    ACTIVE
+    PROCESSING
+    SENT
+}
+
 type Campaign @model @auth(rules: [{allow: public}])
-@key(name: "byClientId", fields: ["clientId", "lastProcessDt", "status"], queryField: "allCampaignsByClientId"){
+@key(name: "byClientId", fields: ["clientId", "lastProcessDt", "status", "cStatus"], queryField: "allCampaignsByClientId"){
     id: ID!
     clientId: ID!
     name: String
@@ -128,16 +143,21 @@ type Campaign @model @auth(rules: [{allow: public}])
     metadata: String
     status: SubsStatus
     archive: Boolean
-    cType: CampaignTypeOptions
+    cType: CampaignTypeOptions,
+    dateStart: String,
+    timeStart: String,
+    epocStart: String
+    cStatus: CampaignStatus
 }
 
-type CampaignTarget @model @auth(rules: [{allow: public}]) {
+type CampaignTarget @model @auth(rules: [{allow: public}])
+@key(name: "targetAll", fields: ["campaignId", "lastProcessDt", "status"], queryField: "QueryCampaignTargetsById"){
     id: ID!
     campaignId: ID!
     recipientId: String
     recipient: Recipient @connection
     lastProcessDt: AWSDateTime
-    status: SubsStatus
+    status: CampaignTargetStatus
     groupId: String
     group: Group @connection
     type: CampaignTargetOptions

@@ -1,0 +1,56 @@
+
+<div class="border-b py-4">
+    Campaign {{stepInfo.formInfo.get('type').value | titlecase}}
+</div>
+<mat-horizontal-stepper [linear]="true"
+                        #horizontalStepper
+                        class="lg:px-18 md:px-8 sm:px-0">
+
+    <mat-step [stepControl]="stepInfo.formInfo">
+        <ng-template matStepLabel>Information</ng-template>
+        <app-wizard-info #stepInfo
+                         [dataInfo]="dataInfo"
+                        (cancel)="cancel($event)"></app-wizard-info>
+    </mat-step>
+
+    <mat-step [completed]="stepMessage.formMessage.get('message').value.length > 0">
+        <ng-template matStepLabel>Message</ng-template>
+        <app-wizard-message #stepMessage
+                            [dataMessage]="dataMessage"
+                            (cancel)="cancel($event)"></app-wizard-message>
+    </mat-step>
+
+    <mat-step [completed]="stepInfo.formInfo.get('target').value === 'ALL' ||
+                           stepSearch.recipientTargets.length > 0 ||
+                           stepSearch.groupTargets.length > 0">
+        <ng-template matStepLabel>Search</ng-template>
+        <app-wizard-search [formInfo]="stepInfo.formInfo.value"
+                           [dataTargets]="dataTargets"
+                           #stepSearch
+                           (stepperIndex)="goStepperIndex($event)"
+                           (cancel)="cancel($event)"></app-wizard-search>
+    </mat-step>
+
+    <mat-step [stepControl]="stepSchedule.formSchedule">
+        <ng-template matStepLabel>Schedule</ng-template>
+        <app-wizard-schedule #stepSchedule
+                             [campaignTypeSelected]="stepInfo.formInfo.get('type').value"
+                             (cancel)="cancel($event)">
+        </app-wizard-schedule>
+    </mat-step>
+
+    <mat-step>
+        <ng-template matStepLabel>Confirm Details</ng-template>
+        <app-wizard-confirm [formInfo]="stepInfo.formInfo.value"
+                            [formMessage]="stepMessage.formMessage.value"
+                            [formSchedule]="stepSchedule.formSchedule.getRawValue()"
+                            (saveData)="saveCampaign(stepInfo.formInfo.value,
+                                                    stepMessage.formMessage.value,
+                                                    stepSchedule.formSchedule.getRawValue(),
+                                                    stepSearch.recipientTargets,
+                                                    stepSearch.groupTargets);"
+                            (cancel)="cancel($event)">
+        </app-wizard-confirm>
+    </mat-step>
+
+</mat-horizontal-stepper>

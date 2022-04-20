@@ -1,0 +1,39 @@
+
+<div class="flex mt-4">
+    <span class="flex-initial w-40 font-bold">File Name: </span>
+    <span class="flex-auto" *ngIf="files && files.length > 0">{{files[0]}}</span>
+</div>
+
+<div class="flex mt-4">
+    <span class="flex-initial w-40 font-bold">Group Name: </span>
+    <span class="flex-auto" *ngIf="groups && groups.length > 0">{{groups[0].name}}</span>
+</div>
+
+<div class="flex mt-20">
+    <button
+        class="flex px-8 mr-2"
+        mat-flat-button
+        [color]="'accent'"
+        type="button"
+        matStepperPrevious>
+        Back
+    </button>
+    <div class="flex-auto text-right">
+        <button
+            class="px-8 mr-2"
+            mat-flat-button
+            type="button"
+            (click)="close()">
+            Cancel
+        </button>
+        <button
+            class="px-8"
+            mat-flat-button
+            [color]="'primary'"
+            type="button"
+            (click)="save()"
+            matStepperNext>
+            Save
+        </button>
+    </div>
+</div>

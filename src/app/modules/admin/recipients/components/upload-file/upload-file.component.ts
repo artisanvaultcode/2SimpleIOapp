@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, Output, ViewChild} from '@angular/core';
 
 @Component({
     selector: 'upload-file',
@@ -9,13 +9,14 @@ export class UploadFileComponent  {
     @Output() _onSelect: EventEmitter<any> = new EventEmitter();
     @Output() _onReset: EventEmitter<any> = new EventEmitter();
 
+    @ViewChild('fileInput') fileInput: any;
+
     files: any = [];
     fileType = ['csv'];
 
     uploadFile(event): void {
-        console.log(event)
-        if(this.files.length === 0 && event.files && event.files[0]) {
-            const maxSize = 20971520;
+        if(this.files.length === 0 && event.files.length > 0) {
+            const maxSize = 20971520;   // 20Mb.
             if (event.files[0].size > maxSize) {
                 return;
             }
@@ -31,13 +32,14 @@ export class UploadFileComponent  {
                 const csvData = reader.result;
                 const csvRecordsArray = (<string>csvData).split(/\r\n|\n/);
                 this.files.push(element.name);
-                this._onSelect.emit(csvRecordsArray);
+                this._onSelect.emit({csvArray: csvRecordsArray, filesName: this.files});
             };
         }
     }
 
     deleteAttachment(index): void {
         this.files.splice(index, 1);
+        this.fileInput.nativeElement.value = '';
         this._onReset.emit();
     }
 }

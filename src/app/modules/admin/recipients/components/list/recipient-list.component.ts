@@ -13,12 +13,15 @@ import { DOCUMENT } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { MatDrawer } from '@angular/material/sidenav';
-import { fromEvent, Observable, of, Subject } from 'rxjs';
-import { filter, switchMap, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, fromEvent, Observable, of, Subject } from 'rxjs';
+import { debounceTime, filter, switchMap, takeUntil } from 'rxjs/operators';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { RecipientsService } from '../../recipients.service';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { UploadCsvDialogComponent } from '../upload-csv-dialog/upload-csv-dialog.component';
+import { WizardComponent } from '../wizard/wizard.component';
+import { Hub } from 'aws-amplify';
+import { Group } from '../../../../../API.service';
+import { GroupsRecipientsService } from '../../groups-recipients.service';
 
 @Component({
     selector: 'recipient-list',
@@ -30,13 +33,17 @@ import { UploadCsvDialogComponent } from '../upload-csv-dialog/upload-csv-dialog
 export class RecipientListComponent implements OnInit, OnDestroy {
     @ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
 
-    recipients$: Observable<any[]>;
+    // recipients$: Observable<any[]>;
     recipient$: Observable<any>;
+    labels$: Observable<Group[]>;
     nextPage$: Observable<any[]>;
 
     contactLists: any[] = [];
 
     recipientsCount: number = 0;
+    filter$: BehaviorSubject<string> = new BehaviorSubject('recipients');
+    query: string;
+    isLoading: boolean = false;
     contactsTableColumns: string[] = ['name', 'email', 'phoneNumber', 'job'];
     drawerMode: 'side' | 'over';
     searchInputControl: FormControl = new FormControl();
@@ -50,6 +57,7 @@ export class RecipientListComponent implements OnInit, OnDestroy {
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
         private _recipientsService: RecipientsService,
+        private _groupsService: GroupsRecipientsService,
         @Inject(DOCUMENT) private _document: any,
         private _router: Router,
         private _bottomSheet: MatBottomSheet,
@@ -65,9 +73,9 @@ export class RecipientListComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        // Get the contacts
-        this.recipients$ = this._recipientsService.recipients$;
         this.nextPage$ = this._recipientsService.nextPage$;
+        this.labels$ = this._recipientsService.labels$;
+
         this._recipientsService.recipients$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((contacts: any[]) => {
@@ -97,10 +105,22 @@ export class RecipientListComponent implements OnInit, OnDestroy {
         this.searchInputControl.valueChanges
             .pipe(
                 takeUntil(this._unsubscribeAll),
-                switchMap(query =>
-                    // Search
-                    of(this._recipientsService.searchRecipients(query))
-                )
+                debounceTime(500),
+                switchMap((query) => {
+                    this.query = query;
+                    if(this.filterStatus === 'recipients') {
+                        return of(this._recipientsService.getRecipients(query, null, true));
+                    } else if(this.filterStatus === 'archived') {
+                        return of(this._recipientsService.getRecipientsArchived(query, null, true));
+                    } else {
+                        // by group id
+                        return of(this._recipientsService.getRecipientsByGroupId(
+                                        this.filterStatus,
+                                        null,
+                                        true,
+                                        query));
+                    }
+                })
             )
             .subscribe();
 
@@ -143,10 +163,86 @@ export class RecipientListComponent implements OnInit, OnDestroy {
             .subscribe(() => {
                 this.createContact();
             });
+
+        Hub.listen('processing', (data) => {
+            if (data.payload.event === 'progressbar') {
+                this.isLoading = data.payload.data.activate === 'on';
+                this._changeDetectorRef.markForCheck();
+            }
+        });
+    }
+
+    /**
+     * Get the filter status
+     */
+    get filterStatus(): string
+    {
+        return this.filter$.value;
+    }
+
+    /**
+     * Filter by archived
+     */
+    filterByArchived(): void {
+        this.filter$.next('archived');
+        if(this.searchInputControl.value) {
+            of(this._recipientsService.getRecipientsArchived(this.searchInputControl.value, null, true));
+        } else {
+            of(this._recipientsService.getRecipientsArchived(null, null, true));
+        }
+    }
+
+    /**
+     * Filter by recipients
+     */
+    filterByRecipients(): void  {
+        this.filter$.next('recipients');
+        if(this.searchInputControl.value) {
+            of(this._recipientsService.getRecipients(this.searchInputControl.value, null, true));
+        } else {
+            of(this._recipientsService.getRecipients(null, null, true));
+        }
+    }
+
+    /**
+     * Filter by label
+     *
+     * @param labelId
+     */
+    filterByLabel(labelId: string): void {
+        this.filter$.next(labelId);
+        if(this.searchInputControl.value) {
+            of(this._recipientsService.getRecipientsByGroupId(labelId,
+                null,
+                true,
+                this.searchInputControl.value));
+        } else {
+            of(this._recipientsService.getRecipientsByGroupId(labelId, null, true));
+        }
     }
 
     gotoNextPage(nextPage): void {
-        this._recipientsService.goNextPage(null, nextPage);
+        if(this.filterStatus === 'recipients') {
+            of(this._recipientsService.getRecipients(this.searchInputControl.value, nextPage, false));
+        } else if(this.filterStatus === 'archived') {
+            of(this._recipientsService.getRecipientsArchived(this.searchInputControl.value, nextPage, false));
+        } else {
+            // by group id nexpage
+            of(this._recipientsService.getRecipientsByGroupId(this.filterStatus,
+                    nextPage,
+                    false,
+                    this.searchInputControl.value));
+        }
+    }
+
+    refreshByFilter(event?: any): void {
+        if(this.filterStatus === 'recipients') {
+            this.filterByRecipients();
+        } else if(this.filterStatus === 'archived') {
+            this.filterByArchived();
+        } else {
+            this.filterByLabel(this.filterStatus);
+        }
     }
 
     /**
@@ -173,23 +269,18 @@ export class RecipientListComponent implements OnInit, OnDestroy {
         this._changeDetectorRef.markForCheck();
     }
 
-    refresh($event): void {
-        this.contactLists = [];
-        this.searchInputControl.setValue(null);
-        this._recipientsService.refresh();
-    }
-
-    async uploadFile($event) {
-        const fileToUpload = this._bottomSheet.open(UploadCsvDialogComponent, {
+    async uploadFile($event): Promise<any> {
+        const fileToUpload = this._bottomSheet.open(WizardComponent, {
+            panelClass: 'full-width',
             data: { fileTarget: 'QUEUE' },
         });
         const {sub} = await this._auth.checkClientId();
         fileToUpload.afterDismissed().subscribe((data) => {
             if (data) {
                 this._recipientsService
-                    .importRecipients(data?.items, sub)
+                    .importRecipients(data?.recipients, data?.group, sub)
                     .then((results) => {
-                        this._recipientsService.refresh();
+                        this.refreshByFilter();
                     });
             }
         });

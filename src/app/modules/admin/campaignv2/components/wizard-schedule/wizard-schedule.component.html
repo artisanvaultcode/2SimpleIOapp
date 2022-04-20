@@ -1,0 +1,120 @@
+<form [formGroup]="formSchedule">
+    <p class="my-2 font-bold">
+        Start On
+    </p>
+    <div class="flex flex-col gt-sm:flex-row">
+        <div class="flex flex-col gt-xs:flex-row">
+            <!--<mat-form-field class="flex-auto gt-xs:pr-3"
+                            *ngIf="campaignTypeSelected === 'EXPRESS'">
+                <mat-label>Select type</mat-label>
+                <mat-select
+                    [formControlName]="'scheduleType'"
+                    (selectionChange)="scheduleTypeChange($event)"
+                    [placeholder]="'Schedule Type'">
+                    <mat-option
+                        *ngFor="let st of sendTypes"
+                        [value]="st.type">
+                        {{st.value}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>-->
+
+            <div class="my-2 px-4">
+                <!-- select one or range date -->
+<!--                <div class="font-bold">-->
+<!--                    <mat-radio-group-->
+<!--                        aria-label="Select an option"-->
+<!--                        [formControlName]="'onceSend'">-->
+<!--                        <mat-radio-button color="primary"-->
+<!--                                          value="opt1"-->
+<!--                                          id="opt1"-->
+<!--                                          name="opt1"-->
+<!--                                          (click)="onClickRepeat('opt1')"-->
+<!--                                          class="pr-4">-->
+<!--                            Once:-->
+<!--                        </mat-radio-button>-->
+<!--                        <mat-radio-button color="primary"-->
+<!--                                          value="opt2"-->
+<!--                                          id="opt2"-->
+<!--                                          name="opt2"-->
+<!--                                          (click)="onClickRepeat('opt2')"-->
+<!--                                          class="pr-4">-->
+<!--                            Repeat:-->
+<!--                        </mat-radio-button>-->
+<!--                    </mat-radio-group>-->
+<!--                </div>-->
+                <!-- select date -->
+                <div class="flex flex-col 2xl:flex-row xl:flex-row lg:flex-row md:flex-row">
+                    <div class="flex flex-auto lg:flex-initial lg:w-40 md:flex-initial md:w-40">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Date</mat-label>
+                            <input matInput [min]="minDateScheduled"
+                                   [matDatepicker]="picker"
+                                   [formControlName]="'date'">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="flex flex-auto">
+                        <mat-form-field class="mr-4">
+                            <mat-label>Hours</mat-label>
+                            <input matInput
+                                   [formControlName]="'hours'"
+                                   min="0" max="23"
+                                   type="number">
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>Minutes</mat-label>
+                            <input matInput
+                                   min="0" max="50"
+                                   step="10"
+                                   [formControlName]="'minutes'"
+                                   type="number">
+                        </mat-form-field>
+                    </div>
+                    <!-- select times to repeat -->
+<!--                    <div *ngIf="!onceSchedule">-->
+<!--                        <div>Repeat</div>-->
+<!--                        <div>-->
+<!--                            <mat-form-field> &lt;!&ndash; class="w-52 md:w-72" appearance="fill" &ndash;&gt;-->
+<!--                                <input matInput-->
+<!--                                       min="2"-->
+<!--                                       [formControlName]="'repeatCounter'"-->
+<!--                                       type="number">-->
+<!--                            </mat-form-field>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex mt-8">
+        <button
+            class="flex px-8 mr-2"
+            mat-flat-button
+            [color]="'accent'"
+            type="button"
+            matStepperPrevious>
+            Back
+        </button>
+        <div class="flex-auto text-right">
+            <button
+                class="px-8 mr-2"
+                mat-flat-button
+                type="button"
+                (click)="close()">
+                Cancel
+            </button>
+            <button
+                class="px-8"
+                mat-flat-button
+                [color]="'primary'"
+                type="button"
+                [disabled]="formSchedule.invalid"
+                matStepperNext>
+                Next
+            </button>
+        </div>
+    </div>
+</form>

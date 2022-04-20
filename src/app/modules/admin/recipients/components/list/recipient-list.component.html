@@ -1,143 +1,192 @@
 <div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden">
 
+    <ng-container *ngIf="isLoading" >
+        <mat-progress-bar mode="query" ></mat-progress-bar>
+    </ng-container>
+
     <mat-drawer-container
         class="flex-auto h-full bg-card dark:bg-transparent"
         (backdropClick)="onBackdropClicked()">
 
-        <!-- Drawer -->
-        <mat-drawer
-            class="w-full md:w-160 dark:bg-gray-900"
-            mode="side"
-            [opened]="false"
-            [position]="'end'"
-            [disableClose]="false"
-            #matDrawer>
+        <mat-drawer class="w-60 dark:bg-gray-900 border-r-0"
+                     opened="true"
+                     mode="side"
+                     position="start">
+
+            <!-- Filters -->
+            <div class="space-y-2 mt-4 pr-4">
+                <!-- Notes -->
+                <div class="relative flex items-center py-2 px-4 font-medium rounded-full cursor-pointer"
+                     [ngClass]="{'bg-gray-200 dark:bg-gray-700 text-primary dark:text-primary-400': filterStatus === 'recipients',
+                                'text-hint hover:bg-hover': filterStatus !== 'recipients'}"
+                     (click)="filterByRecipients()"
+                     [matRippleDisabled]="filterStatus === 'recipients'"
+                     matRipple>
+                    <mat-icon
+                        class="text-current"
+                        [svgIcon]="'heroicons_outline:pencil-alt'"></mat-icon>
+                    <div class="ml-3 leading-5 select-none text-default">Recipients</div>
+                </div>
+                <!-- Archive -->
+                <div class="relative flex items-center py-2 px-4 font-medium rounded-full cursor-pointer"
+                     [ngClass]="{'bg-gray-200 dark:bg-gray-700 text-primary dark:text-primary-400': filterStatus === 'archived',
+                                'text-hint hover:bg-hover': filterStatus !== 'archived'}"
+                     (click)="filterByArchived()"
+                     [matRippleDisabled]="filterStatus === 'archived'"
+                     matRipple>
+                    <mat-icon class="text-current"
+                              [svgIcon]="'heroicons_outline:archive'"></mat-icon>
+                    <div class="ml-3 leading-5 select-none text-default">Archive</div>
+                </div>
+                <hr>
+                <!-- Labels -->
+                <ng-container *ngIf="(labels$ | async) as groups">
+                    <ng-container *ngFor="let label of groups; trackBy: trackByFn">
+                        <div class="relative flex items-center py-2 px-4 font-medium rounded-full cursor-pointer"
+                             [ngClass]="{'bg-gray-200 dark:bg-gray-700 text-primary dark:text-primary-400': label.id === filterStatus,
+                                    'text-hint hover:bg-hover': label.id !== filterStatus}"
+                             (click)="filterByLabel(label.id)"
+                             [matRippleDisabled]="label.id === filterStatus"
+                             matRipple>
+                            <mat-icon
+                                class="text-current"
+                                [svgIcon]="'heroicons_outline:tag'"></mat-icon>
+                            <div class="ml-3 leading-5 select-none text-default">{{label.name}}</div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </mat-drawer>
+        <mat-drawer class="w-100 dark:bg-gray-900"
+                     mode="side"
+                     [opened]="false"
+                     [position]="'end'"
+                     [disableClose]="false"
+                     #matDrawer>
             <router-outlet></router-outlet>
         </mat-drawer>
-
         <mat-drawer-content class="flex flex-col">
-
             <!-- Main -->
             <div class="flex-auto">
 
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row md:flex-col flex-auto justify-between py-8 px-6 md:px-8 border-b">
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row md:flex-col flex-auto justify-between py-4 px-6 md:px-8 border-b">
 
-                    <!-- Title -->
-                    <div>
-                        <div class="text-4xl font-extrabold tracking-tight leading-none">Recipients</div>
-                        <div class="ml-0.5 font-medium text-secondary">
-                            <ng-container *ngIf="recipientsCount > 0">
-                                {{recipientsCount}}
-                            </ng-container>
-                            {{recipientsCount | i18nPlural: {
-                            '=0'   : 'No recipients',
-                            '=1'   : 'recipient',
-                            'other': 'recipients'
-                        } }}
-                        </div>
-                    </div>
-
-                    <!-- Main actions -->
-                    <div class="flex items-center mt-4 sm:mt-0 md:mt-4">
-                        <!-- Search -->
-                        <div class="flex-auto">
-                            <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded w-full min-w-50">
-                                <mat-icon
-                                    class="icon-size-5"
-                                    matPrefix
-                                    [svgIcon]="'heroicons_solid:search'"></mat-icon>
-                                <input
-                                    matInput
-                                    [formControl]="searchInputControl"
-                                    [autocomplete]="'off'"
-                                    [placeholder]="'Search recipient by phone (wilcard * available ex: *9098*)'">
-                            </mat-form-field>
-                        </div>
-                        <!-- Add contact button -->
-                        <button
-                            class="ml-4"
-                            mat-flat-button
-                            [color]="'primary'"
-                            (click)="uploadFile($event)">
-                            <mat-icon [svgIcon]="'heroicons_outline:bookmark'"></mat-icon>
-                            <span class="ml-2 mr-1">Import</span>
-                        </button>
-                        <!-- Add contact button -->
-                        <button
-                            class="ml-4"
-                            mat-flat-button
-                            [color]="'primary'"
-                            (click)="refresh($event)">
-                            <mat-icon [svgIcon]="'heroicons_outline:refresh'"></mat-icon>
-                            <span class="ml-2 mr-1">Refresh</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Contacts list -->
-                <div class="relative">
-                    <ng-container *ngIf="recipients$ | async as recipients">
-                        <ng-container *ngIf="recipients.length; else noContacts">
-                            <ng-container *ngFor="let contact of contactLists; let i = index; trackBy: trackByFn">
-
-                                <!-- Contact -->
-                                <div class="flex flex-row mb-2">
-                                    <a
-                                        class="recipients z-20 px-6 py-4 md:px-8 cursor-pointer border-b"
-                                        [ngClass]="{'hover:bg-gray-100 dark:hover:bg-hover': !selectedContact || selectedContact.id !== contact.id,
-                                                    'bg-primary-50 dark:bg-hover': selectedContact && selectedContact.id === contact.id} "
-                                                    [routerLink]="['./', contact.id]"
-                                        >
-                                        <div class="min-w-0 ml-4">
-                                            <div  *ngIf="contact.status==='BL' || contact.status==='WL' " class="font-medium leading-5" style ="color : darkgray;">
-                                                {{contact.phone}}
-                                                <span style="font-size: x-small;">{{contact.status}}</span>
-                                            </div>
-                                            <div  *ngIf="contact.status==='ACTIVE'" class="font-medium leading-5" style="color : blue;">{{contact.phone}}</div>
-                                            <div  *ngIf="contact.status==='PROCESS'" class="font-medium leading-5" style="color : darkgreen;">{{contact.phone}}</div>
-                                            <div  *ngIf="contact.status==='SENT'" class="font-medium leading-5" style="color : green;">{{contact.phone}}</div>
-                                            <div  *ngIf="contact.status==='INACTIVE'" class="font-medium leading-5" style="color : gray;">{{contact.phone}}</div>
-                                            <div class="leading-5 truncate text-secondary">{{contact?.Group?.name}}</div>
-                                        </div>
-                                    </a> <!-- (click)="activateDevice([deviceEle], 'INACTIVE')" -->
-                                    <div *ngIf="contact.Group && contact.Group.name" class="control z-20 px-6 py-1 md:px-8 border-b" style="margin-top: 0.5em;">
-                                        <app-recipcontrol [recipientEle]="contact"></app-recipcontrol>
-                                    </div>
-                                    <div *ngIf="!contact.Group " class="control z-20 px-6 py-1 md:px-8 border-b">
-                                        <app-recipcontrol [recipientEle]="contact"></app-recipcontrol>
-                                    </div>
-                                </div>
-                            </ng-container>
+                <!-- Title -->
+                <div>
+<!--                    <div class="text-4xl font-extrabold tracking-tight leading-none">Recipients</div>-->
+                    <div class="ml-0.5 font-medium text-secondary">
+                        <ng-container *ngIf="recipientsCount > 0">
+                            {{recipientsCount}}
                         </ng-container>
-
-                    </ng-container>
-
-                    <!-- No contacts -->
-                    <ng-template #noContacts>
-                        <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">There are no recipients!</div>
-                    </ng-template>
-
+                        {{recipientsCount | i18nPlural: {
+                        '=0'   : 'No recipients',
+                        '=1'   : 'recipient',
+                        'other': 'recipients'
+                    } }}
+                    </div>
                 </div>
 
-                <div id="nPage"
-                     class="dark:bg-transparent text-center mx-8 mt-2"
-                     *ngIf="contactLists && contactLists.length>0"
-                >
-                    <ng-container *ngIf="nextPage$ | async as nextPage">
-                        <button
-                            [hidden]="nextPage===null"
-                            mat-flat-button
-                            [color]="'primary'"
-                            (click)="gotoNextPage(nextPage)">
-                            <mat-icon [svgIcon]="'feather:more-horizontal'" class="icon-size-8"></mat-icon>
-                            <span class="ml-2 mr-1">More</span>
-                        </button>
-                    </ng-container>
+                <!-- Main actions -->
+                <div class="flex items-center mt-4 sm:mt-0 md:mt-4">
+                    <!-- Search -->
+                    <div class="flex-auto">
+                        <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded w-full min-w-50">
+                            <mat-icon
+                                class="icon-size-5"
+                                matPrefix
+                                [svgIcon]="'heroicons_solid:search'"></mat-icon>
+                            <input
+                                matInput
+                                [formControl]="searchInputControl"
+                                [autocomplete]="'off'"
+                                [placeholder]="'Search recipient by phone (wilcard * available ex: *9098*)'">
+                        </mat-form-field>
+                    </div>
+                    <!-- Add contact button -->
+                    <button
+                        class="ml-4"
+                        mat-flat-button
+                        [color]="'primary'"
+                        (click)="uploadFile($event)">
+                        <mat-icon [svgIcon]="'heroicons_outline:bookmark'"></mat-icon>
+                        <span class="ml-2 mr-1">Import</span>
+                    </button>
+                    <!-- Add contact button -->
+                    <button
+                        class="ml-4"
+                        mat-flat-button
+                        [color]="'primary'"
+                        (click)="refreshByFilter($event)">
+                        <mat-icon [svgIcon]="'heroicons_outline:refresh'"></mat-icon>
+                        <span class="ml-2 mr-1">Refresh</span>
+                    </button>
                 </div>
             </div>
 
+            <!-- Contacts list -->
+            <div class="relative">
+                <!--                    <ng-container *ngIf="recipients$ | async as recipients">-->
+                <ng-container *ngIf="contactLists.length; else noContacts">
+                    <ng-container *ngFor="let contact of contactLists; let i = index; trackBy: trackByFn">
+
+                        <!-- Contact -->
+                        <div class="flex flex-row mb-2">
+                            <a
+                                class="recipients z-20 px-6 py-4 md:px-8 cursor-pointer border-b"
+                                [ngClass]="{'hover:bg-gray-100 dark:hover:bg-hover': !selectedContact || selectedContact.id !== contact.id,
+                                                'bg-primary-50 dark:bg-hover': selectedContact && selectedContact.id === contact.id} "
+                                [routerLink]="['./', contact.id]">
+                                <div class="min-w-0 ml-4">
+                                    <div  *ngIf="contact.status==='BL' || contact.status==='WL' " class="font-medium leading-5" style ="color : darkgray;">
+                                        {{contact.phone}}
+                                        <span style="font-size: x-small;">{{contact.status}}</span>
+                                    </div>
+                                    <div  *ngIf="contact.status==='ACTIVE'" class="font-medium leading-5" style="color : blue;">{{contact.phone}}</div>
+                                    <div  *ngIf="contact.status==='PROCESS'" class="font-medium leading-5" style="color : darkgreen;">{{contact.phone}}</div>
+                                    <div  *ngIf="contact.status==='SENT'" class="font-medium leading-5" style="color : green;">{{contact.phone}}</div>
+                                    <div  *ngIf="contact.status==='INACTIVE'" class="font-medium leading-5" style="color : gray;">{{contact.phone}}</div>
+                                    <div class="leading-5 truncate text-secondary">{{contact?.Group?.name}}</div>
+                                </div>
+                            </a> <!-- (click)="activateDevice([deviceEle], 'INACTIVE')" -->
+                            <div *ngIf="contact.Group && contact.Group.name" class="control z-20 px-6 py-1 md:px-8 border-b" style="margin-top: 0.5em;">
+                                <app-recipcontrol [recipientEle]="contact"></app-recipcontrol>
+                            </div>
+                            <div *ngIf="!contact.Group " class="control z-20 px-6 py-1 md:px-8 border-b">
+                                <app-recipcontrol [recipientEle]="contact"></app-recipcontrol>
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+
+                <!--                    </ng-container>-->
+
+                <!-- No contacts -->
+                <ng-template #noContacts>
+                    <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">There are no recipients!</div>
+                </ng-template>
+
+            </div>
+
+            <div id="nPage"
+                 class="dark:bg-transparent text-center mx-8 mt-2"
+                 *ngIf="contactLists && contactLists.length>0"
+            >
+                <ng-container *ngIf="nextPage$ | async as nextPage">
+                    <button
+                        [hidden]="nextPage===null"
+                        mat-flat-button
+                        [color]="'primary'"
+                        (click)="gotoNextPage(nextPage)">
+                        <mat-icon [svgIcon]="'feather:more-horizontal'" class="icon-size-8"></mat-icon>
+                        <span class="ml-2 mr-1">More</span>
+                    </button>
+                </ng-container>
+            </div>
+        </div>
+
         </mat-drawer-content>
+
     </mat-drawer-container>
 
 </div>

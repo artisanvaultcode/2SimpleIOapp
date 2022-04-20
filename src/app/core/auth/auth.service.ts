@@ -194,7 +194,7 @@ export class AuthService
         });
     }
 
-    checkClientId(): Promise<any> {
+    checkClientId(): Promise<string | any> {
         return new Promise((resolve, reject) => {
             Auth.currentAuthenticatedUser({
                 bypassCache: true

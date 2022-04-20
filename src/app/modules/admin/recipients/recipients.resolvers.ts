@@ -31,7 +31,8 @@ export class RecipientsResolver implements Resolve<any>
     {
         return new Promise((resolve, reject) => {
             Promise.all([
-                this._recipientsService.getRecipients()
+                this._recipientsService.getRecipients(),
+                this._recipientsService.getGroups(),
             ]).then(
                 () => {
                     resolve(true);
@@ -73,9 +74,6 @@ export class RecipientsRecipientResolver implements Resolve<any>
            .pipe(
                // Error here means the requested contact is not available
                catchError((error) => {
-
-                   // Log the error
-                   console.error(error);
 
                    // Get the parent url
                    const parentUrl = state.url.split('/').slice(0, -1).join('/');

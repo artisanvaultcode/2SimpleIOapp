@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { BooleanInput } from '@angular/cdk/coercion';
-import {Observable, Subject} from 'rxjs';
+import {Observable, of, Subject, timer} from 'rxjs';
 import {AuthService} from '../../../core/auth/auth.service';
+import {finalize, takeUntil, takeWhile, tap} from "rxjs/operators";
 
 @Component({
     selector       : 'user',
@@ -69,6 +70,10 @@ export class UserComponent implements OnInit, OnDestroy
      */
     signOut(): void
     {
-        this._router.navigate(['/client/logout']);
+        this._authService.signOut()
+            .then((resp) => {
+                this._router.navigate(['/']);
+            });
+
     }
 }

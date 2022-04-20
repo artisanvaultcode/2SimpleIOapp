@@ -36,7 +36,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
         type : 'basic',
         icon : 'heroicons_outline:speakerphone',
         link : '/client/campaign'
-    },
+    }
 ];
 export const compactNavigation: FuseNavigationItem[] = [
     {
@@ -73,7 +73,7 @@ export const compactNavigation: FuseNavigationItem[] = [
         type : 'basic',
         icon : 'heroicons_outline:speakerphone',
         link : '/client/campaign'
-    },
+    }
 ];
 export const futuristicNavigation: FuseNavigationItem[] = [
     {
@@ -110,7 +110,7 @@ export const futuristicNavigation: FuseNavigationItem[] = [
         type : 'basic',
         icon : 'heroicons_outline:speakerphone',
         link : '/client/campaign'
-    },
+    }
 ];
 export const horizontalNavigation: FuseNavigationItem[] = [
     {
@@ -147,5 +147,5 @@ export const horizontalNavigation: FuseNavigationItem[] = [
         type : 'basic',
         icon : 'heroicons_outline:speakerphone',
         link : '/client/campaign'
-    },
+    }
 ];

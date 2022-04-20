@@ -1,0 +1,150 @@
+
+<div class="flex flex-col">
+
+    <!-- Info -->
+    <fuse-alert [type]="'info'"
+                class="mt-8"
+                *ngIf="formInfo.target === 'ALL'">
+        <span fuseAlertTitle>Info alert</span>
+        The message will be sent to all recipients
+    </fuse-alert>
+
+    <ng-container *ngIf="formInfo.target === 'SELECTION'">
+        <mat-form-field class="flex-auto">
+            <input matInput
+                   [matAutocomplete]="auto"
+                   [formControl]="formTarget" placeholder="Search recipient">
+            <button *ngIf="selectedTarget"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="clearSelection()">
+                <mat-icon>close</mat-icon>
+            </button>
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onRecipSelected()"
+                              [displayWith]="displayWith">
+                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                <ng-container *ngIf="!isLoading">
+                    <mat-option *ngFor="let recipient of (recipients$ | async)" [value]="recipient">
+                        <span><b>{{recipient.phone}}</b></span>
+                    </mat-option>
+                </ng-container>
+            </mat-autocomplete>
+        </mat-form-field>
+        <p class="text-secondary">You can add up to 20 recipients.</p>
+        <div class="flex-auto border list-targets">
+            <!-- Recipients list -->
+            <div class="mx-4 py-2 px-2">
+                <ng-container *ngIf="recipientTargets as targets">
+                    <ng-container *ngIf="targets.length; else noRecipTarget">
+                        <ng-container *ngFor="let recip of targets; let i = index">
+                            <!-- Recipients -->
+                            <div class="flex border-b justify-center"> <!-- mb-2 min-w-0 ml-4 -->
+                                <div class="flex-auto py-2 cursor-pointer">
+                                    <div class="font-medium leading-5 truncate">
+                                        <span class="mr-4">{{targets.length - i}}. </span> {{recip.phone}}
+                                    </div>
+                                </div>
+                                <mat-icon class="flex-initial w-10 mt-2 cursor-pointer"
+                                          [svgIcon]="'delete_outline'"
+                                          (click)="removeRecipient(recip.phone)">
+                                </mat-icon>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+                <!-- No contacts -->
+                <ng-template #noRecipTarget>
+                    <div class="p-8 sm:p-16 text-2xl font-semibold tracking-tight text-center">
+                        No recipients!
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </ng-container>
+
+    <ng-container *ngIf="formInfo.target === 'GROUP'">
+        <mat-form-field class="flex-auto">
+            <input matInput
+                   [matAutocomplete]="auto"
+                   [formControl]="formTarget" placeholder="Search group">
+            <button *ngIf="groupTarget"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="clearSelection()">
+                <mat-icon>close</mat-icon>
+            </button>
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onGroupSelected()"
+                              [displayWith]="groupDisplayWith">
+                <mat-option *ngIf="isLoading" class="is-loading">Loading...</mat-option>
+                <ng-container *ngIf="!isLoading">
+                    <mat-option *ngFor="let group of (labels$ | async)" [value]="group">
+                        <span><b>{{group.name}}</b></span>
+                    </mat-option>
+                </ng-container>
+            </mat-autocomplete>
+        </mat-form-field>
+        <p class="text-secondary">You can add up to 20 groups.</p>
+        <div class="flex-auto border list-targets">
+            <!-- Group list -->
+            <div class="flex-auto mx-4 py-2 px-2">
+                <ng-container *ngIf="groupTargets as groups">
+                    <ng-container *ngIf="groups.length; else noGroupTarget">
+                        <ng-container *ngFor="let group of groups; let i = index">
+                            <!-- Recipients -->
+                            <div class="flex border-b justify-center"> <!-- mb-2 min-w-0 ml-4 -->
+                                <div class="flex-auto py-2 cursor-pointer">
+                                    <div class="font-medium leading-5 truncate">
+                                        <span class="mr-4">{{groups.length - i}}. </span>{{group.name}}
+                                    </div>
+                                </div>
+                                <mat-icon class="flex-initial w-10 mt-2 cursor-pointer"
+                                          [svgIcon]="'delete_outline'"
+                                          (click)="removeGroup(group.name)">
+                                </mat-icon>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+                <!-- No contacts -->
+                <ng-template #noGroupTarget>
+                    <div class="p-8 sm:p-16 text-2xl font-semibold tracking-tight text-center">
+                        No groups!
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </ng-container>
+    <div class="flex mt-8">
+        <button
+            class="flex px-8 mr-2"
+            mat-flat-button
+            [color]="'accent'"
+            type="button"
+            matStepperPrevious>
+            Back
+        </button>
+        <div class="flex-auto text-right">
+            <button
+                class="px-8 mr-2"
+                mat-flat-button
+                type="button"
+                (click)="close()">
+                Cancel
+            </button>
+            <button
+                class="px-8"
+                mat-flat-button
+                [color]="'primary'"
+                type="button"
+                [disabled]="formInfo.target !== 'ALL' &&
+                            recipientTargets.length === 0
+                            && groupTargets.length === 0"
+                matStepperNext>
+                Next
+            </button>
+        </div>
+    </div>
+
+</div>

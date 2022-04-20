@@ -1,0 +1,28 @@
+
+<div class="border-b py-4">
+    Import File
+</div>
+
+<mat-horizontal-stepper [linear]="true"
+                        class="lg:px-18 md:px-8 sm:px-0">
+    <mat-step [completed]="stepFile.recList.length > 0">
+        <ng-template matStepLabel>File</ng-template>
+        <upload-csv-dialog #stepFile
+                         (cancel)="cancel($event)"></upload-csv-dialog>
+    </mat-step>
+
+    <mat-step [completed]="stepGroup.groupTargets.length > 0">
+        <ng-template matStepLabel>Group</ng-template>
+        <app-wizard-search-group #stepGroup
+                            (cancel)="cancel($event)"></app-wizard-search-group>
+    </mat-step>
+
+    <mat-step>
+        <ng-template matStepLabel>Confirm</ng-template>
+        <wizard-confirm [files]="stepFile.filesName"
+                        [recipients]="stepFile.recList"
+                        [groups]="stepGroup.groupTargets"
+                        (saveData)="save($event)"
+                        (cancel)="cancel($event)"></wizard-confirm>
+    </mat-step>
+</mat-horizontal-stepper>

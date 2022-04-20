@@ -1,0 +1,78 @@
+    <div class="flex mt-4">
+        <span class="flex-initial w-20 font-bold">Title: </span>
+        <span class="flex-auto">{{formInfo.name}}</span>
+    </div>
+
+    <div class="flex mt-4">
+        <span class="flex-initial w-20 font-bold">Type: </span>
+        <span class="flex-auto">{{formInfo.type}}</span>
+    </div>
+
+    <div class="flex border-b mt-4 pb-4">
+        <span class="flex-initial w-20 font-bold">Target: </span>
+        <span class="flex-auto">{{formInfo.target}}</span>
+    </div>
+
+    <div class="border-b py-4">
+        <div class="font-bold">Message: </div>
+        <div>{{formMessage.message}}</div>
+    </div>
+
+<!--    <ng-container>-->
+<!--        <div class="flex mt-4 pt-2">-->
+<!--            <span class="flex-initial w-40 font-bold">-->
+<!--                How Many Times?:-->
+<!--            </span>-->
+<!--            <span *ngIf="onceSchedule" class="flex-auto">-->
+<!--                once-->
+<!--            </span>-->
+<!--            <span *ngIf="!onceSchedule" class="flex-auto">-->
+<!--                {{formSchedule.repeatCounter}} times-->
+<!--            </span>-->
+<!--        </div>-->
+
+        <div class="flex mt-4">
+            <span class="flex-initial w-40 font-bold">Date:</span>
+            <span class="flex-auto">{{formSchedule.date}}</span>
+        </div>
+
+        <div class="flex mt-4">
+            <span class="flex-initial w-40 font-bold">Time:</span>
+            <span class="flex-auto">{{formSchedule.hours}}:{{formSchedule.minutes}}</span>
+        </div>
+<!--    </ng-container>-->
+<!--    <ng-container *ngIf="formInfo.type === 'EXPRESS'">-->
+<!--        <div class="flex mt-4">-->
+<!--            <span class="flex-initial w-40 font-bold">Type:</span>-->
+<!--            <span class="flex-auto">{{scheduleType}}</span>-->
+<!--        </div>-->
+<!--    </ng-container>-->
+
+    <div class="flex mt-8">
+        <button
+            class="flex px-8 mr-2"
+            mat-flat-button
+            [color]="'accent'"
+            type="button"
+            matStepperPrevious>
+            Back
+        </button>
+        <div class="flex-auto text-right">
+            <button
+                class="px-8 mr-2"
+                mat-flat-button
+                type="button"
+                (click)="close()">
+                Cancel
+            </button>
+            <button
+                class="px-8"
+                mat-flat-button
+                [color]="'primary'"
+                type="button"
+                (click)="save()"
+                matStepperNext>
+                Save
+            </button>
+        </div>
+    </div>

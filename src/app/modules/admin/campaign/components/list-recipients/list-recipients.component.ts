@@ -17,7 +17,7 @@ import { MsgTemplateService } from 'app/core/services/msg-template.service';
 
 
 @Component({
-    selector: 'app-list-recipients',
+    selector: 'app-add-campaign',
     templateUrl: './list-recipients.component.html',
     styleUrls: ['./list-recipients.component.scss'],
 })
@@ -169,7 +169,7 @@ export class ListRecipientsComponent implements OnInit {
                 groupId: grouptmp,
                 message: campData['message'],
             }
-            console.log("CreateCampaignInput", camp);
+            console.log('CreateCampaignInput', camp);
             this._campaignService.createCampaign(camp)
                 .then((creCampMut: CreateCampaignMutation) => {
                     console.log("Campaign create Mutation", creCampMut);

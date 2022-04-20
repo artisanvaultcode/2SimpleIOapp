@@ -114,6 +114,7 @@ query GetRecipient($id: ID!) {
     groupId
     phoneTxt
     status
+    archive
     clientId
     _version
     _deleted
@@ -162,6 +163,56 @@ query ListRecipients(
       groupId
       phoneTxt
       status
+      archive
+      clientId
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+      Group {
+        id
+        name
+        carrier
+        status
+        msgTemplateId
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+    }
+    nextToken
+    startedAt
+  }
+}
+query AllRecipientsByPhone(
+  $clientId: String
+  $phoneTxtLastProcessDtStatus: ModelRecipientRByPhoneTxtCompositeKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelRecipientFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  allRecipientsByPhone(
+    clientId: $clientId
+    phoneTxtLastProcessDtStatus: $phoneTxtLastProcessDtStatus
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      phone
+      carrierStatus
+      lastProcessDt
+      groupId
+      phoneTxt
+      status
+      archive
       clientId
       _version
       _deleted
@@ -208,6 +259,7 @@ query SearchRecipients(
       groupId
       phoneTxt
       status
+      archive
       clientId
       _version
       _deleted
@@ -252,6 +304,7 @@ query SyncRecipients(
       groupId
       phoneTxt
       status
+      archive
       clientId
       _version
       _deleted
@@ -675,6 +728,10 @@ query GetCampaign($id: ID!) {
     status
     archive
     cType
+    dateStart
+    timeStart
+    epocStart
+    cStatus
     _version
     _deleted
     _lastChangedAt
@@ -700,6 +757,10 @@ query ListCampaigns(
       status
       archive
       cType
+      dateStart
+      timeStart
+      epocStart
+      cStatus
       _version
       _deleted
       _lastChangedAt
@@ -712,7 +773,7 @@ query ListCampaigns(
 }
 query AllCampaignsByClientId(
   $clientId: ID
-  $lastProcessDtStatus: ModelCampaignByClientIdCompositeKeyConditionInput
+  $lastProcessDtStatusCStatus: ModelCampaignByClientIdCompositeKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelCampaignFilterInput
   $limit: Int
@@ -720,7 +781,7 @@ query AllCampaignsByClientId(
 ) {
   allCampaignsByClientId(
     clientId: $clientId
-    lastProcessDtStatus: $lastProcessDtStatus
+    lastProcessDtStatusCStatus: $lastProcessDtStatusCStatus
     sortDirection: $sortDirection
     filter: $filter
     limit: $limit
@@ -738,6 +799,10 @@ query AllCampaignsByClientId(
       status
       archive
       cType
+      dateStart
+      timeStart
+      epocStart
+      cStatus
       _version
       _deleted
       _lastChangedAt
@@ -772,6 +837,10 @@ query SyncCampaigns(
       status
       archive
       cType
+      dateStart
+      timeStart
+      epocStart
+      cStatus
       _version
       _deleted
       _lastChangedAt
@@ -830,6 +899,7 @@ query GetCampaignTarget($id: ID!) {
       groupId
       phoneTxt
       status
+      archive
       clientId
       _version
       _deleted
@@ -892,6 +962,70 @@ query ListCampaignTargets(
         groupId
         phoneTxt
         status
+        archive
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+    }
+    nextToken
+    startedAt
+  }
+}
+query QueryCampaignTargetsById(
+  $campaignId: ID
+  $lastProcessDtStatus: ModelCampaignTargetTargetAllCompositeKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelCampaignTargetFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  QueryCampaignTargetsById(
+    campaignId: $campaignId
+    lastProcessDtStatus: $lastProcessDtStatus
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      campaignId
+      recipientId
+      lastProcessDt
+      status
+      groupId
+      type
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+      group {
+        id
+        name
+        carrier
+        status
+        msgTemplateId
+        clientId
+        _version
+        _deleted
+        _lastChangedAt
+        createdAt
+        updatedAt
+      }
+      recipient {
+        id
+        phone
+        carrierStatus
+        lastProcessDt
+        groupId
+        phoneTxt
+        status
+        archive
         clientId
         _version
         _deleted
@@ -950,6 +1084,7 @@ query SyncCampaignTargets(
         groupId
         phoneTxt
         status
+        archive
         clientId
         _version
         _deleted

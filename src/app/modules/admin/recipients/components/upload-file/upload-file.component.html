@@ -1,9 +1,15 @@
 <div class="title">
     <p>Import! Upload a file to Import (csv)</p>
 </div>
-<div class="uploadfilecontainer" (click)="fileInput.click()" appDragDrop (_onFileDropped)="uploadFile($event)">
-    <input hidden type="file" accept="text/csv" #fileInput  (change)="uploadFile($event.target)"
-           [disabled]="files.length > 0">
+<div class="uploadfilecontainer"
+     (click)="fileInput.click()"
+     appDragDrop
+     (_onFileDropped)="uploadFile($event)">
+    <input hidden
+           type="file"
+           accept="text/csv"
+           #fileInput
+           (change)="uploadFile($event.target)">
 </div>
 <div class="files-list" *ngFor="let file of files;let i=index">
     <p>{{ file }}</p>

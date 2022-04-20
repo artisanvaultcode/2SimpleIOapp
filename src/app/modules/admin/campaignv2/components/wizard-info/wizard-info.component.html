@@ -1,0 +1,51 @@
+<form [formGroup]="formInfo">
+    <div class="flex">
+        <mat-form-field class="flex-auto">
+            <mat-label>Title</mat-label>
+            <input matInput
+                   [formControlName]="'name'"
+                   [placeholder]="'Title'">
+        </mat-form-field>
+    </div>
+    <div class="flex flex-col gt-xs:flex-row">
+        <mat-form-field class="flex-auto gt-xs:pr-3">
+            <mat-label>Type</mat-label>
+            <mat-select [formControlName]="'type'"
+                        (selectionChange)="typeChange($event)">
+                <mat-option *ngFor="let type of campaignTypes" [value]="type">
+                    {{type}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="flex flex-col gt-xs:flex-row">
+        <mat-form-field class="flex-auto gt-xs:pr-3">
+            <mat-label>Target</mat-label>
+            <mat-select [formControlName]="'target'">
+                <mat-option *ngFor="let target of targetValues"
+                            [value]="target"
+                            [disabled]="formGroup.type === 'EXPRESS' &&  target === 'ALL'">
+                    {{target}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="flex justify-end">
+        <button
+            class="px-8 mr-2"
+            mat-flat-button
+            type="button"
+            (click)="close()">
+            Cancel
+        </button>
+        <button
+            class="px-8"
+            mat-flat-button
+            [color]="'primary'"
+            [disabled]="formInfo.invalid"
+            type="button"
+            matStepperNext>
+            Next
+        </button>
+    </div>
+</form>

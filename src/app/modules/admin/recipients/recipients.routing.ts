@@ -3,6 +3,7 @@ import {RecipientsComponent} from './recipients.component';
 import {RecipientListComponent} from './components/list/recipient-list.component';
 import {RecipientsRecipientResolver, RecipientsResolver} from './recipients.resolvers';
 import {ContactsDetailsComponent} from './components/details/details.component';
+import {CanDeactivateRecipientDetails} from './recipients.guards';
 
 export const recipientsRoutes: Route[] = [
     {
@@ -21,7 +22,8 @@ export const recipientsRoutes: Route[] = [
                         component    : ContactsDetailsComponent,
                         resolve      : {
                             task     : RecipientsRecipientResolver,
-                        }
+                        },
+                        canDeactivate: [CanDeactivateRecipientDetails]
                     }
                 ]
             }

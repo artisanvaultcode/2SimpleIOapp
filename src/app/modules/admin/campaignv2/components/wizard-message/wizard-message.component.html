@@ -1,0 +1,48 @@
+<form [formGroup]="formMessage">
+    <p class="my-6 font-medium">
+        Fill the message
+    </p>
+    <div class="flex">
+        <mat-form-field class="fuse-mat-textarea flex-auto">
+            <textarea #message
+                      matInput
+                      [formControlName]="'message'"
+                      [placeholder]="'Message'"
+                      maxlength="160"
+                      [rows]="3"></textarea>
+            <mat-icon class="icon-size-5"
+                      matPrefix
+                      [svgIcon]="'heroicons_solid:menu-alt-2'">
+            </mat-icon>
+            <mat-hint align="end">{{message.value.length}} / 160</mat-hint>
+        </mat-form-field>
+    </div>
+    <div class="flex">
+        <button
+            class="flex px-8 mr-2"
+            mat-flat-button
+            [color]="'accent'"
+            type="button"
+            matStepperPrevious>
+            Back
+        </button>
+        <div class="flex-auto text-right">
+            <button
+                class="px-8 mr-2"
+                mat-flat-button
+                type="button"
+                (click)="close()">
+                Cancel
+            </button>
+            <button
+                class="px-8"
+                mat-flat-button
+                [color]="'primary'"
+                [disabled]="formMessage.invalid"
+                type="button"
+                matStepperNext>
+                Next
+            </button>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,91 @@
+<div class="flex items-center" *ngIf="campaignArr.length === 0">
+    <!-- More menu -->
+    <button
+        mat-icon-button
+        [matMenuTriggerFor]="moreMenu"
+        [disabled]="disabled">
+        <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+    </button>
+    <mat-menu #moreMenu="matMenu">
+        <!--   ACTIVE   -->
+        <button *ngIf="campaignEle.status==='ACTIVE'"
+                mat-menu-item
+                (click)="activateCampaign(campaignEle,'INACTIVE')">
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>Inactive</span>
+        </button>
+        <button *ngIf="campaignEle.status==='ACTIVE'"
+                mat-menu-item
+                (click)="activateCampaign(campaignEle, 'SUSPENDED')">
+            <mat-icon [svgIcon]="'heroicons_outline:pause'"></mat-icon>
+            <span>Suspended</span>
+        </button>
+        <!--   INACTIVE   -->
+        <button *ngIf="campaignEle.status==='INACTIVE'"
+                mat-menu-item
+                (click)="activateCampaign(campaignEle, 'ACTIVE')">
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>Active</span>
+        </button>
+        <button *ngIf="campaignEle.status==='INACTIVE'"
+                mat-menu-item
+                (click)="activateCampaign(campaignEle, 'SUSPENDED')">
+            <mat-icon [svgIcon]="'heroicons_outline:pause'"></mat-icon>
+            <span>Suspended</span>
+        </button>
+        <!--   SUSPENDED   -->
+        <button *ngIf="campaignEle.status==='SUSPENDED'"
+                mat-menu-item
+                (click)="activateCampaign(campaignEle, 'ACTIVE')">
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>Active</span>
+        </button>
+        <button *ngIf="campaignEle.status==='SUSPENDED'"
+                mat-menu-item
+                (click)="activateCampaign(campaignEle, 'INACTIVE')">
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>Inactive</span>
+        </button>
+        <!--   ALL   -->
+        <button mat-menu-item
+                (click)="openRerun(campaignEle)">
+            <mat-icon [svgIcon]="'mat_outline:replay'"></mat-icon>
+            <span>Rerun</span>
+        </button>
+        <button mat-menu-item
+                (click)="deleteCampaign(campaignEle)">
+            <mat-icon [svgIcon]="'mat_outline:delete'"></mat-icon>
+            <span>Delete</span>
+        </button>
+    </mat-menu>
+</div>
+
+<div class="flex items-center" *ngIf="campaignArr.length > 0">
+    <!-- More menu -->
+    <button mat-icon-button
+            [matMenuTriggerFor]="moreMenu">
+        <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+    </button>
+    <mat-menu #moreMenu="matMenu">
+        <button mat-menu-item
+                (click)="statusAllCampaign('ACTIVE')">
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>Active</span>
+        </button>
+        <button mat-menu-item
+                (click)="statusAllCampaign('INACTIVE')">
+            <mat-icon [svgIcon]="'heroicons_outline:switch-horizontal'"></mat-icon>
+            <span>Inactive</span>
+        </button>
+        <button mat-menu-item
+                (click)="statusAllCampaign('SUSPENDED')">
+            <mat-icon [svgIcon]="'heroicons_outline:pause'"></mat-icon>
+            <span >Suspended</span>
+        </button>
+        <button mat-menu-item
+                (click)="deleteMultipleCampaigns()">
+            <mat-icon [svgIcon]="'mat_outline:delete'"></mat-icon>
+            <span>Delete</span>
+        </button>
+    </mat-menu>
+</div>

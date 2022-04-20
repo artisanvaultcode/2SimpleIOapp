@@ -1,7 +1,7 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
-import {filter, map, switchMap, take, tap} from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { map, switchMap, take } from 'rxjs/operators';
 
 import { Logger } from '@aws-amplify/core';
 import { Hub } from 'aws-amplify';
@@ -9,13 +9,19 @@ import { AuthService } from '../../../core/auth/auth.service';
 import {
     APIService,
     CreateRecipientInput,
-    EntityStatus, ListRecipientsQuery,
-    ModelRecipientFilterInput,
+    DeleteRecipientInput,
+    DeleteRecipientMutation,
+    EntityStatus,
+    Group,
+    ListGroupsQuery,
+    ModelGroupFilterInput,
     SearchableRecipientFilterInput,
     SearchableRecipientSortableFields,
     SearchableRecipientSortInput,
     SearchableSortDirection,
-    UpdateRecipientInput
+    SearchRecipientsQuery,
+    UpdateRecipientInput,
+    UpdateRecipientMutation
 } from 'app/API.service';
 
 import * as _ from 'lodash';
@@ -25,23 +31,24 @@ import * as _ from 'lodash';
 })
 export class RecipientsService
 {
-
     pageSize: number;
     nextToken: string = null;
 
     // Private
     private logger = new Logger('RecipientsList');
+    private _labels: BehaviorSubject<Group[] | null> = new BehaviorSubject(null);
+    private _groups: BehaviorSubject<Group[] | null> = new BehaviorSubject(null);
     private _recipient: BehaviorSubject<any | null> = new BehaviorSubject(null);
     private _recipients: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _pageChange: BehaviorSubject<any | null> = new BehaviorSubject(null);
-    private defaultGroupId = '10172232-cca8-4f4c-b3df-1e96ab3fa431';
+    // private defaultGroupId = '10172232-cca8-4f4c-b3df-1e96ab3fa431';
     /**
      * Constructor
      */
     constructor(
         private api: APIService,
         private auth: AuthService,
-        private _httpClient: HttpClient
+        private _httpClient: HttpClient,
     )
     {
         this.pageSize = 20;
@@ -70,81 +77,106 @@ export class RecipientsService
         return this._recipients.asObservable();
     }
 
+    get labels$(): Observable<any[]> {
+        return this._labels.asObservable();
+    }
+
+    get groups$(): Observable<any[]> {
+        return this._groups.asObservable();
+    }
+
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
-    refresh(): void {
-        this.nextToken =null;
-        this._pageChange.next(this.nextToken);
-        of(this.getRecipients());
-    }
 
-    goNextPage(filterTxt: string, nextPageToken: string): void {
-        of(this.getRecipients(filterTxt,  nextPageToken));
-    }
-    /**
-     * Get recipients
-     */
-    async getRecipients(searchTxt?: string, nextToken?: string): Promise<any> {
-        this.activateProgressBar();
+    // Get groups
+    async getGroups(searchTxt?: string, nextToken?: string): Promise<any> {
         const { sub } = await this.auth.checkClientId();
-        const filterRec: ModelRecipientFilterInput =  {
-            clientId: { eq: sub},
-            status: { ne: EntityStatus.INACTIVE}
+        const filter: ModelGroupFilterInput = {
+            clientId: { eq: sub },
+            status: { eq: EntityStatus.ACTIVE }
         };
-        if (searchTxt !== undefined && searchTxt) {
-            filterRec['phoneTxt'] = { contains: searchTxt};
-        }
-        this.nextToken = nextToken ? nextToken : null;
         return new Promise((resolve, reject) => {
-           this.api.ListRecipients(filterRec, this.pageSize, this.nextToken)
-                .then((result: ListRecipientsQuery) => {
-                    this.nextToken = !_.isEmpty(result['nextToken']) ? result['nextToken'] : null;
-                    this._pageChange.next(this.nextToken);
-                    this._recipients.next(result.items);
-                    resolve(result.items);
-                    this.activateProgressBar('off');
+            this.api
+                .ListGroups(filter)
+                .then((result: ListGroupsQuery) => {
+                    const notDeleted = result.items.filter(
+                        item => item._deleted !== true);
+                    this._labels.next(notDeleted);
+                    resolve(notDeleted.length);
                 })
-                .catch((err) => {
-                    this.catchError(err);
-                    reject(err);
-                    this.activateProgressBar('off');
+                .catch((error: any) => {
+                    this.catchError(error);
+                    reject(error.message);
                 });
-
         });
     }
 
-    async searchRecipients(searchTxt: string): Promise<any> {
-
-        if (searchTxt.length===0) {
-            this.refresh();
-            return Promise.resolve();
-        }
+    async searchGroups(searchTxt?: string, nextToken?: string): Promise<any> {
         const { sub } = await this.auth.checkClientId();
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        const filter: SearchableRecipientFilterInput = {
-            clientId: { eq: sub},
-            phone: { wildcard: searchTxt },
-            or :[
-                { phoneTxt: {wildcard: searchTxt}}
-            ]
-
-        };
-        const sortCriteria: SearchableRecipientSortInput= {
-            field: SearchableRecipientSortableFields.phone,
-            direction: SearchableSortDirection.asc
+        const filter: ModelGroupFilterInput = {
+            clientId: { eq: sub },
+            status: { eq: EntityStatus.ACTIVE },
+            name: { contains: searchTxt }
         };
         return new Promise((resolve, reject) => {
-            this.api.SearchRecipients(filter, sortCriteria, 10)
-                .then((result) => {
-                    this.nextToken = null;
+            this.api
+                .ListGroups(filter)
+                .then((result: ListGroupsQuery) => {
+                    const notDeleted = result.items.filter(
+                        item => item._deleted !== true);
+                    this._groups.next(notDeleted);
+                    resolve(notDeleted.length);
+                })
+                .catch((error: any) => {
+                    this.catchError(error);
+                    reject(error.message);
+                });
+        });
+    }
+
+
+    /**
+     * Get recipients
+     */
+    async getRecipients(searchTxt?: string, nextToken?: string, isSwitched?: boolean): Promise<any> {
+        this.activateProgressBar();
+        const { sub } = await this.auth.checkClientId();
+        const filterRec: SearchableRecipientFilterInput =  {
+            clientId: { eq: sub }
+        };
+        if (searchTxt && searchTxt.length > 0) {
+            filterRec['phone'] = { wildcard: searchTxt };
+            filterRec['phoneTxt'] = { wildcard: searchTxt };
+        }
+        const sortCriteria: SearchableRecipientSortInput = {
+            field: SearchableRecipientSortableFields.lastProcessDt,
+            direction: SearchableSortDirection.desc
+        };
+        this.nextToken = nextToken ? nextToken : null;
+        return new Promise((resolve, reject) => {
+           this.api.SearchRecipients(filterRec, sortCriteria, this.pageSize, this.nextToken)
+                .then((result: SearchRecipientsQuery) => {
+                    this.nextToken = !_.isEmpty(result['nextToken']) ? result['nextToken'] : null;
                     this._pageChange.next(this.nextToken);
-                    this._recipients.next(null);
-                    this._recipients.next(result.items);
-                    resolve(result.items.length);
+                    if(this.nextToken) {
+                        if(isSwitched) {
+                            this._recipients.next(null);
+                        }
+                        this._recipients.next(result.items);
+                        resolve(result.items);
+                        this.activateProgressBar('off');
+                    } else {
+                        if (result.total === 0) {
+                            this._recipients.next(result.items);
+                        }
+                        resolve(null);
+                        this.activateProgressBar('off');
+                    }
                 })
                 .catch((err) => {
+                    this.activateProgressBar('off');
                     this.catchError(err);
                     reject(err);
                 });
@@ -153,24 +185,17 @@ export class RecipientsService
     }
 
     async recipientExists(searchTxt: string, clientId: string): Promise<any> {
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        let filter: ModelRecipientFilterInput;
+        let filter: SearchableRecipientFilterInput;
         const { sub } = await this.auth.checkClientId();
         if (searchTxt !== undefined && searchTxt) {
             filter = {
-                phone: { eq: searchTxt},
-                clientId: { eq: sub},
-                or: [
-                    {
-                        phoneTxt: {contains: searchTxt}
-                    }
-                ],
-                and: [{ clientId: {eq: clientId} }]
+                phone: { eq: searchTxt },
+                clientId: { eq: sub },
             };
         }
         return new Promise((resolve, reject) => {
-            this.api.ListRecipients(filter)
-                .then((result: ListRecipientsQuery) => {
+            this.api.SearchRecipients(filter, null, this.pageSize)
+                .then((result: SearchRecipientsQuery) => {
                     resolve(result.items);
                 })
                 .catch((err) => {
@@ -209,26 +234,42 @@ export class RecipientsService
         );
     }
 
-
-    async getRecipientsByGroupId(gId: any, nextToken?: string): Promise<any> {
+    async getRecipientsByGroupId(gId: any, nextToken?: string, isSwitched?: boolean, searchTxt?: string): Promise<any> {
+        console.log('GETRECIPIENTS BY GROUPID------>');
         this.activateProgressBar();
         const { sub } = await this.auth.checkClientId();
-        const recipFilter: ModelRecipientFilterInput = {
+        const recipFilter: SearchableRecipientFilterInput = {
             clientId: { eq: sub },
-            and :[
-                { groupId: { eq: gId }}
-            ]
+            groupId: { eq: gId }
+        };
+        if (searchTxt && searchTxt.length > 0) {
+            recipFilter['phone'] = { wildcard: searchTxt };
+            recipFilter['phoneTxt'] = { wildcard: searchTxt };
+        }
+        const sortCriteria: SearchableRecipientSortInput = {
+            field: SearchableRecipientSortableFields.lastProcessDt,
+            direction: SearchableSortDirection.desc
         };
         this.nextToken = nextToken ? nextToken : null;
         return new Promise((resolve, reject) => {
-            this.api.ListRecipients(recipFilter, this.pageSize, nextToken)
-                .then((result: ListRecipientsQuery) => {
+            this.api.SearchRecipients(recipFilter, sortCriteria, this.pageSize, this.nextToken)
+                .then((result: SearchRecipientsQuery) => {
                     this.nextToken = !_.isEmpty(result['nextToken']) ? result['nextToken'] : null;
                     this._pageChange.next(this.nextToken);
-                    const notDeleted = result.items.filter(item => item._deleted !== true);
-                    this._recipients.next(notDeleted);
-                    resolve(notDeleted.length);
-                    this.activateProgressBar('off');
+                    if (this.nextToken) {
+                        if (isSwitched) {
+                            this._recipients.next(null);
+                        }
+                        this._recipients.next(result.items);
+                        resolve(result.items.length);
+                        this.activateProgressBar('off');
+                    } else {
+                        if (result.total === 0) {
+                            this._recipients.next(result.items);
+                        }
+                        resolve(null);
+                        this.activateProgressBar('off');
+                    }
                 })
                 .catch((error) => {
                     this.activateProgressBar('off');
@@ -238,15 +279,59 @@ export class RecipientsService
         });
     }
 
-    importRecipients(data: any[], clientId: string): Promise<any> {
+    async getRecipientsArchived(searchTxt: string, nextToken?: string, isSwitched?: boolean): Promise<any> {
+        this.activateProgressBar();
+        const { sub } = await this.auth.checkClientId();
+        const filter: SearchableRecipientFilterInput = {
+            clientId: { eq: sub },
+            archive: { eq: true }
+        };
+        if (searchTxt && searchTxt.length > 0) {
+            filter['phone'] = { wildcard: searchTxt };
+            filter['phoneTxt'] = { wildcard: searchTxt };
+        }
+        const sortCriteria: SearchableRecipientSortInput = {
+            field: SearchableRecipientSortableFields.lastProcessDt,
+            direction: SearchableSortDirection.desc
+        };
+        this.nextToken = nextToken ? nextToken : null;
+        return new Promise((resolve, reject) => {
+            this.api.SearchRecipients(filter, sortCriteria, this.pageSize, this.nextToken)
+                .then((result: SearchRecipientsQuery) => {
+                    this.nextToken = !_.isEmpty(result['nextToken']) ? result['nextToken'] : null;
+                    this._pageChange.next(this.nextToken);
+                    if(this.nextToken) {
+                        if (isSwitched) {
+                            this._recipients.next(null);
+                        }
+                        this._recipients.next(result.items);
+                        resolve(result.items.length);
+                        this.activateProgressBar('off');
+                    } else {
+                        if(result.total === 0) {
+                            this._recipients.next(result.items);
+                        }
+                        resolve(null);
+                        this.activateProgressBar('off');
+                    }
+                })
+                .catch((error) => {
+                    this.activateProgressBar('off');
+                    this.catchError(error);
+                    reject(error);
+                });
+        });
+    }
+
+    async importRecipients(dataRecipients: any[], dataGroup: any[], clientId: string): Promise<any> {
         const allAdditions = [];
-        data.forEach( (item) =>{
+        dataRecipients.forEach( (item) => {
             this.recipientExists(item, clientId)
                 .then( (exists) => {
                     if (exists.length === 0) {
-                        allAdditions.push(this.addRecipient(item, clientId));
+                        allAdditions.push(this.addRecipient(item, dataGroup[0].id, clientId));
                     } else {
-                        allAdditions.push(this.updateRecipient(exists));
+                        allAdditions.push(this.updateRecipient(exists[0], dataGroup[0].id));
                     }
                 });
         });
@@ -254,6 +339,7 @@ export class RecipientsService
             Promise.all([
                 allAdditions
             ]).then((imports) => {
+                    this.activateProgressBar('off');
                     resolve(imports);
                 },
                 reject
@@ -261,23 +347,27 @@ export class RecipientsService
         });
     }
 
-    addRecipient(item, clientId): Promise<any> {
+    addRecipient(item, groupId, clientId): Promise<any> {
         const dateAt = new Date().toISOString();
+        this.activateProgressBar('on');
         return new Promise((resolve, reject) => {
             const payloadInput: CreateRecipientInput = {
                 phone: item,
                 phoneTxt: item,
+                archive: false,
                 clientId: clientId,
                 carrierStatus: null,
                 lastProcessDt: dateAt,
                 status: EntityStatus.ACTIVE,
-                recipientGroupId: this.defaultGroupId,
-                groupId: this.defaultGroupId
+                recipientGroupId: groupId,
+                groupId: groupId,
             };
             this.api.CreateRecipient(payloadInput)
                 .then((result) => {
+                    this.activateProgressBar('off');
                     resolve(result);
                 }).catch( (error) => {
+                    this.activateProgressBar('off');
                     this.catchError(error);
                     resolve(error);
                 });
@@ -290,28 +380,58 @@ export class RecipientsService
      * @param recipient
      * @returns
      */
-    updateRecipient(recipient: any): Promise<any> {
+    updateRecipient(recipient: any, groupId): Promise<any> {
         const dateAt = new Date().toISOString();
+        this.activateProgressBar('on');
         return new Promise((resolve, reject) => {
             const payloadInput: UpdateRecipientInput = {
                 id: recipient.id,
                 phone: recipient.phone,
                 phoneTxt: recipient.phone,
+                archive: false,
                 carrierStatus: null,
                 lastProcessDt: dateAt,
                 _version: recipient._version,
-                _deleted: null,
                 status: EntityStatus.ACTIVE,
-                recipientGroupId: this.defaultGroupId,
-                groupId: this.defaultGroupId
+                recipientGroupId: groupId,
+                groupId: groupId
             };
             this.api.UpdateRecipient(payloadInput)
                 .then((result) => {
+                    this.activateProgressBar('off');
                     resolve(result);
                 }).catch( (error) => {
+                    this.activateProgressBar('off');
                     this.catchError(error);
                     reject(error);
             });
+        });
+    }
+
+    async deleteContact(id: string): Promise<any> {
+        this.activateProgressBar('on');
+        return new Promise((resolve, reject) => {
+            const payload: UpdateRecipientInput = {
+                id: id,
+                archive: true
+            };
+            this.api.UpdateRecipient(payload)
+                .then((resp: UpdateRecipientMutation) => {
+                    const newPayload: DeleteRecipientInput = {
+                        id: resp.id,
+                        _version: resp._version
+                    };
+                    return this.api.DeleteRecipient(newPayload);
+                })
+                .then((resp: DeleteRecipientMutation) => {
+                    this.activateProgressBar('off');
+                    resolve(true);
+                })
+                .catch((error: any) => {
+                    this.activateProgressBar('off');
+                    this.catchError(error);
+                    reject(error.message);
+                });
         });
     }
 
@@ -349,6 +469,7 @@ export class RecipientsService
      */
     updateRecipientDetail(recipient: any): Promise<any> {
         const dateAt = new Date().toISOString();
+        this.activateProgressBar('on');
         return new Promise((resolve, reject) => {
             this.api.GetRecipient(recipient.id)
                 .then((oldRec) => {
@@ -364,8 +485,10 @@ export class RecipientsService
                     };
                     return this.api.UpdateRecipient(payloadInput);
                 }).then((newRec) => {
+                    this.activateProgressBar('off');
                     resolve(newRec);
                 }).catch( (error) => {
+                    this.activateProgressBar('off');
                     this.catchError(error);
                     reject(error);
             });

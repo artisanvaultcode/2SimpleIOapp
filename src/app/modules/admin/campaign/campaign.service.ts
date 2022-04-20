@@ -14,7 +14,8 @@ import {
     SearchableRecipientSortInput,
     SearchRecipientsQuery,
     ModelRecipientFilterInput,
-    ListRecipientsQuery, } from 'app/API.service';
+    ListRecipientsQuery, CampaignTargetStatus,
+} from 'app/API.service';
 import { AuthService } from 'app/core/auth/auth.service';
 import { Hub, Logger } from 'aws-amplify';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
@@ -145,7 +146,7 @@ export class CampaignService {
         return new Promise((resolve, reject) => {
             this.api.SearchRecipients(searchRecips, sortCriteria, this.pageSizeRecips, this.nextTokenRecips)
                 .then((result: SearchRecipientsQuery) => {
-                    console.log("[serachREcipients] result", result, "\n\n\n\n");
+                    console.log("[searchRecipients] result", result, "\n\n\n\n");
                     this.nextTokenRecips = !_.isEmpty(result['nextToken']) ? result['nextToken'] : null;
                     this._pageChangeRecips.next(this.nextTokenRecips);
                     const notDeleted = result.items.filter(item => item._deleted !== true);
@@ -287,7 +288,7 @@ export class CampaignService {
                 campaignId: campId,
                 recipientId: recipId,
                 lastProcessDt: dateAt,
-                status: SubsStatus.ACTIVE,
+                status: CampaignTargetStatus.ACTIVE,
                 campaignTargetRecipientId: recipId
             };
             this.api

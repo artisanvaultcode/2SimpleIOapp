@@ -104,6 +104,7 @@ mutation CreateRecipient(
     groupId
     phoneTxt
     status
+    archive
     clientId
     _version
     _deleted
@@ -150,6 +151,7 @@ mutation UpdateRecipient(
     groupId
     phoneTxt
     status
+    archive
     clientId
     _version
     _deleted
@@ -196,6 +198,7 @@ mutation DeleteRecipient(
     groupId
     phoneTxt
     status
+    archive
     clientId
     _version
     _deleted
@@ -534,6 +537,10 @@ mutation CreateCampaign(
     status
     archive
     cType
+    dateStart
+    timeStart
+    epocStart
+    cStatus
     _version
     _deleted
     _lastChangedAt
@@ -557,6 +564,10 @@ mutation UpdateCampaign(
     status
     archive
     cType
+    dateStart
+    timeStart
+    epocStart
+    cStatus
     _version
     _deleted
     _lastChangedAt
@@ -580,6 +591,10 @@ mutation DeleteCampaign(
     status
     archive
     cType
+    dateStart
+    timeStart
+    epocStart
+    cStatus
     _version
     _deleted
     _lastChangedAt
@@ -638,6 +653,7 @@ mutation CreateCampaignTarget(
       groupId
       phoneTxt
       status
+      archive
       clientId
       _version
       _deleted
@@ -711,6 +727,7 @@ mutation UpdateCampaignTarget(
       groupId
       phoneTxt
       status
+      archive
       clientId
       _version
       _deleted
@@ -784,6 +801,7 @@ mutation DeleteCampaignTarget(
       groupId
       phoneTxt
       status
+      archive
       clientId
       _version
       _deleted

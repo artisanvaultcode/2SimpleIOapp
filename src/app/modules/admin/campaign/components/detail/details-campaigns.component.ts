@@ -8,7 +8,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 export class DetailsCampaignsComponent implements OnInit {
 
     // =========================== REVISAR
-    /// @ViewChild(ListRecipientsComponent) _listRecipients: ListRecipientsComponent;
+    /// @ViewChild(AddCampaignComponent) _listRecipients: AddCampaignComponent;
     @Output() closeOrCancelEvent: EventEmitter<any> = new EventEmitter<any>();
 
     msgDefault: string ="";
@@ -54,7 +54,7 @@ export class DetailsCampaignsComponent implements OnInit {
         }
     }
 
-    onClickDate(element) {
+    onClickDate(element): void {
         console.log("[onClickDate] event", element, "\n\nId", element.id);
         if (element.id === 'op1') {
             this.onceSchedule = true;
@@ -63,7 +63,7 @@ export class DetailsCampaignsComponent implements OnInit {
         }
     }
 
-    onDateChange(value) {
+    onDateChange(value): void {
         console.log("[OnDateChange] SINGLE value", value);
     }
 

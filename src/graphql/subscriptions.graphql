@@ -92,6 +92,7 @@ subscription OnCreateRecipient {
     groupId
     phoneTxt
     status
+    archive
     clientId
     _version
     _deleted
@@ -135,6 +136,7 @@ subscription OnUpdateRecipient {
     groupId
     phoneTxt
     status
+    archive
     clientId
     _version
     _deleted
@@ -178,6 +180,7 @@ subscription OnDeleteRecipient {
     groupId
     phoneTxt
     status
+    archive
     clientId
     _version
     _deleted
@@ -468,6 +471,10 @@ subscription OnCreateCampaign {
     status
     archive
     cType
+    dateStart
+    timeStart
+    epocStart
+    cStatus
     _version
     _deleted
     _lastChangedAt
@@ -488,6 +495,10 @@ subscription OnUpdateCampaign {
     status
     archive
     cType
+    dateStart
+    timeStart
+    epocStart
+    cStatus
     _version
     _deleted
     _lastChangedAt
@@ -508,6 +519,10 @@ subscription OnDeleteCampaign {
     status
     archive
     cType
+    dateStart
+    timeStart
+    epocStart
+    cStatus
     _version
     _deleted
     _lastChangedAt
@@ -563,6 +578,7 @@ subscription OnCreateCampaignTarget {
       groupId
       phoneTxt
       status
+      archive
       clientId
       _version
       _deleted
@@ -633,6 +649,7 @@ subscription OnUpdateCampaignTarget {
       groupId
       phoneTxt
       status
+      archive
       clientId
       _version
       _deleted
@@ -703,6 +720,7 @@ subscription OnDeleteCampaignTarget {
       groupId
       phoneTxt
       status
+      archive
       clientId
       _version
       _deleted
