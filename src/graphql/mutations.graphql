@@ -470,6 +470,9 @@ mutation CreateSubscriber(
     lastProcessDt
     metadata
     status
+    confirmCount
+    transitCount
+    creditCount
     _version
     _deleted
     _lastChangedAt
@@ -492,6 +495,9 @@ mutation UpdateSubscriber(
     lastProcessDt
     metadata
     status
+    confirmCount
+    transitCount
+    creditCount
     _version
     _deleted
     _lastChangedAt
@@ -514,6 +520,9 @@ mutation DeleteSubscriber(
     lastProcessDt
     metadata
     status
+    confirmCount
+    transitCount
+    creditCount
     _version
     _deleted
     _lastChangedAt
@@ -822,5 +831,77 @@ mutation DeleteCampaignTarget(
         updatedAt
       }
     }
+  }
+}
+mutation CreateMemberCredits(
+  $input: CreateMemberCreditsInput!
+  $condition: ModelMemberCreditsConditionInput
+) {
+  createMemberCredits(input: $input, condition: $condition) {
+    id
+    clientId
+    qty
+    confirmationId
+    amount
+    amountTxt
+    stripeCustomer
+    paymentDetails
+    lastProcessDt
+    receiptUrl
+    paymentStatus
+    metaData
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation UpdateMemberCredits(
+  $input: UpdateMemberCreditsInput!
+  $condition: ModelMemberCreditsConditionInput
+) {
+  updateMemberCredits(input: $input, condition: $condition) {
+    id
+    clientId
+    qty
+    confirmationId
+    amount
+    amountTxt
+    stripeCustomer
+    paymentDetails
+    lastProcessDt
+    receiptUrl
+    paymentStatus
+    metaData
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+mutation DeleteMemberCredits(
+  $input: DeleteMemberCreditsInput!
+  $condition: ModelMemberCreditsConditionInput
+) {
+  deleteMemberCredits(input: $input, condition: $condition) {
+    id
+    clientId
+    qty
+    confirmationId
+    amount
+    amountTxt
+    stripeCustomer
+    paymentDetails
+    lastProcessDt
+    receiptUrl
+    paymentStatus
+    metaData
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
   }
 }

@@ -413,6 +413,9 @@ subscription OnCreateSubscriber {
     lastProcessDt
     metadata
     status
+    confirmCount
+    transitCount
+    creditCount
     _version
     _deleted
     _lastChangedAt
@@ -432,6 +435,9 @@ subscription OnUpdateSubscriber {
     lastProcessDt
     metadata
     status
+    confirmCount
+    transitCount
+    creditCount
     _version
     _deleted
     _lastChangedAt
@@ -451,6 +457,9 @@ subscription OnDeleteSubscriber {
     lastProcessDt
     metadata
     status
+    confirmCount
+    transitCount
+    creditCount
     _version
     _deleted
     _lastChangedAt
@@ -741,5 +750,68 @@ subscription OnDeleteCampaignTarget {
         updatedAt
       }
     }
+  }
+}
+subscription OnCreateMemberCredits {
+  onCreateMemberCredits {
+    id
+    clientId
+    qty
+    confirmationId
+    amount
+    amountTxt
+    stripeCustomer
+    paymentDetails
+    lastProcessDt
+    receiptUrl
+    paymentStatus
+    metaData
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateMemberCredits {
+  onUpdateMemberCredits {
+    id
+    clientId
+    qty
+    confirmationId
+    amount
+    amountTxt
+    stripeCustomer
+    paymentDetails
+    lastProcessDt
+    receiptUrl
+    paymentStatus
+    metaData
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteMemberCredits {
+  onDeleteMemberCredits {
+    id
+    clientId
+    qty
+    confirmationId
+    amount
+    amountTxt
+    stripeCustomer
+    paymentDetails
+    lastProcessDt
+    receiptUrl
+    paymentStatus
+    metaData
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
   }
 }

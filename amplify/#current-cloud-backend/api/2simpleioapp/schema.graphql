@@ -100,12 +100,15 @@ type Subscriber @model @auth(rules: [{allow: public}])
     apiKey: String!
     clientId: ID!
     limit: MontlyLimit
-    limitMax: String
-    currentCount: String
+    limitMax: Int
+    currentCount: Int
     expires: String
     lastProcessDt: AWSDateTime
     metadata: String
     status: SubsStatus
+    confirmCount: Int
+    transitCount: Int
+    creditCount: Int
 }
 
 enum CampaignTargetOptions {
@@ -161,4 +164,20 @@ type CampaignTarget @model @auth(rules: [{allow: public}])
     groupId: String
     group: Group @connection
     type: CampaignTargetOptions
+}
+
+type MemberCredits @model @auth(rules: [{allow: public}])
+@key(name: "payList", fields: ["clientId", "lastProcessDt", "amountTxt", "paymentStatus"], queryField: "QueryPayments"){
+    id: ID!
+    clientId: String!
+    qty: Int!
+    confirmationId: String!
+    amount: Float!
+    amountTxt: String!
+    stripeCustomer: String!
+    paymentDetails: String!
+    lastProcessDt: AWSDateTime
+    receiptUrl: String!
+    paymentStatus: String!
+    metaData: String
 }

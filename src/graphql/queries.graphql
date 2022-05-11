@@ -648,6 +648,9 @@ query GetSubscriber($id: ID!) {
     lastProcessDt
     metadata
     status
+    confirmCount
+    transitCount
+    creditCount
     _version
     _deleted
     _lastChangedAt
@@ -672,6 +675,9 @@ query ListSubscribers(
       lastProcessDt
       metadata
       status
+      confirmCount
+      transitCount
+      creditCount
       _version
       _deleted
       _lastChangedAt
@@ -705,6 +711,9 @@ query SyncSubscribers(
       lastProcessDt
       metadata
       status
+      confirmCount
+      transitCount
+      creditCount
       _version
       _deleted
       _lastChangedAt
@@ -1092,6 +1101,130 @@ query SyncCampaignTargets(
         createdAt
         updatedAt
       }
+    }
+    nextToken
+    startedAt
+  }
+}
+query GetMemberCredits($id: ID!) {
+  getMemberCredits(id: $id) {
+    id
+    clientId
+    qty
+    confirmationId
+    amount
+    amountTxt
+    stripeCustomer
+    paymentDetails
+    lastProcessDt
+    receiptUrl
+    paymentStatus
+    metaData
+    _version
+    _deleted
+    _lastChangedAt
+    createdAt
+    updatedAt
+  }
+}
+query ListMemberCredits(
+  $filter: ModelMemberCreditsFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listMemberCredits(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      clientId
+      qty
+      confirmationId
+      amount
+      amountTxt
+      stripeCustomer
+      paymentDetails
+      lastProcessDt
+      receiptUrl
+      paymentStatus
+      metaData
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query QueryPayments(
+  $clientId: String
+  $lastProcessDtAmountTxtPaymentStatus: ModelMemberCreditsPayListCompositeKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelMemberCreditsFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  QueryPayments(
+    clientId: $clientId
+    lastProcessDtAmountTxtPaymentStatus: $lastProcessDtAmountTxtPaymentStatus
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      clientId
+      qty
+      confirmationId
+      amount
+      amountTxt
+      stripeCustomer
+      paymentDetails
+      lastProcessDt
+      receiptUrl
+      paymentStatus
+      metaData
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
+    }
+    nextToken
+    startedAt
+  }
+}
+query SyncMemberCredits(
+  $filter: ModelMemberCreditsFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncMemberCredits(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      clientId
+      qty
+      confirmationId
+      amount
+      amountTxt
+      stripeCustomer
+      paymentDetails
+      lastProcessDt
+      receiptUrl
+      paymentStatus
+      metaData
+      _version
+      _deleted
+      _lastChangedAt
+      createdAt
+      updatedAt
     }
     nextToken
     startedAt
