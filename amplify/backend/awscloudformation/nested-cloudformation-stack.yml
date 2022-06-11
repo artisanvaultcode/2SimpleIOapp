@@ -119,38 +119,6 @@
         }
       }
     },
-    "functionlpostStripePayments": {
-      "Type": "AWS::CloudFormation::Stack",
-      "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/amplify-2simpleioapp-dev-213838-deployment/amplify-cfn-templates/function/lpostStripePayments-cloudformation-template.json",
-        "Parameters": {
-          "stripeKey": "pk_live_51KpyxuC3K2llSHl1M5gVZAmn14l6Sw6iLTUii5FJw1PTjt35b1bRiF08I67XQxrnyLTNrPBXD1nqZPhguJRML4Wg00GGojqX23",
-          "stripeSecretKey": "sk_test_51KpyxuC3K2llSHl1z025XLFEkbGnVrmMRz3sdS1edxmsltLWdfmCrG8LhqBVkgT3am6tjBndz65kZXwMlUoXXyKf00g4eT3NZM",
-          "secretsPathAmplifyAppId": "d1p76vn48npwaa",
-          "deploymentBucketName": "amplify-2simpleioapp-dev-213838-deployment",
-          "s3Key": "amplify-builds/lpostStripePayments-3367494d644634324e51-build.zip",
-          "api2simpleioappGraphQLAPIIdOutput": {
-            "Fn::GetAtt": [
-              "api2simpleioapp",
-              "Outputs.GraphQLAPIIdOutput"
-            ]
-          },
-          "api2simpleioappGraphQLAPIEndpointOutput": {
-            "Fn::GetAtt": [
-              "api2simpleioapp",
-              "Outputs.GraphQLAPIEndpointOutput"
-            ]
-          },
-          "api2simpleioappGraphQLAPIKeyOutput": {
-            "Fn::GetAtt": [
-              "api2simpleioapp",
-              "Outputs.GraphQLAPIKeyOutput"
-            ]
-          },
-          "env": "dev"
-        }
-      }
-    },
     "authuserPoolGroups": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {

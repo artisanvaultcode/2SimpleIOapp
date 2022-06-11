@@ -17,13 +17,6 @@
           "GROUP": "USER",
           "deploymentBucketName": "amplify-2simpleioapp-dev-213838-deployment",
           "s3Key": "amplify-builds/2simpleioapp755235cd755235cdPostConfirmation-352f7533776a7753726e-build.zip"
-        },
-        "lpostStripePayments": {
-          "stripeKey": "pk_live_51KpyxuC3K2llSHl1M5gVZAmn14l6Sw6iLTUii5FJw1PTjt35b1bRiF08I67XQxrnyLTNrPBXD1nqZPhguJRML4Wg00GGojqX23",
-          "stripeSecretKey": "sk_test_51KpyxuC3K2llSHl1z025XLFEkbGnVrmMRz3sdS1edxmsltLWdfmCrG8LhqBVkgT3am6tjBndz65kZXwMlUoXXyKf00g4eT3NZM",
-          "secretsPathAmplifyAppId": "d1p76vn48npwaa",
-          "deploymentBucketName": "amplify-2simpleioapp-dev-213838-deployment",
-          "s3Key": "amplify-builds/lpostStripePayments-3367494d644634324e51-build.zip"
         }
       },
       "auth": {

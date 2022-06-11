@@ -24,56 +24,20 @@
         "Name": "2simpleioapp755235cd755235cdPostConfirmation-dev",
         "LambdaExecutionRole": "2simpleioapp755235cd755235cdPostConfirmation-dev"
       },
-      "lastPushTimeStamp": "2022-05-11T00:44:14.592Z",
+      "lastPushTimeStamp": "2022-05-11T04:06:40.843Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-2simpleioapp-dev-213838-deployment/amplify-cfn-templates/function/2simpleioapp755235cd755235cdPostConfirmation-cloudformation-template.json",
         "logicalId": "function2simpleioapp755235cd755235cdPostConfirmation"
       },
-      "lastBuildTimeStamp": "2022-05-11T00:38:57.866Z",
+      "lastBuildTimeStamp": "2022-05-11T01:36:24.644Z",
       "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2022-05-11T00:38:58.327Z",
+      "lastPackageTimeStamp": "2022-05-11T01:36:25.090Z",
       "distZipFilename": "2simpleioapp755235cd755235cdPostConfirmation-352f7533776a7753726e-build.zip",
       "s3Bucket": {
         "deploymentBucketName": "amplify-2simpleioapp-dev-213838-deployment",
         "s3Key": "amplify-builds/2simpleioapp755235cd755235cdPostConfirmation-352f7533776a7753726e-build.zip"
       },
       "lastPushDirHash": "KcG8lunbDALWCX+Nabn6ZWIHcRU="
-    },
-    "lpostStripePayments": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda",
-      "dependsOn": [
-        {
-          "category": "api",
-          "resourceName": "2simpleioapp",
-          "attributes": [
-            "GraphQLAPIIdOutput",
-            "GraphQLAPIEndpointOutput",
-            "GraphQLAPIKeyOutput"
-          ]
-        }
-      ],
-      "lastBuildTimeStamp": "2022-05-11T00:38:57.864Z",
-      "lastBuildType": "PROD",
-      "lastPackageTimeStamp": "2022-05-11T00:38:57.923Z",
-      "distZipFilename": "lpostStripePayments-3367494d644634324e51-build.zip",
-      "s3Bucket": {
-        "deploymentBucketName": "amplify-2simpleioapp-dev-213838-deployment",
-        "s3Key": "amplify-builds/lpostStripePayments-3367494d644634324e51-build.zip"
-      },
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-2simpleioapp-dev-213838-deployment/amplify-cfn-templates/function/lpostStripePayments-cloudformation-template.json",
-        "logicalId": "functionlpostStripePayments"
-      },
-      "lastPushTimeStamp": "2022-05-11T00:44:14.592Z",
-      "output": {
-        "Region": "us-east-1",
-        "Arn": "arn:aws:lambda:us-east-1:538331572700:function:lpostStripePayments-dev",
-        "Name": "lpostStripePayments-dev",
-        "LambdaExecutionRole": "2simpleioappLambdaRolef05146d0-dev"
-      },
-      "lastPushDirHash": "HBmZ+eFLgStqmWIUlHBt06yfEe4="
     }
   },
   "auth": {
@@ -96,7 +60,7 @@
         "ADMINGroupRole": "arn:aws:iam::538331572700:role/us-east-1_taWiNn0o6-ADMINGroupRole",
         "USERGroupRole": "arn:aws:iam::538331572700:role/us-east-1_taWiNn0o6-USERGroupRole"
       },
-      "lastPushTimeStamp": "2022-05-11T00:44:14.583Z",
+      "lastPushTimeStamp": "2022-05-11T04:06:40.848Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-2simpleioapp-dev-213838-deployment/amplify-cfn-templates/auth/template.json",
         "logicalId": "authuserPoolGroups"
@@ -151,7 +115,7 @@
         "IdentityPoolName": "2simpleioapp755235cd_identitypool_755235cd__dev",
         "UserPoolName": "2simpleioapp755235cd_userpool_755235cd"
       },
-      "lastPushTimeStamp": "2022-05-11T00:44:14.585Z",
+      "lastPushTimeStamp": "2022-05-11T04:06:40.849Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-2simpleioapp-dev-213838-deployment/amplify-cfn-templates/auth/2simpleioapp755235cd755235cd-cloudformation-template.yml",
         "logicalId": "auth2simpleioapp755235cd755235cd"
@@ -188,7 +152,7 @@
         "GraphQLAPIEndpointOutput": "https://ide3bqegebglzab7zqfmpervja.appsync-api.us-east-1.amazonaws.com/graphql",
         "GraphQLAPIKeyOutput": "da2-zby2jkdlu5hljlz7igypd3xt64"
       },
-      "lastPushTimeStamp": "2022-05-11T00:44:14.592Z",
+      "lastPushTimeStamp": "2022-05-11T04:06:45.132Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-2simpleioapp-dev-213838-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "api2simpleioapp"

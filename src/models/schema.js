@@ -271,6 +271,13 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "archive": {
+                    "name": "archive",
+                    "isArray": false,
+                    "type": "Boolean",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "clientId": {
                     "name": "clientId",
                     "isArray": false,
@@ -305,6 +312,19 @@ export const schema = {
                 {
                     "type": "searchable",
                     "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "rByPhoneTxt",
+                        "fields": [
+                            "clientId",
+                            "phoneTxt",
+                            "lastProcessDt",
+                            "status"
+                        ],
+                        "queryField": "allRecipientsByPhone"
+                    }
                 },
                 {
                     "type": "auth",
@@ -457,6 +477,13 @@ export const schema = {
                     "type": {
                         "enum": "EntityStatus"
                     },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "clientId": {
+                    "name": "clientId",
+                    "isArray": false,
+                    "type": "ID",
                     "isRequired": false,
                     "attributes": []
                 },
@@ -645,14 +672,14 @@ export const schema = {
                 "limitMax": {
                     "name": "limitMax",
                     "isArray": false,
-                    "type": "String",
+                    "type": "Int",
                     "isRequired": false,
                     "attributes": []
                 },
                 "currentCount": {
                     "name": "currentCount",
                     "isArray": false,
-                    "type": "String",
+                    "type": "Int",
                     "isRequired": false,
                     "attributes": []
                 },
@@ -683,6 +710,27 @@ export const schema = {
                     "type": {
                         "enum": "SubsStatus"
                     },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "confirmCount": {
+                    "name": "confirmCount",
+                    "isArray": false,
+                    "type": "Int",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "transitCount": {
+                    "name": "transitCount",
+                    "isArray": false,
+                    "type": "Int",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "creditCount": {
+                    "name": "creditCount",
+                    "isArray": false,
+                    "type": "Int",
                     "isRequired": false,
                     "attributes": []
                 },
@@ -717,6 +765,455 @@ export const schema = {
                         "fields": [
                             "apiKey"
                         ]
+                    }
+                },
+                {
+                    "type": "auth",
+                    "properties": {
+                        "rules": [
+                            {
+                                "allow": "public",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "Campaign": {
+            "name": "Campaign",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "clientId": {
+                    "name": "clientId",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "name": {
+                    "name": "name",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "target": {
+                    "name": "target",
+                    "isArray": false,
+                    "type": {
+                        "enum": "CampaignTargetOptions"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "groupId": {
+                    "name": "groupId",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "message": {
+                    "name": "message",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "lastProcessDt": {
+                    "name": "lastProcessDt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "metadata": {
+                    "name": "metadata",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "status": {
+                    "name": "status",
+                    "isArray": false,
+                    "type": {
+                        "enum": "SubsStatus"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "archive": {
+                    "name": "archive",
+                    "isArray": false,
+                    "type": "Boolean",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "cType": {
+                    "name": "cType",
+                    "isArray": false,
+                    "type": {
+                        "enum": "CampaignTypeOptions"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "dateStart": {
+                    "name": "dateStart",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "timeStart": {
+                    "name": "timeStart",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "epocStart": {
+                    "name": "epocStart",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "cStatus": {
+                    "name": "cStatus",
+                    "isArray": false,
+                    "type": {
+                        "enum": "CampaignStatus"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                },
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                }
+            },
+            "syncable": true,
+            "pluralName": "Campaigns",
+            "attributes": [
+                {
+                    "type": "model",
+                    "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byClientId",
+                        "fields": [
+                            "clientId",
+                            "lastProcessDt",
+                            "status",
+                            "cStatus"
+                        ],
+                        "queryField": "allCampaignsByClientId"
+                    }
+                },
+                {
+                    "type": "auth",
+                    "properties": {
+                        "rules": [
+                            {
+                                "allow": "public",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "CampaignTarget": {
+            "name": "CampaignTarget",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "campaignId": {
+                    "name": "campaignId",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "recipientId": {
+                    "name": "recipientId",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "recipient": {
+                    "name": "recipient",
+                    "isArray": false,
+                    "type": {
+                        "model": "Recipient"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "association": {
+                        "connectionType": "BELONGS_TO",
+                        "targetName": "campaignTargetRecipientId"
+                    }
+                },
+                "lastProcessDt": {
+                    "name": "lastProcessDt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "status": {
+                    "name": "status",
+                    "isArray": false,
+                    "type": {
+                        "enum": "CampaignTargetStatus"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "groupId": {
+                    "name": "groupId",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "group": {
+                    "name": "group",
+                    "isArray": false,
+                    "type": {
+                        "model": "Group"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "association": {
+                        "connectionType": "BELONGS_TO",
+                        "targetName": "campaignTargetGroupId"
+                    }
+                },
+                "type": {
+                    "name": "type",
+                    "isArray": false,
+                    "type": {
+                        "enum": "CampaignTargetOptions"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                },
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                }
+            },
+            "syncable": true,
+            "pluralName": "CampaignTargets",
+            "attributes": [
+                {
+                    "type": "model",
+                    "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "targetAll",
+                        "fields": [
+                            "campaignId",
+                            "lastProcessDt",
+                            "status"
+                        ],
+                        "queryField": "QueryCampaignTargetsById"
+                    }
+                },
+                {
+                    "type": "auth",
+                    "properties": {
+                        "rules": [
+                            {
+                                "allow": "public",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "MemberCredits": {
+            "name": "MemberCredits",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "clientId": {
+                    "name": "clientId",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "qty": {
+                    "name": "qty",
+                    "isArray": false,
+                    "type": "Int",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "confirmationId": {
+                    "name": "confirmationId",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "amount": {
+                    "name": "amount",
+                    "isArray": false,
+                    "type": "Float",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "amountTxt": {
+                    "name": "amountTxt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "stripeCustomer": {
+                    "name": "stripeCustomer",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "paymentDetails": {
+                    "name": "paymentDetails",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "lastProcessDt": {
+                    "name": "lastProcessDt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "receiptUrl": {
+                    "name": "receiptUrl",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "paymentStatus": {
+                    "name": "paymentStatus",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "metaData": {
+                    "name": "metaData",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                },
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                }
+            },
+            "syncable": true,
+            "pluralName": "MemberCredits",
+            "attributes": [
+                {
+                    "type": "model",
+                    "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "payList",
+                        "fields": [
+                            "clientId",
+                            "lastProcessDt",
+                            "amountTxt",
+                            "paymentStatus"
+                        ],
+                        "queryField": "QueryPayments"
                     }
                 },
                 {
@@ -781,8 +1278,40 @@ export const schema = {
                 "INACTIVE",
                 "SUSPENDED"
             ]
+        },
+        "CampaignTargetOptions": {
+            "name": "CampaignTargetOptions",
+            "values": [
+                "ALL",
+                "GROUP",
+                "SELECTION"
+            ]
+        },
+        "CampaignTypeOptions": {
+            "name": "CampaignTypeOptions",
+            "values": [
+                "EXPRESS",
+                "SCHEDULED"
+            ]
+        },
+        "CampaignStatus": {
+            "name": "CampaignStatus",
+            "values": [
+                "DEFINED",
+                "PROCESSING",
+                "PAUSE",
+                "COMPLETED"
+            ]
+        },
+        "CampaignTargetStatus": {
+            "name": "CampaignTargetStatus",
+            "values": [
+                "ACTIVE",
+                "PROCESSING",
+                "SENT"
+            ]
         }
     },
     "nonModels": {},
-    "version": "ad2a2356bcb38a959ea805f06aa52fd8"
+    "version": "526d157aef6ecb55318158bffae92e8f"
 };
